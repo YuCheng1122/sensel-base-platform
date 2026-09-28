@@ -1,9 +1,51 @@
 {
   "sourceRepository": "sensel-full-stack",
   "sourceHead": "c206fd1b2cd2c2ca29faae0811b94d1741d276da",
-  "sources": [{"path": "src/lib/read-agent-stream.ts", "sha256": "735267c6f70639c2343905f4b7e8ea53b1a74e74d2c54e7f2b5681f55b08eff4", "disposition": "Copied reusable SSE framing parser unchanged to src/read-agent-stream.ts."}],
-  "newImplementations": ["REST-driven ChatWorkspace"],
-  "excluded": ["SOC event references", "investigation cards", "customer prompts", "domain tool names"],
-  "consumers": ["templates/project/web"],
-  "compatibility": "New platform stream event names. Existing source app untouched."
+  "sources": [
+    {
+      "path": "src/lib/read-agent-stream.ts",
+      "sha256": "735267c6f70639c2343905f4b7e8ea53b1a74e74d2c54e7f2b5681f55b08eff4",
+      "disposition": "Copied reusable SSE framing parser unchanged to src/read-agent-stream.ts."
+    },
+    {
+      "path": "src/app/chatbot/page.tsx",
+      "sha256": "8fab43e17527d113898f34345acc489fdc07712ba471c43a218bf7452d64076b",
+      "disposition": "Adapted original presentation, proportions and responsive structure into chat-view/chat-panels/chat-message and scoped styles; REST state retained; SOC content excluded."
+    },
+    {
+      "path": "src/app/chatbot/components/chat-sidebar.tsx",
+      "sha256": "24eda6837155c6c979c26639ef516379a8dd2abd725d7ec947eaf12cbb3e74cc",
+      "disposition": "Adapted original presentation, proportions and responsive structure into chat-view/chat-panels/chat-message and scoped styles; REST state retained; SOC content excluded."
+    },
+    {
+      "path": "src/app/chatbot/components/message.tsx",
+      "sha256": "efe2b3c8e31e8995e786bb7df3c9993c6aea23aff61646583e48777184a2cc73",
+      "disposition": "Adapted original presentation, proportions and responsive structure into chat-view/chat-panels/chat-message and scoped styles; REST state retained; SOC content excluded."
+    },
+    {
+      "path": "src/app/chatbot/components/suggested-questions.tsx",
+      "sha256": "7889c0bd55ed4b5f84549267739936b9595b05a3ab241e423a2de3710598f5d2",
+      "disposition": "Adapted original presentation, proportions and responsive structure into chat-view/chat-panels/chat-message and scoped styles; REST state retained; SOC content excluded."
+    },
+    {
+      "path": "src/app/chatbot/components/conversation-activity.tsx",
+      "sha256": "f6da88f6760e7039d9002cfb2da8cc2eba25b8f88eee1d48bf8f1022f74d65bd",
+      "disposition": "Adapted original presentation, proportions and responsive structure into chat-view/chat-panels/chat-message and scoped styles; REST state retained; SOC content excluded."
+    }
+  ],
+  "newImplementations": [
+    "REST-driven ChatWorkspace state adapter",
+    "Generic suggested prompts and tool result payload adapter"
+  ],
+  "excluded": [
+    "SOC event references",
+    "investigation cards",
+    "customer prompts",
+    "domain tool names"
+  ],
+  "consumers": [
+    "templates/project/web"
+  ],
+  "compatibility": "New platform stream event names. Existing source app untouched.",
+  "presentation": "Preserves source application design; does not claim SOC feature or event-link migration."
 }

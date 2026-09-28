@@ -8,11 +8,17 @@
     "extraction-manifest.json"
   ],
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./styles.css": "./src/styles.css"
   },
-  "sideEffects": false,
+  "sideEffects": [
+    "**/*.css"
+  ],
   "dependencies": {
-    "@sensel/ui": "0.1.0"
+    "@sensel/ui": "0.1.0",
+    "lucide-react": "0.479.0",
+    "react-markdown": "10.1.0",
+    "remark-gfm": "4.0.1"
   },
   "peerDependencies": {
     "react": "^18.3.1",

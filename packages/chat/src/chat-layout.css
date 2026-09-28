@@ -1,0 +1,294 @@
+/* Presentation adapted from the original chatbot layout; domain content is injected by the project. */
+.sensel-chat {
+  display: flex;
+  flex: 1;
+  height: 100%;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+  background: var(--background);
+  color: var(--foreground);
+}
+.sensel-chat button,
+.sensel-chat select,
+.sensel-chat textarea {
+  font: inherit;
+}
+.sensel-chat button {
+  cursor: pointer;
+}
+.sensel-chat svg {
+  flex-shrink: 0;
+}
+.chat-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  color: var(--muted-foreground);
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+}
+.chat-icon:hover {
+  color: var(--foreground);
+  background: var(--muted);
+}
+.chat-sidebar {
+  display: flex;
+  flex-direction: column;
+  width: 256px;
+  height: 100%;
+  min-height: 0;
+  background: var(--sidebar, var(--muted));
+  border-right: 1px solid var(--border);
+}
+.chat-sidebar header,
+.chat-conversation-header,
+.chat-tool-panel header {
+  height: 56px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px;
+  border-bottom: 1px solid var(--border);
+}
+.chat-sidebar header strong {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 600;
+}
+.chat-sidebar-create {
+  padding: 12px;
+}
+.chat-new {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 36px;
+  padding: 8px 12px;
+  border: 0;
+  border-radius: 7px;
+  background: var(--primary);
+  color: var(--primary-foreground, #fff);
+  font-size: 14px;
+  font-weight: 500;
+}
+.chat-sidebar nav {
+  padding: 0 8px;
+}
+.chat-sidebar nav p {
+  font-size: 12px;
+  color: var(--muted-foreground);
+  margin: 0;
+  padding: 0 8px 4px;
+}
+.chat-workspace-current {
+  display: flex;
+  height: 40px;
+  align-items: center;
+  gap: 10px;
+  border-radius: 8px;
+  padding: 0 10px;
+  background: var(--sidebar-accent, var(--muted));
+  color: var(--sidebar-primary, var(--primary));
+  font-size: 14px;
+  font-weight: 500;
+}
+.chat-history {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  border-top: 1px solid var(--border);
+  margin-top: 12px;
+  padding-top: 12px;
+}
+.chat-history-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 28px;
+  padding: 0 16px 8px;
+  color: var(--muted-foreground);
+  font-size: 12px;
+}
+.chat-history-list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 0 8px 12px;
+}
+.chat-history-empty {
+  padding: 20px 8px;
+  color: var(--muted-foreground);
+  text-align: center;
+  font-size: 12px;
+}
+.chat-history-empty svg {
+  display: block;
+  margin: auto;
+}
+.chat-history-empty p {
+  margin: 8px 0;
+}
+.sensel-chat .conversation {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  min-height: 44px;
+  margin: 3px 0;
+  padding: 10px 10px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  text-align: left;
+  color: var(--sidebar-foreground, var(--foreground));
+  font-size: 12px;
+}
+.sensel-chat .conversation span {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.sensel-chat .conversation:hover,
+.sensel-chat .conversation[aria-current="page"] {
+  background: var(--sidebar-accent, var(--muted));
+  color: var(--sidebar-primary, var(--primary));
+}
+.chat-sidebar.is-collapsed {
+  width: 52px;
+}
+.chat-sidebar.is-collapsed header {
+  justify-content: center;
+  padding: 0;
+}
+.chat-sidebar.is-collapsed header strong,
+.chat-sidebar.is-collapsed .chat-new span,
+.chat-sidebar.is-collapsed nav,
+.chat-sidebar.is-collapsed .chat-history {
+  display: none;
+}
+.chat-sidebar.is-collapsed .chat-sidebar-create {
+  padding: 10px 8px;
+}
+.chat-sidebar.is-collapsed .chat-new {
+  padding: 0;
+  width: 36px;
+  justify-content: center;
+}
+.chat-main {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  background: var(--background);
+}
+.chat-conversation-header h1 {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0;
+}
+.chat-tools-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: transparent;
+  padding: 6px 9px;
+  font-size: 12px !important;
+  color: var(--muted-foreground);
+}
+.chat-tools-toggle:hover {
+  background: var(--muted);
+  color: var(--foreground);
+}
+.chat-mobile-history {
+  display: none;
+}
+.chat-transcript {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+}
+.chat-welcome {
+  display: flex;
+  min-height: 100%;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 24px;
+}
+.chat-welcome > div {
+  width: 100%;
+  max-width: 672px;
+}
+.chat-eyebrow {
+  color: var(--primary);
+  font-size: 14px;
+  font-weight: 500;
+  margin: 0 0 12px;
+}
+.chat-welcome h2 {
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  margin: 0 0 8px;
+}
+.chat-welcome-description {
+  color: var(--muted-foreground);
+  font-size: 14px;
+  line-height: 24px;
+  margin: 0 0 32px;
+}
+.chat-suggestions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.chat-suggestions button {
+  min-height: 128px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  color: var(--foreground);
+  background: var(--card);
+  text-align: left;
+  box-shadow: 0 1px 2px #00000008;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s,
+    transform 0.15s;
+}
+.chat-suggestions button:hover {
+  border-color: color-mix(in srgb, var(--primary) 40%, transparent);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px #0000000a;
+}
+.chat-suggestion-icon {
+  display: inline-flex;
+  color: var(--primary);
+  padding: 8px;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--primary) 10%, transparent);
+}
+.chat-suggestions strong {
+  display: block;
+  margin-top: 12px;
+  font-size: 14px;
+  font-weight: 600;
+}
+.chat-suggestions button > span:last-child {
+  display: block;
+  margin-top: 4px;
+  color: var(--muted-foreground);
+  font-size: 12px;
+  line-height: 20px;
+}

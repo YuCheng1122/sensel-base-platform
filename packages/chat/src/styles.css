@@ -1,0 +1,64 @@
+@import "./chat-layout.css";
+@import "./chat-transcript.css";
+@import "./chat-tools.css";
+
+@media (min-width: 1280px) {
+  .chat-sidebar:not(.is-collapsed) {
+    width: 288px;
+  }
+}
+@media (min-width: 1536px) {
+  .chat-tool-panel {
+    width: 384px;
+  }
+}
+@media (max-width: 1279px) {
+  .chat-desktop-tools {
+    display: none;
+  }
+}
+@media (max-width: 767px) {
+  .chat-desktop-sidebar {
+    display: none;
+  }
+  .chat-mobile-history {
+    display: inline-flex;
+  }
+  .chat-welcome {
+    padding: 24px 16px;
+  }
+  .chat-welcome h2 {
+    font-size: 24px;
+  }
+  .chat-welcome-description {
+    margin-bottom: 24px;
+  }
+  .chat-composer-region {
+    padding: 12px;
+  }
+  .chat-tools-toggle span {
+    display: none;
+  }
+  .chat-message-container {
+    padding: 16px 12px;
+  }
+}
+@media (max-width: 479px) {
+  .chat-suggestions {
+    grid-template-columns: 1fr;
+  }
+  .chat-suggestions button {
+    min-height: 112px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .chat-spinner {
+    animation: none;
+  }
+  .chat-suggestions button {
+    transition: none;
+  }
+  .chat-suggestions button:hover {
+    transform: none;
+  }
+}

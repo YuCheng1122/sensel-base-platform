@@ -78,6 +78,7 @@ export default function Home() {
   return (
     <AppShell
       name={user.name}
+      email={user.email}
       navigation={navigation}
       active={active}
       onNavigate={setActive}

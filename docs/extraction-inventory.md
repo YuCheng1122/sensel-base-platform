@@ -4,8 +4,8 @@
 
 | 能力 | 去向 | 處置與驗證邊界 |
 | --- | --- | --- |
-| UI tokens／表單／管理版型 | @sensel/ui | 選擇性改寫為無客戶依賴元件；不複製未使用shadcn元件／SOC卡片 |
-| Chat／工具紀錄 | @sensel/chat | 保留核心互動、持久歷史、SSE parser及取消；引用renderer不綁資安事件 |
+| UI tokens／表單／管理版型 | @sensel/ui | 保留原登入、浮動側欄與管理配置，拆除客戶依賴；樣式依責任拆分，不複製未使用shadcn元件／SOC卡片 |
+| Chat／工具紀錄 | @sensel/chat | 還原原Chat側欄、歡迎頁、訊息／輸入與工具面板；保留歷史、SSE與取消，Markdown不啟用raw HTML、不綁資安事件 |
 | 認證／users／groups | @sensel/server＋Prisma adapter | 重新組合為CoreStore；opaque DB sessions；不保留NextAuth provider或Digiwin ACL欄位 |
 | 秘密加密 | @sensel/server/secrets | 保留gcm1 AES-GCM格式；真實資料尚未遷移，不宣稱舊DB直接相容 |
 | 模型設定 | server＋Python | provider基本文字／tools、版本綁定連線／能力檢查、預設門檻；不保留舊模型目錄稽核UI |

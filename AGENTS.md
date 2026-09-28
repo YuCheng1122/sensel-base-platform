@@ -14,6 +14,8 @@ This repo contains reusable application and Agent capabilities for independent c
 
 ## Workflow
 
+During extraction, preserve the source UI layout and interaction hierarchy. Read DESIGN.md and compare actual screenshots; separating dependencies does not authorize redesigning login, navigation or chat. Keep style ownership in the relevant package, remove obsolete rules rather than stacking overrides, and document necessary contract differences.
+
 Use Node >=20.19 and Python >=3.12. Install with `npm ci`, then generate the Prisma client. Use root package scripts instead of undocumented paths. `npm run check` checks lint, types and boundaries. `npm test` exercises backend contracts. `npm run test:ui` requires the isolated running stack; see docs/testing.md. Python commands live in python/README.md.
 
 Use fake providers and isolated synthetic databases for testing. Do not call live model providers or send email in automated verification. Never print, copy or commit real secrets, customer logs, database exports or `.env` files.

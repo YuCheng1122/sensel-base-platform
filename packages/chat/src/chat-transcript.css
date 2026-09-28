@@ -1,0 +1,198 @@
+.chat-message-container,
+.chat-composer {
+  width: 100%;
+  max-width: 896px;
+  margin: auto;
+}
+.sidebar-collapsed .chat-message-container,
+.sidebar-collapsed .chat-composer {
+  max-width: 1024px;
+}
+.chat-message-container {
+  padding: 24px 16px;
+}
+.chat-message {
+  display: flex;
+  width: 100%;
+  gap: 12px;
+  padding: 16px 0;
+}
+.chat-message-avatar {
+  display: flex;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: var(--primary);
+  background: color-mix(in srgb, var(--primary) 10%, transparent);
+}
+.chat-message-body {
+  min-width: 0;
+  flex: 1;
+}
+.chat-message-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  margin-bottom: 8px;
+}
+.chat-message-meta span {
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: var(--primary);
+  background: color-mix(in srgb, var(--primary) 10%, transparent);
+  font-weight: 500;
+}
+.chat-message-content {
+  font-size: 15px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+.chat-message-content p {
+  margin: 0 0 12px;
+}
+.chat-message-content p:last-child {
+  margin-bottom: 0;
+}
+.chat-message-content pre {
+  max-width: 100%;
+  overflow: auto;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--muted);
+}
+.chat-message-content code {
+  font-family: ui-monospace, monospace;
+  font-size: 13px;
+}
+.chat-message-content table {
+  border-collapse: collapse;
+  display: block;
+  max-width: 100%;
+  overflow: auto;
+}
+.chat-message-content td,
+.chat-message-content th {
+  border: 1px solid var(--border);
+  padding: 6px 10px;
+}
+.chat-message-content blockquote {
+  margin-left: 0;
+  border-left: 3px solid var(--border);
+  padding-left: 12px;
+  color: var(--muted-foreground);
+}
+.chat-message.user {
+  flex-direction: row-reverse;
+}
+.chat-message.user .chat-message-avatar {
+  background: var(--muted);
+  color: var(--muted-foreground);
+}
+.chat-message.user .chat-message-body {
+  flex: initial;
+  max-width: 85%;
+}
+.chat-message.user .chat-message-content {
+  background: var(--muted);
+  border-radius: 16px 6px 16px 16px;
+  padding: 12px 16px;
+  white-space: pre-wrap;
+}
+.chat-message-status {
+  display: block;
+  color: var(--muted-foreground);
+  font-size: 12px;
+  margin-top: 8px;
+}
+.chat-copy {
+  margin-top: 8px;
+  opacity: 0.6;
+}
+.chat-message:hover .chat-copy {
+  opacity: 1;
+}
+.chat-loading {
+  padding: 32px;
+  color: var(--muted-foreground);
+}
+.chat-composer-region {
+  flex-shrink: 0;
+  border-top: 1px solid var(--border);
+  padding: 16px;
+  background: var(--background);
+}
+.chat-composer-options {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.chat-composer-options > span {
+  flex: 1;
+  color: var(--muted-foreground);
+  font-size: 12px;
+}
+.chat-composer-options select {
+  width: 240px;
+  max-width: 100%;
+  height: 32px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 3px 10px;
+  background: var(--background);
+  color: var(--foreground);
+  font-size: 12px;
+}
+.chat-composer-input {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+}
+.chat-composer-input textarea {
+  display: block;
+  min-height: 50px;
+  width: 100%;
+  max-height: 200px;
+  resize: vertical;
+  padding: 12px 48px 12px 16px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--card);
+  color: var(--foreground);
+  font-size: 15px;
+  line-height: 24px;
+  box-shadow: 0 1px 2px #00000008;
+}
+.chat-composer-input textarea::placeholder {
+  color: var(--muted-foreground);
+}
+.chat-send {
+  position: absolute;
+  right: 6px;
+  bottom: 6px;
+  display: flex;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 12px;
+  background: var(--primary);
+  color: var(--primary-foreground, #fff);
+}
+.chat-send:disabled {
+  background: var(--muted);
+  color: var(--muted-foreground);
+}
+.chat-stop {
+  background: var(--destructive, #b42318);
+  color: #fff;
+}

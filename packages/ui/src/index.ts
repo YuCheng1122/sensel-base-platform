@@ -11,3 +11,6 @@ export { AppShell, type NavigationItem } from "./app-shell";
 export { AccessSettings } from "./access-settings";
 export { ModelSettings } from "./model-settings";
 export { ProfileSettings } from "./profile-settings";
+
+export { PlatformThemeProvider } from "./presentation";
+export type { LoginBranding } from "./login";

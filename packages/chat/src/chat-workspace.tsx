@@ -1,34 +1,9 @@
 "use client";
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import {
-  Button,
-  Field,
-  Notice,
-  PageHeader,
-  request,
-  type Model,
-} from "@sensel/ui";
+import { request, type Model } from "@sensel/ui";
 import { readAgentStream } from "./read-agent-stream";
-interface Conversation {
-  id: string;
-  title: string;
-}
-interface Message {
-  id: string;
-  role: string;
-  content: string;
-  status?: string;
-  executionId?: string;
-  trace?: StreamEvent[];
-}
-interface StreamEvent {
-  type: string;
-  delta?: string;
-  executionId?: string;
-  status?: string;
-  error?: unknown;
-  [key: string]: unknown;
-}
+import { ChatView } from "./chat-view";
+import type { Conversation, Message, StreamEvent } from "./chat-types";
 export function ChatWorkspace() {
   const [chats, setChats] = useState<Conversation[]>([]);
   const [active, setActive] = useState("");
@@ -237,129 +212,30 @@ export function ChatWorkspace() {
     }
   }
   return (
-    <>
-      <PageHeader title="對話分析">
-        <div className="row">
-          <Button
-            variant="secondary"
-            disabled={busy || loading}
-            onClick={() => {
-              setActive("");
-              setMessages([]);
-              setTraces([]);
-              setStatus("");
-              setError("");
-            }}
-          >
-            新對話
-          </Button>
-          {active && (
-            <Button
-              variant="danger"
-              disabled={busy || loading}
-              onClick={() => void remove()}
-            >
-              刪除對話
-            </Button>
-          )}
-        </div>
-      </PageHeader>
-      <div className="chat-layout">
-        <aside className="conversation-list" aria-label="對話歷史">
-          {chats.map((chat) => (
-            <button
-              className="conversation"
-              key={chat.id}
-              disabled={busy || loading}
-              aria-current={chat.id === active}
-              onClick={() => void select(chat.id)}
-            >
-              {chat.title}
-            </button>
-          ))}
-          {!chats.length && <p className="muted">尚無歷史對話。</p>}
-        </aside>
-        <section className="panel">
-          <div
-            className="messages"
-            role="log"
-            aria-label="對話訊息"
-            aria-busy={loading}
-          >
-            {loading ? (
-              <p>載入中…</p>
-            ) : messages.length ? (
-              messages.map((message) => (
-                <article key={message.id} className="message">
-                  <strong>
-                    {message.role === "user" ? "您" : "Assistant"}
-                    {message.status && message.status !== "completed"
-                      ? ` · ${message.status}`
-                      : ""}
-                  </strong>
-                  {message.content || "…"}
-                </article>
-              ))
-            ) : (
-              <p className="muted">選擇模型，開始新的分析對話。</p>
-            )}
-            <div ref={end} />
-          </div>
-          {traces.length > 0 && (
-            <details>
-              <summary>工具執行紀錄（{traces.length}）</summary>
-              {traces.map((trace, index) => (
-                <pre className="trace" key={index}>
-                  {JSON.stringify(trace, null, 2)}
-                </pre>
-              ))}
-            </details>
-          )}
-          <form className="composer" onSubmit={submit}>
-            <Field label="模型">
-              <select
-                value={modelId}
-                disabled={busy}
-                onChange={(event) => setModelId(event.target.value)}
-              >
-                {models.map((model) => (
-                  <option key={model.id} value={model.id}>
-                    {model.name}
-                  </option>
-                ))}
-              </select>
-            </Field>
-            {!models.length && (
-              <Notice>尚無可用模型，請管理員在模型設定啟用模型。</Notice>
-            )}
-            <Field label="訊息">
-              <textarea
-                name="content"
-                required
-                disabled={busy || loading}
-                placeholder="輸入您想分析的問題"
-                maxLength={32000}
-              />
-            </Field>
-            {error && <Notice error>{error}</Notice>}
-            <div className="row">
-              <Button disabled={busy || loading || !modelId}>傳送</Button>
-              {busy && (
-                <Button
-                  type="button"
-                  variant="danger"
-                  onClick={() => void stop()}
-                >
-                  停止
-                </Button>
-              )}
-              <span role="status" className="muted">
-                {status}
-              </span>
-            </div>
-          </form>
-        </section>
-      </div>
-    </>
+    <ChatView
+      chats={chats}
+      active={active}
+      messages={messages}
+      models={models}
+      modelId={modelId}
+      traces={traces}
+      error={error}
+      busy={busy}
+      loading={loading}
+      status={status}
+      end={end}
+      onModel={setModelId}
+      onSelect={(id) => void select(id)}
+      onNew={() => {
+        setActive("");
+        setMessages([]);
+        setTraces([]);
+        setStatus("");
+        setError("");
+      }}
+      onRemove={() => void remove()}
+      onStop={() => void stop()}
+      onSubmit={(event) => void submit(event)}
+    />
   );
 }

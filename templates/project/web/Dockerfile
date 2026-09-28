@@ -18,6 +18,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends openssl ca-cert
 ENV NODE_ENV=production NEXT_TELEMETRY_DISABLED=1 HOSTNAME=0.0.0.0 PORT=3000
 COPY --from=build --chown=node:node /app/templates/project/web/.next/standalone ./
 COPY --from=build --chown=node:node /app/templates/project/web/.next/static ./templates/project/web/.next/static
+COPY --from=build --chown=node:node /app/templates/project/web/public ./templates/project/web/public
 # Migration/bootstrap use an explicit one-shot job based on the build target.
 USER node
 EXPOSE 3000

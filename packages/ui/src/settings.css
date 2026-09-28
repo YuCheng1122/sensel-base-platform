@@ -1,0 +1,206 @@
+/* Settings retain the source's full-width management tables and model catalog. */
+.model-settings-content {
+  display: grid;
+  gap: 24px;
+}
+.model-editor {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+.model-editor-wide {
+  grid-column: 1 / -1;
+}
+.model-editor .row {
+  justify-content: flex-start;
+}
+.model-catalog > h2 {
+  margin-bottom: 12px;
+}
+.model-catalog-grid {
+  display: grid;
+  grid-template-columns: minmax(256px, 320px) minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+.model-catalog-list,
+.model-detail {
+  height: 544px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.model-catalog-list > p {
+  margin: 0;
+  font-size: 13px;
+}
+.model-catalog-scroll,
+.model-detail-scroll {
+  min-height: 0;
+  overflow: auto;
+  flex: 1;
+}
+.model-catalog-scroll {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.model-choice {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex-shrink: 0;
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 12px;
+  text-align: left;
+  background: var(--card);
+  color: var(--foreground);
+}
+.model-choice:hover {
+  background: var(--muted);
+}
+.model-choice.is-selected {
+  border-color: var(--primary);
+  background: var(--accent);
+}
+.model-choice > strong,
+.model-choice > span {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.model-choice > span,
+.model-choice > small {
+  color: var(--muted-foreground);
+  font-size: 12px;
+}
+.model-detail > header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+.model-detail h2 {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 2px 8px;
+  font-size: 12px;
+  font-weight: 500;
+}
+.model-detail-scroll p {
+  overflow-wrap: anywhere;
+}
+.model-checks {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  background: var(--muted);
+}
+.model-checks h3 {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin: 0 0 12px;
+  font-size: 14px;
+}
+.model-checks dl {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0;
+}
+.model-checks dt {
+  color: var(--muted-foreground);
+  font-size: 12px;
+}
+.model-checks dd {
+  margin: 4px 0 0;
+  font-size: 13px;
+}
+.search-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 380px;
+  min-width: 0;
+}
+.search-control > svg {
+  flex-shrink: 0;
+  color: var(--muted-foreground);
+}
+.search-control > input {
+  min-width: 0;
+  width: 100%;
+}
+.access-settings-content {
+  display: grid;
+  gap: 16px;
+}
+.access-settings-content .settings-table {
+  min-width: 600px;
+}
+.access-settings-content .settings-table th:nth-child(2) {
+  width: auto;
+}
+.access-settings-content .settings-table td:last-child {
+  width: 160px;
+}
+.settings-dialog-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  background: rgb(0 0 0 / 0.5);
+}
+.settings-dialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 81;
+  width: min(512px, calc(100vw - 32px));
+  max-height: 85dvh;
+  overflow: auto;
+  padding: 24px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--background);
+  color: var(--foreground);
+  box-shadow: 0 12px 32px rgb(0 0 0 / 0.12);
+}
+.settings-dialog > h2 {
+  margin: 0 28px 20px 0;
+  font-size: 18px;
+}
+.settings-dialog-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+}
+.settings-dialog fieldset {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+@media (max-width: 1023px) {
+  .model-catalog-grid {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 639px) {
+  .model-editor {
+    grid-template-columns: 1fr;
+  }
+  .model-catalog-list,
+  .model-detail {
+    height: 416px;
+  }
+}

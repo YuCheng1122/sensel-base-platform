@@ -1,14 +1,78 @@
 {
   "sourceRepository": "sensel-full-stack",
   "sourceHead": "c206fd1b2cd2c2ca29faae0811b94d1741d276da",
-  "sourceState": "Working tree read-only; another agent may modify source concurrently. Hashes identify files actually inspected.",
+  "sourceState": "Source tree read-only; file hashes identify inspected working-tree content, not an assumption of a clean HEAD.",
   "sources": [
-    {"path": "src/styles/globals.css", "sha256": "d422ab1fa2b243b8a6a1f24d2a0a3110569ddda0cbe129eee3cc41535aebf57d", "disposition": "Retain neutral blue/gray light/dark tokens and focus semantics in src/styles.css. Exclude severity and domain styling."},
-    {"path": "DESIGN.md", "sha256": "7c8ae6169206b913cb9755a4f67155caad8f10c25e73ccc931cf7266a1a5afd7", "disposition": "Adapt shared compact spacing, labeled controls, error/empty distinction and responsive layout."},
-    {"path": "src/components/ui/button.tsx", "disposition": "Reimplement consumed native button variants without unused asChild/Slot or styling dependencies."}
+    {
+      "path": "src/app/auth/signin/page.tsx",
+      "sha256": "e77d91ba1a9227fe4dfd341ac73254a534ae03e87e8679ea3ff16af41a7b9acf"
+    },
+    {
+      "path": "src/app/auth/layout.tsx",
+      "sha256": "82999325d9c308f155137d12f4b427dd1f10441b17dbc209d9ad1ce21c2d239b"
+    },
+    {
+      "path": "src/components/app-sidebar.tsx",
+      "sha256": "c812ec3748cbe4dada936491a4e5af00d8d9bd3ac8212c87ce54a1f1f93b9e6a"
+    },
+    {
+      "path": "src/components/top-nav/top-nav-layout.tsx",
+      "sha256": "26502d5e778ad516591e9ba383ce3ee54f790de45e0a06b6464320b8be8343fb"
+    },
+    {
+      "path": "src/components/top-nav/theme-toggle.tsx",
+      "sha256": "696e573e8c00e6f767f5effa9158c1ce8e191db228961c102b173c63f49117e8"
+    },
+    {
+      "path": "src/components/ui/nav-header.tsx",
+      "sha256": "d999f0c85b8eae60dc8cf6f835ec1a9c3fa09bdca82dfa921fda3b83611563b6"
+    },
+    {
+      "path": "src/components/ui/nav-main.tsx",
+      "sha256": "deac3d660e750a20748ebcb7a64801435294a01a030ff7535d809c9512bd9c7b"
+    },
+    {
+      "path": "src/components/ui/nav-user.tsx",
+      "sha256": "02a595292dfe3a34fc6abf2033c729b439c5d618f79bcbdb33691fd28ef855d6"
+    },
+    {
+      "path": "src/components/ui/lang-switcher.tsx",
+      "sha256": "1276b770273db35c029278c7c817d7775a0ffe76f137dccfb5fee64946604744"
+    },
+    {
+      "path": "src/components/ui/input.tsx",
+      "sha256": "6628e8fde207857b9ba08910d386eeea8213d7d745b4e0ae8b95332b52730db9"
+    },
+    {
+      "path": "src/components/ui/button.tsx",
+      "sha256": "d4921e2420279f65a94797a2565bbfb73832f7ce912aad5f2e9fb9ee06949501"
+    },
+    {
+      "path": "src/styles/globals.css",
+      "sha256": "d422ab1fa2b243b8a6a1f24d2a0a3110569ddda0cbe129eee3cc41535aebf57d"
+    },
+    {
+      "path": "src/app/layout.tsx",
+      "sha256": "4e75cb25aeb5516171bbb745f58254eed0cd0f8fdb22057aabf80894a586915c"
+    }
   ],
-  "newImplementations": ["REST client", "login", "app-shell", "access-settings", "model-settings", "profile-settings"],
-  "excluded": ["Domain pages and navigation", "SOC components", "unused primitive exports", "customer fonts/assets"],
-  "consumers": ["templates/project/web", "packages/chat"],
-  "compatibility": "New REST-driven components, not drop-in compatibility with source tRPC UI. Existing customer app not switched."
+  "disposition": "Restore original login composition, floating sidebar, nested settings, user menu, control styling, tokens, and Geist typography. Adapt framework/REST boundaries; no imports from source tree.",
+  "visualCorrections": [
+    "Removed newly designed centered login card and simplified sidebar.",
+    "Restored original45/55 desktop composition,380px form,pill controls,logo placement and branding panel.",
+    "Restored floating sidebar, nested settings, compact topbar, theme/language and user menus.",
+    "Split stylesheet ownership rather than layering overrides; removed obsolete chat styles from UI package."
+  ],
+  "intentionalDifferences": [
+    "Email authentication retained because base backend uses email.",
+    "No dead signup link: optional registrationHref; default administrator contact text.",
+    "Customer/SOC navigation and marketing copy are configurable or excluded.",
+    "Language selection currently covers login and shell only.",
+    "Profile/password use existing base profile workflow."
+  ],
+  "consumers": [
+    "templates/project/web",
+    "packages/chat"
+  ],
+  "validation": "Visual comparison to original public login and browser geometry/behavior tests; do not claim pixel-perfect parity."
 }
