@@ -3,15 +3,15 @@
   display: grid;
   gap: 24px;
 }
-.model-editor {
+.settings-form-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px;
 }
-.model-editor-wide {
+.settings-form-wide {
   grid-column: 1 / -1;
 }
-.model-editor .row {
+.settings-form-grid .row {
   justify-content: flex-start;
 }
 .model-catalog > h2 {
@@ -196,7 +196,7 @@
   }
 }
 @media (max-width: 639px) {
-  .model-editor {
+  .settings-form-grid {
     grid-template-columns: 1fr;
   }
   .model-catalog-list,

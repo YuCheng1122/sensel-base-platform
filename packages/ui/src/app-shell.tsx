@@ -20,7 +20,7 @@ export interface NavigationItem {
 export function AppShell({
   name,
   email,
-  brand = "Avocado SenseL",
+  brand = "SenseL",
   logoSrc = "/Avocado_SenseL_logo_transparent.png",
   iconSrc = "/favicon.ico",
   navigation,
@@ -49,6 +49,9 @@ export function AppShell({
       ? {
           chat: "Analysis chat",
           models: "Models",
+          overview: "Event overview",
+          reports: "Report downloads",
+          platform: "Platform settings",
           users: "Users",
           groups: "Groups",
           profile: "Profile",
@@ -56,10 +59,11 @@ export function AppShell({
       : {};
   const label = (item: NavigationItem) => labels[item.id] ?? item.label;
   const settings = navigation.filter((item) =>
-    ["models", "users", "groups"].includes(item.id),
+    ["platform", "models", "users", "groups"].includes(item.id),
   );
   const general = navigation.filter(
-    (item) => !["models", "users", "groups", "profile"].includes(item.id),
+    (item) =>
+      !["platform", "models", "users", "groups", "profile"].includes(item.id),
   );
   const navigate = (id: string) => {
     onNavigate(id);

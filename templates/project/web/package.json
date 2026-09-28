@@ -21,7 +21,9 @@
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "bcryptjs": "2.4.3",
-    "geist": "1.4.2"
+    "geist": "1.4.2",
+    "@sensel/analytics": "0.1.0",
+    "@sensel/reports": "0.1.0"
   },
   "devDependencies": {
     "prisma": "5.22.0"

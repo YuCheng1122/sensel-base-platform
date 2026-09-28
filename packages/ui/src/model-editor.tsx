@@ -22,7 +22,7 @@ export function ModelEditor({
   return (
     <form
       key={`${editing?.id ?? "new"}-${editing?.version ?? 0}`}
-      className="panel model-editor"
+      className="panel settings-form-grid"
       onSubmit={onSubmit}
       onChange={(event) => {
         const target = event.target as HTMLInputElement | HTMLSelectElement;
@@ -40,7 +40,7 @@ export function ModelEditor({
           setIsDefault(false);
       }}
     >
-      <h2 className="model-editor-wide">{editing ? "編輯模型" : "新增模型"}</h2>
+      <h2 className="settings-form-wide">{editing ? "編輯模型" : "新增模型"}</h2>
       <Field label="顯示名稱">
         <input name="name" defaultValue={editing?.name} required />
       </Field>
@@ -122,10 +122,10 @@ export function ModelEditor({
         />
         預設模型
       </label>
-      <small className="model-editor-wide">
+      <small className="settings-form-wide">
         先儲存模型，再執行連線及工具測試；兩項通過後，重新編輯並設為預設。變更執行設定會取消預設，需重新測試。
       </small>
-      <div className="row model-editor-wide">
+      <div className="row settings-form-wide">
         <Button disabled={busy}>儲存</Button>
         {editing && (
           <Button

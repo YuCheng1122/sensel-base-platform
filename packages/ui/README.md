@@ -22,3 +22,5 @@ The consuming application loads Geist Sans/Mono variables and serves the default
 Styles have one ownership location: `tokens.css`, `primitives.css`, `login.css`, `shell.css`, `sidebar-user.css` and `settings.css`, imported by `styles.css`. Chat-specific presentation lives in `@sensel/chat/styles.css`. No customer app aliases, Prisma client, source-tree imports or domain widgets are included. Runtime dependencies are React, Radix menus/dialogs, Lucide icons and next-themes. Native logo images keep the package independent of Next.js.
 
 Validation: root `npm run lint`, `npm run typecheck`, and `npm run test:ui`. Next.js consumers transpile `@sensel/ui` and `@sensel/chat`. Source provenance and deliberate adaptations are recorded in `extraction-manifest.json`.
+
+`PlatformSettings` provides versioned platform name, IANA display timezone and report defaults. Its `onSaved` callback lets the customer composition refresh presentation defaults. The related audit view displays the most recent 50 platform-setting changes; it does not claim to be the complete user/model audit UI. Settings form layout is shared with model editing instead of duplicating CSS.

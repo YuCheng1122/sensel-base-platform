@@ -4,6 +4,8 @@ import { GeistMono } from "geist/font/mono";
 import { PlatformThemeProvider } from "@sensel/ui";
 import "@sensel/ui/styles.css";
 import "@sensel/chat/styles.css";
+import "@sensel/analytics/styles.css";
+import "@sensel/reports/styles.css";
 export const metadata = {
   title: "Avocado SenseL",
   description: "An extensible analysis workspace",

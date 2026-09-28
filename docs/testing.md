@@ -2,6 +2,8 @@
 
 所有測試使用合成資料、假模型或假HTTP transport；不呼叫付費模型、不寄信、不接客戶來源。
 
+PDF驗證使用系統 `pdftotext`（Ubuntu／Debian 安裝 `poppler-utils`）。Knip只豁免這個已明列的系統binary，CI會安裝它；不是忽略未使用程式。
+
 ```sh
 npm ci
 npm run db:generate

@@ -14,3 +14,4 @@ export { ProfileSettings } from "./profile-settings";
 
 export { PlatformThemeProvider } from "./presentation";
 export type { LoginBranding } from "./login";
+export { PlatformSettings, type PlatformSettingsData } from "./platform-settings";

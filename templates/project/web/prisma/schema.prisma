@@ -16,6 +16,7 @@ model User {
  groups Group[]
  sessions Session[]
  chats Chat[]
+ reports ReportSnapshot[]
 }
 model Group {
  id String @id @default(uuid())
@@ -73,6 +74,32 @@ model AuditEvent {
  actorId String
  action String
  targetId String
+ createdAt DateTime @default(now())
+ @@index([createdAt])
+}
+
+model ReportSnapshot {
+ id String @id
+ ownerId String
+ owner User @relation(fields:[ownerId],references:[id],onDelete:Cascade)
+ title String
+ createdAt DateTime
+ snapshot Json
+ @@index([ownerId,createdAt])
+}
+model PlatformSettings {
+ id String @id @default("platform")
+ name String
+ timezone String
+ reportTitle String
+ defaultRangeDays Int
+ version Int @default(1)
+}
+model PlatformSettingsAudit {
+ id String @id @default(uuid())
+ actorId String
+ before Json
+ after Json
  createdAt DateTime @default(now())
  @@index([createdAt])
 }

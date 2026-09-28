@@ -13,7 +13,7 @@ npm run typecheck
 npm run build
 ```
 
-產生器拒絕覆蓋非空目錄，排除node_modules/.next/.env與Python快取。平台專用Dockerfile不會複製到客戶專案，因其build context是平台workspace；客戶需按自己的套件與目錄建立映像配方。`vendor/`保存明確版本的tgz，web/package.json用相對file相依；換成private registry時改成鎖定版本並重建lockfile。三個套件需採相容版本。
+產生器拒絕覆蓋非空目錄，排除node_modules/.next/.env與Python快取。平台專用Dockerfile不會複製到客戶專案，因其build context是平台workspace；客戶需按自己的套件與目錄建立映像配方。`vendor/`保存明確版本的tgz，web/package.json用相對file相依；換成private registry時改成鎖定版本並重建lockfile。五個套件需採相容版本。
 
 在客戶專案建立Python venv，安裝平台建好的wheel，再以 `uvicorn main:app --app-dir agent --port 8001` 啟動。生產依賴請鎖定，不用跨repo PYTHONPATH，也不引用平台原始碼目錄。
 

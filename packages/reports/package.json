@@ -1,0 +1,29 @@
+{
+  "name": "@sensel/reports",
+  "version": "0.1.0",
+  "type": "module",
+  "files": [
+    "src",
+    "README.md",
+    "extraction-manifest.json"
+  ],
+  "exports": {
+    ".": "./src/index.ts",
+    "./contracts": "./src/contracts.ts",
+    "./exports": "./src/report-exports.ts",
+    "./pdf": "./src/snapshot-pdf.tsx",
+    "./styles.css": "./src/styles.css"
+  },
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "dependencies": {
+    "@sensel/ui": "0.1.0",
+    "@sensel/analytics": "0.1.0",
+    "@react-pdf/renderer": "4.3.0"
+  },
+  "peerDependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  }
+}

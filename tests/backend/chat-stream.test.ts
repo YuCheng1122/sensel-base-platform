@@ -61,6 +61,13 @@ function fixture(failPersistence = false) {
     recordModelTest: unsupported,
     audit: unsupported,
     health: unsupported,
+    settings: unsupported,
+    saveSettings: unsupported,
+    settingsAudit: unsupported,
+    reports: unsupported,
+    createReport: unsupported,
+    report: unsupported,
+    deleteReport: unsupported,
     chat: async () => ({
       id: "chat",
       userId: user.id,

@@ -11,3 +11,7 @@ Prisma是ORM；PostgreSQL是實際資料庫。每個客戶維護一份schema、�
 原Digiwin的schema及migration未搬入；不得拿新migration覆蓋舊DB。未來接回時，需逐表mapping、歷史資料讀回、加密資料相容與還原演練。
 
 Nginx可以把log存PostgreSQL；有ES需求的專案另行安裝adapter、定義mapping與索引生命周期。PCAP原始檔不必塞進資料庫，可存檔案／物件儲存，DB記錄索引和分析結果。平台不提供通用SQL-to-ES轉換層。
+
+## 共用分析與報告
+
+新增 `PlatformSettings`、`PlatformSettingsAudit`、`ReportSnapshot` 由範本Prisma adapter擁有；migration只新增表，不重設舊資料。報告保存完整JSON快照，以ownerId限制存取；客戶業務事件仍屬客戶schema或儲存服務，不進平台資料表。設定寫入與before／after紀錄同交易提交。詳見 [共用功能](analytics-and-reports.md)。

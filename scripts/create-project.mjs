@@ -22,7 +22,7 @@ manifest.name = 'customer-web';
 manifest.devDependencies = { ...manifest.devDependencies, typescript: rootManifest.devDependencies.typescript, tsx: rootManifest.devDependencies.tsx, '@types/node': rootManifest.devDependencies['@types/node'], '@types/react': rootManifest.devDependencies['@types/react'], '@types/bcryptjs': rootManifest.devDependencies['@types/bcryptjs'] };
 if (tarballs) {
   await mkdir(path.join(destination, 'vendor'), { recursive: true });
-  for (const name of ['ui', 'chat', 'server']) {
+  for (const name of ['ui', 'chat', 'analytics', 'reports', 'server']) {
     const version = manifest.dependencies[`@sensel/${name}`];
     const filename = `sensel-${name}-${version}.tgz`;
     await cp(path.join(tarballs, filename), path.join(destination, 'vendor', filename));

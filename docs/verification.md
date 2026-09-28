@@ -63,3 +63,28 @@
 本輪紀錄及合成截圖位於 `/tmp/sensel-base-visual/`；秘密、trace和截圖不入版控。
 
 本機預覽 `http://localhost:3300` 已更新為新的Web映像；Web／Agent／PostgreSQL均healthy。以既有管理員完成登入，模型1筆、對話1筆保留，瀏覽器pageerror為0。只重建Web，未重置資料庫或停止其他專案服務。隔離驗證服務於交付前停止，3300預覽持續運作；尚未push或遠端發布。
+
+## 共用分析／報告／設定擴充（2026-09-28）
+
+三位Agent分別完成Analytics、Reports與後端儲存，主Agent整合導覽／共用設定並交叉檢查。新增功能說明見 [共用能力](analytics-and-reports.md)。
+
+- `npm run check`：lint、根與Web型別、相依邊界／400行模組限制通過。
+- `npm run dead-code`：無未處理發現。`pdftotext`為明列的系統工具，由CI安裝poppler-utils；僅豁免此非npm binary。
+- `npm test`：22通過、0失敗、0略過，包括真Prisma持久層、並行設定版本衝突、owner隔離、來源失敗、圖表範圍與匯出。
+- 中文PDF以真renderer生成12頁，Poppler確認中文、最後一筆明細、完整長敘述及每頁頁尾；實際查看封面及明細圖片。
+- 正式Next build通過，瀏覽器14項全部通過（20.3秒）；含真JSON／CSV／PDF下載、來源離線下載既有快照、時區設定改變不改舊報告、設定回讀與手機版。
+- `npm pack`五套件→`/tmp/sensel-base-consumer-features`獨立安裝、Prisma generate、typecheck、正式build全部通過，中文字型／授權與public資產完整帶入，無原workspace程式相依。
+- 事件概覽、報告預覽、平台設定1440／390與概覽暗色共7張合成截圖已實際檢查，無頁面水平溢出；手機表格於自身容器橫向捲動。
+
+新增migration在隔離資料庫由空庫依序套用兩個migration並bootstrap通過。Python runtime及Agent映像未變，沿用先前驗證；本輪真Agent參與全部原Chat瀏覽器回歸。CI增加PDF文字驗證的系統工具，本地對應步驟已跑，尚未在GitHub執行。
+
+本輪logs與合成截圖位於 `/tmp/sensel-base-features/`，PDF文字／圖片檢查在 `/tmp/sensel-base-visual/reports-cjk-long.pdf` 及同目錄圖片。資料與產物均未納入版控。
+
+容器與既有資料升級亦已完成：
+
+- 最終本機瀏覽器build ID：`PeUKrjHpMPD7WPoNy2A4M`。
+- Web `sensel-base-web:features`：`sha256:9d3abf797e357ef312805fa1b50f765f366fba0aaabf512f5e90cd8c0488b26d`。
+- Migration `sensel-base-migrate:features`：`sha256:0dc3c6b9b8cb03ffcfaf80b9a978ab14b0bca4b52699824a9ac97dbe14053e82`。
+- 先將本機預覽資料庫備份至私有暫存檔，再只套用`202609280002_feature_modules`。未reset／重新bootstrap；既有模型1筆、對話1筆與原管理員登入均保留。
+- `localhost:3300` 的Web／Agent／PostgreSQL healthy；實際開啟概覽、保存一份標示合成的「SenseL 共用功能示範報告」、下載131464 bytes的真PDF，快照回讀一致，瀏覽器pageerror為0。
+- 已停止隔離測試Web／Agent及測試PostgreSQL；3300預覽繼續運作。没有push、registry發布或遠端部署。

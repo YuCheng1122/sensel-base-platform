@@ -1,3 +1,4 @@
+import { createSyntheticAnalysisProvider } from "./synthetic-analysis-provider";
 import { PrismaClient } from "@prisma/client";
 import { createCoreHandler, type CoreConfig } from "@sensel/server";
 import { createPrismaStore } from "./prisma-store";
@@ -6,6 +7,7 @@ const db = globalDb.senselDb ?? new PrismaClient();
 if (process.env.NODE_ENV !== "production") globalDb.senselDb = db;
 export const coreConfig: CoreConfig = {
   store: createPrismaStore(db),
+  analysisProvider: createSyntheticAnalysisProvider(),
   publicOrigin: process.env.PUBLIC_APP_URL,
   encryptionKey: process.env.SETTINGS_ENCRYPTION_KEY ?? "",
   agentUrl: process.env.AGENT_URL ?? "http://127.0.0.1:8000",

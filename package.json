@@ -18,7 +18,7 @@
     "lint": "eslint packages templates/project/web/src tests --ext .ts,.tsx --no-error-on-unmatched-pattern",
     "check": "npm run lint && npm run typecheck && npm run boundaries",
     "boundaries": "node scripts/check-boundaries.mjs",
-    "test": "tsx --test tests/backend/*.test.ts tests/ui/*.test.ts",
+    "test": "tsx --test tests/backend/*.test.ts tests/ui/*.test.ts packages/analytics/tests/*.test.ts",
     "test:ui": "playwright test",
     "db:generate": "npm run db:generate --workspace @sensel/project-web",
     "db:migrate": "npm run db:migrate --workspace @sensel/project-web",
@@ -41,7 +41,8 @@
     "typescript": "5.8.3",
     "knip": "6.38.0",
     "bcryptjs": "2.4.3",
-    "@prisma/client": "5.22.0"
+    "@prisma/client": "5.22.0",
+    "@react-pdf/renderer": "4.3.0"
   },
   "overrides": {
     "next": {

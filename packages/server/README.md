@@ -30,3 +30,25 @@ Account/group/model lists are bounded; cursor pagination and settings operation 
 from the source application are not yet extracted. Audit events record actor/action/target
 transactionally but do not expose a history UI. There is no production-data migration
 from the source application. See [extraction notes](EXTRACTION.md).
+
+## Analysis, snapshots and platform settings
+
+`CoreConfig.analysisProvider` is a customer-injected boundary. `sources(actor)` advertises
+only authorized source IDs; `collect({actor,query})` supplies `OverviewData` from
+`@sensel/analytics/contracts`. Requests use UTC instants with inclusive `from`, exclusive
+`to`, and a positive range of at most 90 days. Missing source ID selects the first advertised
+source; the core does not invent an `all` source. Missing/failing providers return 503,
+never an empty success. Provider output is validated for query/range consistency, category
+IDs, distinct identifiers, count bounds and a 5 MiB serialized snapshot limit.
+
+Reports use `@sensel/reports/contracts`. Creation calls `collect` once and stores the
+snapshot JSON in PostgreSQL. Listing, reading and exports use that saved JSON; they do
+not query the provider again. Access is owner-scoped, including administrators. Listing
+supports title query, page and pageSize (1–100). There is no update-snapshot API.
+
+Authenticated users may read safe platform settings. Admin writes require an expected
+version and run under the same transaction-scoped advisory lock as identity/model
+settings; before/after values are saved atomically. Admin audit reads expose up to 50
+rows and a nextCursor. Settings are name, IANA display timezone, report title and default
+range days (1–90), not mail credentials. Query instants remain UTC regardless of display
+timezone. Report snapshots freeze the display timezone at creation.

@@ -34,6 +34,28 @@ secret encryption and signed profiles. Browser/Agent integration results are rec
 by the root task's validation report.
 
 Known limits: process-local cancellation and login throttle; bounded history/list reads;
-no settings-operation replay/cancel protocol, audit browsing endpoint, session maintenance
+no settings-operation replay/cancel protocol, complete user/model audit browsing, session maintenance
 job or source-data migration yet. These require explicit follow-up, not silent claims
 of feature parity. Existing source behavior stays available in the source application.
+
+## Generic feature additions
+
+Overview rendering contracts are owned by `@sensel/analytics/contracts`; report snapshot
+contracts by `@sensel/reports/contracts`. The server imports those pure contracts instead
+of re-declaring UI DTOs. The template provider is explicitly synthetic and replaceable;
+no customer ES index or business event schema was extracted into core. Additive migration
+`202609280002_feature_modules` creates ReportSnapshot, PlatformSettings and its audit table.
+It never resets the database or copies source customer migrations.
+
+Read-only mail/notification inventory:
+
+| Source | Reusable candidate | Kept out of this delivery |
+| --- | --- | --- |
+| `src/server/services/mail-provider.ts` | Bounded provider adapter; sent/rejected/unknown/cancelled outcomes; provider receipt callback | Resend dependency and live delivery until there is an actual mail feature and tested configuration lifecycle |
+| `src/server/services/mail-runtime.ts` | Injected configuration resolver; configuration-version mismatch cancels delivery | Default resolver bound to source settings service |
+| `src/server/services/notification-delivery-status.service.ts` | Provider receipt-status mapping | Source Prisma deliveries, vendor scopes and permission service |
+| `src/server/services/sync/sync-notification-policy.ts` | Bounded sender, unknown-outcome semantics and retry limits | Vendor/site authorization and legacy customer recipient policy |
+
+No SMTP/notification test buttons or successful-delivery claims were added. A future mail
+module must first preserve encryption/versioning, delivery receipts and unknown-outcome
+behavior with synthetic transport tests; the source's customer triggers stay in that project.

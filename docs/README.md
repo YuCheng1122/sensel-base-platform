@@ -2,6 +2,8 @@
 
 第一次使用：根目錄 [README](../README.md) → [開發指南](development.md) → [設定](configuration.md)。
 
+共用圖表與報告：[功能及客戶接入](analytics-and-reports.md)。
+
 新增功能：[架構](architecture.md) → [目錄與命名](code-organization.md) → [建立客戶專案](create-project.md)。
 
 資料與 Agent：[儲存](data-storage.md)、[Agent runtime](agent-runtime.md)、[API 契約](api-contract.md)。

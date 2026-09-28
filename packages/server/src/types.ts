@@ -1,3 +1,4 @@
+import type { AnalysisProvider, FeatureStore } from "./feature-types";
 export type User = {
   id: string;
   email: string;
@@ -46,7 +47,7 @@ export type Chat = {
   createdAt: Date;
   messages?: Message[];
 };
-export interface CoreStore {
+export interface CoreStore extends FeatureStore {
   userByEmail(email: string): Promise<User | null>;
   userById(id: string): Promise<User | null>;
   session(tokenHash: string): Promise<{ user: User; expiresAt: Date } | null>;
@@ -99,6 +100,7 @@ export interface CoreStore {
 export type CoreConfig = {
   /** Trusted browser origin when the framework normalizes the internal request URL. */
   publicOrigin?: string;
+  analysisProvider?: AnalysisProvider;
   store: CoreStore;
   encryptionKey: string;
   agentUrl: string;

@@ -8,7 +8,7 @@
       → 客戶註冊的工具 → 受授權的後端 API → 客戶資料儲存
 ```
 
-`@sensel/ui` 提供管理元件，`@sensel/chat` 提供對話元件。套件暴露 TypeScript 原始碼，Next.js 使用 transpilePackages；不是把整個 Next.js app 發成 library。
+`@sensel/ui` 提供管理元件，`@sensel/chat` 提供對話元件，`@sensel/analytics` 提供事件概覽與圖表，`@sensel/reports` 提供快照預覽與匯出。資料由客戶注入 `AnalysisProvider`；server僅引用analytics／reports的純契約入口，不載入瀏覽器繪圖或PDF。套件暴露 TypeScript 原始碼，Next.js 使用 transpilePackages；不是把整個 Next.js app 發成 library。
 
 平台不 import 客戶模組、客戶 generated Prisma client 或 `@/` alias。專案範本負責 routes、Prisma adapter、導覽、工具與部署組合。HTTP／NDJSON 契約跨越 Web／Agent 服務邊界。
 

@@ -13,6 +13,8 @@
   "sideEffects": false,
   "dependencies": {
     "bcryptjs": "2.4.3",
-    "zod": "3.25.76"
+    "zod": "3.25.76",
+    "@sensel/analytics": "0.1.0",
+    "@sensel/reports": "0.1.0"
   }
 }

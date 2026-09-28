@@ -9,16 +9,41 @@ import {
   ModelSettings,
   Notice,
   ProfileSettings,
+  PlatformSettings,
+  type PlatformSettingsData,
   request,
   type User,
 } from "@sensel/ui";
 import { ChatWorkspace } from "@sensel/chat";
+import { AnalysisPages } from "./analysis-pages";
 export default function Home() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [active, setActive] = useState("chat");
   const [error, setError] = useState("");
   const [loginNotice, setLoginNotice] = useState("");
+  const [settings, setSettings] = useState<PlatformSettingsData | null>(null);
+  const [settingsError, setSettingsError] = useState("");
+  const [settingsRetry, setSettingsRetry] = useState(0);
+  useEffect(() => {
+    if (!user) {
+      setSettings(null);
+      return;
+    }
+    const controller = new AbortController();
+    setSettingsError("");
+    request<{ item: PlatformSettingsData }>("/settings", {
+      signal: controller.signal,
+    })
+      .then((result) => setSettings(result.item))
+      .catch((cause) => {
+        if (!controller.signal.aborted)
+          setSettingsError(
+            cause instanceof Error ? cause.message : "無法載入平台設定。",
+          );
+      });
+    return () => controller.abort();
+  }, [user, settingsRetry]);
   useEffect(() => {
     request<{ user: User }>("/auth/me")
       .then((result) => setUser(result.user))
@@ -65,9 +90,12 @@ export default function Home() {
       />
     );
   const navigation = [
+    { id: "overview", label: "事件概覽" },
     { id: "chat", label: "對話分析" },
+    { id: "reports", label: "報告下載" },
     ...(user.role === "ADMIN"
       ? [
+          { id: "platform", label: "平台設定" },
           { id: "models", label: "模型設定" },
           { id: "users", label: "使用者管理" },
           { id: "groups", label: "群組管理" },
@@ -77,6 +105,7 @@ export default function Home() {
   ];
   return (
     <AppShell
+      brand={settings?.name ?? "SenseL"}
       name={user.name}
       email={user.email}
       navigation={navigation}
@@ -86,6 +115,35 @@ export default function Home() {
     >
       {error && <Notice error>{error}</Notice>}
       {active === "chat" && <ChatWorkspace />}
+      {(active === "overview" || active === "reports") && settingsError && (
+        <div className="stack">
+          <Notice error>{settingsError}</Notice>
+          <Button onClick={() => setSettingsRetry((value) => value + 1)}>
+            重試載入平台設定
+          </Button>
+        </div>
+      )}
+      {active === "reports" && (
+        <AnalysisPages
+          active="reports"
+          settings={settingsError ? null : settings}
+        />
+      )}
+      {active === "overview" &&
+        !settingsError &&
+        (settings ? (
+          <AnalysisPages active="overview" settings={settings} />
+        ) : (
+          <p role="status">載入平台設定…</p>
+        ))}
+      {user.role === "ADMIN" && active === "platform" && (
+        <PlatformSettings
+          onSaved={(value) => {
+            setSettings(value);
+            setSettingsError("");
+          }}
+        />
+      )}
       {user.role === "ADMIN" && active === "models" && <ModelSettings />}
       {user.role === "ADMIN" && (active === "users" || active === "groups") && (
         <AccessSettings key={active} kind={active} />

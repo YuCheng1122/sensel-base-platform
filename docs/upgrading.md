@@ -1,7 +1,7 @@
 # 客戶升級
 
 1. 閱讀release說明及核心schema／API變更。
-2. 在客戶分支更新平台三個npm套件及Python wheel至同一相容版本，更新lockfiles。
+2. 在客戶分支更新平台五個npm套件及Python wheel至同一相容版本，更新lockfiles。
 3. 範本產生的routes／adapter／入口檔由客戶擁有；根據遷移說明調整，不重新生成並覆蓋客戶程式。
 4. 先在隔離DB套migration，驗證登入／歷史資料／模型／工具及客戶查詢。
 5. 備份並記錄上一版本套件與image digests，再依客戶流程發布。

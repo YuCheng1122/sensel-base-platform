@@ -21,5 +21,8 @@
         "prisma/**/*.{ts,prisma}"
       ]
     }
-  }
+  },
+  "ignoreBinaries": [
+    "pdftotext"
+  ]
 }

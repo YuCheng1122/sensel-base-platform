@@ -1,0 +1,63 @@
+{
+  "sourceRepository": "sensel-full-stack",
+  "sourceHead": "c206fd1b2cd2c2ca29faae0811b94d1741d276da",
+  "sourceState": "Source read-only; hashes identify inspected working-tree files, not an assumed clean HEAD.",
+  "sources": [
+    {
+      "path": "src/app/incident-intel/OverviewClient.tsx",
+      "sha256": "47e929f3c46380aa3b871a3ee8bc09d46646fbbeccbd55472095f1a6683865e5"
+    },
+    {
+      "path": "src/app/incident-intel/components/OverviewDistribution.tsx",
+      "sha256": "811aa0feb453bfd37f9710c3dfa68cb6c61e993bd61dd3aa3767ed07283ff098"
+    },
+    {
+      "path": "src/app/incident-intel/components/OverviewTrendChart.tsx",
+      "sha256": "881cf25119395a634b047a66f5c0ea7f6570a408441eb698086bd0295bd20397"
+    },
+    {
+      "path": "src/app/incident-intel/components/SourceTrendChart.tsx",
+      "sha256": "b8400e018a3798d578cde8c7c79b64030069d17ff22d9acb4f842d548c16075c"
+    },
+    {
+      "path": "src/app/incident-intel/components/TimeRangePicker.tsx",
+      "sha256": "304aa600d182f8fcae76ff492bc0e72ebfb759bb6c7501fec7c3ab7cdba0e7f6"
+    },
+    {
+      "path": "src/app/incident-intel/components/RecentEvents.tsx",
+      "sha256": "35b1597c3500478cfd23cd3bedbb05a94a3f41d4245e29de3a6b83cb696cacb1"
+    },
+    {
+      "path": "src/components/ui/chart.tsx",
+      "sha256": "2cfad546336f6e4a8d47731965a602aa0cebeabd9adf674b85f863950b08bf4d"
+    }
+  ],
+  "retained": [
+    "1600px overview frame and page-header/filter hierarchy",
+    "Equal summary cards followed by trend, distribution and event list",
+    "Source-style Recharts trend geometry, ticks, dashed grid and tabular alternative",
+    "Horizontal distribution bars and local drilldown destination",
+    "Anchored preset/custom time ranges and distinct loading/error/empty states"
+  ],
+  "adaptations": [
+    "Pure version1 OverviewData and injected OverviewAdapter replace tRPC/SOC/Elasticsearch dependencies.",
+    "Metrics, source labels, categories and level text supplied by provider.",
+    "Synthetic dataset marker, aggregate coverage and returned-list counts explicitly separated.",
+    "Only advertised scopes selected; no hardcoded all-sources permission.",
+    "List search/category/paging applies only to returned data; source server cursor implementation is not claimed.",
+    "Custom range inputs explicitly UTC; display timezone is consumer-configurable.",
+    "Disable chart animation for deterministic snapshot/report display."
+  ],
+  "excluded": [
+    "Vendor/SOC labels and severity policies",
+    "Assets/correlation/triage tabs requiring domain services",
+    "Unconsumed chart types and unused chart framework exports"
+  ],
+  "consumers": [
+    "templates/project/web event overview",
+    "packages/reports snapshot preview"
+  ],
+  "tests": [
+    "packages/analytics/tests/overview-range.test.ts"
+  ]
+}

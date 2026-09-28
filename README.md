@@ -10,10 +10,13 @@
 - 加密模型設定、連線與工具能力檢查、設定版本與預設模型門檻。
 - Chat 歷史、串流、取消、工具輸入輸出、部分結果及失敗狀態。
 - Python runtime 支援 OpenAI 相容、Anthropic、Gemini 文字／工具呼叫；合成測試可使用明確啟用的 fake provider。
+- 事件概覽與共用指標／趨勢／分類圖表，來源、時間範圍與資料完整性呈現。
+- 報告快照保存、預覽、搜尋／分頁與中文PDF／CSV／JSON下載。
+- 平台名稱、時區、報告預設與版本化設定變更紀錄。
 - 客戶擁有的 Prisma schema／migration 與工具註冊範本。
 - 套件打包、獨立專案產生器、測試及 CI/CD／Compose 配置。
 
-這是從 Digiwin 選擇性抽取並調整介面的第一版，不是原專案的整包副本或資料庫直接替代品。尚未搬入通知、PDF、settings operation replay、稽核 UI、分散式取消與長任務恢復。詳見 [搬移清冊](docs/extraction-inventory.md) 與 [驗證紀錄](docs/verification.md)。
+這是從 Digiwin 選擇性抽取並調整介面的第一版，不是原專案的整包副本或資料庫直接替代品。尚未搬入通知寄送、settings operation replay、完整帳號／模型稽核 UI、分散式取消與長任務恢復。詳見 [搬移清冊](docs/extraction-inventory.md) 與 [驗證紀錄](docs/verification.md)。
 
 ## 開始使用
 
@@ -55,6 +58,7 @@ npm run create:project -- /tmp/my-analysis-project --packages "$PWD/artifacts/pa
 
 - 開發者：[文件索引](docs/README.md)、[架構](docs/architecture.md)、[目錄規範](docs/code-organization.md)。
 - Coding Agent：[AGENTS.md](AGENTS.md)。產品 Agent：[執行與擴充](docs/agent-runtime.md)。
+- 分析與報告：[共用功能與客戶接入](docs/analytics-and-reports.md)。
 - UI：[DESIGN.md](DESIGN.md)。維運：[部署](docs/deployment.md)、[CI/CD](docs/ci-cd.md)。
 
 本地驗證結果記錄於驗證文件；遠端工作流程與正式部署須另行確認。

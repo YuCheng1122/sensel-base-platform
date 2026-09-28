@@ -1,0 +1,41 @@
+{
+  "package": "@sensel/reports",
+  "strategy": "Selective source behavior and PDF style extraction with generic injected contracts",
+  "sources": [
+    {
+      "path": "sensel-full-stack/src/app/report-download/ReportCenter.tsx",
+      "sha256": "a83b111fec45a9c68d691327cdd9ee00278bff6e37c1ffb850470f63cfa9032f"
+    },
+    {
+      "path": "sensel-full-stack/src/app/report-download/ReportCaptureForm.tsx",
+      "sha256": "58b2beaf3c99f2ba7bd03ebfb1564ea2ebe931e278d268e3451d503629676685"
+    },
+    {
+      "path": "sensel-full-stack/src/app/report-download/ReportSnapshotView.tsx",
+      "sha256": "216d418f625a06f16b009a164d79111206a5b651314d3fe29783f89ad8c9e26f"
+    },
+    {
+      "path": "sensel-full-stack/src/components/report/SnapshotPDF.tsx",
+      "sha256": "e7080841e7a0b9c62d67787e87d60991bf41a34f2994bc2903169c9873bdfb3d"
+    },
+    {
+      "path": "sensel-full-stack/public/fonts/NotoSansCJKtc-Regular.otf",
+      "sha256": "dce08bd4fd91aa8aa76ed8fea4b694c2dfb8550f67871e326843212ddbeb88b4"
+    },
+    {
+      "path": "sensel-full-stack/src/components/report/ReportSummaryCharts.tsx",
+      "sha256": "8526dbfeb5412b175d5fd454b8587b20225a54e6bba602bc5a0ce25735c490e9"
+    },
+    {
+      "path": "sensel-full-stack/public/fonts/OFL.txt",
+      "sha256": "6a73f9541c2de74158c0e7cf6b0a58ef774f5a780bf191f2d7ec9cc53efe2bf2"
+    }
+  ],
+  "excluded": [
+    "customer queries",
+    "SOC schema and filters",
+    "security report revisions",
+    "real report snapshots"
+  ],
+  "consumer": "templates/project/web"
+}

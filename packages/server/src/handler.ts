@@ -1,3 +1,4 @@
+import { handleFeatures } from "./feature-handler";
 import bcrypt from "bcryptjs";
 import { randomBytes, randomUUID } from "node:crypto";
 import { z, ZodError } from "zod";
@@ -157,6 +158,8 @@ async function handle(config: CoreConfig, request: Request): Promise<Response> {
   )
     throw new CoreError("UNAUTHORIZED", 401);
   const user = session.user;
+  const featureResponse = await handleFeatures(config, user, path, request);
+  if (featureResponse) return featureResponse;
   if (path.join("/") === "auth/logout" && method === "POST") {
     await config.store.deleteSession(tokenHash(token));
     return Response.json(

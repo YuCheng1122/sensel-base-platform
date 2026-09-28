@@ -57,6 +57,8 @@ jobs:
       - run: npm run db:migrate
       - name: Require isolated database integration tests
         run: node -e "const u=new URL(process.env.CORE_TEST_DATABASE_URL);if(u.hostname!=='127.0.0.1'||!u.pathname.endsWith('_audit'))process.exit(1)"
+      - name: Install PDF text verification tool
+        run: sudo apt-get update && sudo apt-get install -y poppler-utils
       - run: npm test
       - run: npm run build
       - run: uv sync --project python --frozen

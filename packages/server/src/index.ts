@@ -16,3 +16,12 @@ export type {
   Message,
   Chat,
 } from "./types";
+
+export type {
+  AnalysisProvider,
+  AnalysisActor,
+  PlatformSettings,
+  SettingsAudit,
+  FeatureStore,
+} from "./feature-types";
+export { defaultPlatformSettings } from "./feature-types";

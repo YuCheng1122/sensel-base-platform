@@ -1,3 +1,5 @@
+import { admin } from "./prisma-authorization";
+import { createFeatureStore } from "./prisma-feature-store";
 import { PrismaClient, Prisma } from "@prisma/client";
 import {
   CoreError,
@@ -26,12 +28,6 @@ const mapUser = (u: {
 const mapModel = (
   m: { provider: string } & Omit<Model, "provider">,
 ): Model => ({ ...m, provider: m.provider as Model["provider"] });
-async function admin(tx: Tx, id: string) {
-  await tx.$executeRaw`SELECT pg_advisory_xact_lock(183528921,1)`;
-  const u = await tx.user.findUnique({ where: { id } });
-  if (!u?.enabled) throw new CoreError("UNAUTHORIZED", 401);
-  if (u.role !== "ADMIN") throw new CoreError("FORBIDDEN", 403);
-}
 function version(current: { version: number } | null, expected?: number) {
   if (!current) throw new CoreError("NOT_FOUND", 404);
   if (current.version !== expected)
@@ -41,6 +37,7 @@ const audit = (tx: Tx, actorId: string, action: string, targetId: string) =>
   tx.auditEvent.create({ data: { actorId, action, targetId } });
 export function createPrismaStore(db: PrismaClient): CoreStore {
   return {
+    ...createFeatureStore(db),
     async userByEmail(email) {
       const u = await db.user.findUnique({
         where: { email },

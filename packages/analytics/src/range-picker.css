@@ -1,0 +1,54 @@
+.overview-range-trigger {
+  font-size: 12px;
+  max-width: 100%;
+}
+.overview-range-trigger > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.overview-range-popover {
+  z-index: 80;
+  width: 360px;
+  max-width: calc(100vw - 32px);
+  max-height: 85dvh;
+  overflow: auto;
+  background: var(--popover);
+  color: var(--popover-foreground);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0/0.1);
+  padding: 16px;
+}
+.overview-range-presets {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 16px;
+}
+.overview-range-presets > button {
+  height: 32px;
+  text-align: left;
+  border: 0;
+  border-radius: 6px;
+  padding: 4px 8px;
+  background: transparent;
+  color: var(--foreground);
+  font-size: 13px;
+}
+.overview-range-presets > button:hover {
+  background: var(--accent);
+}
+.overview-range-popover form {
+  display: grid;
+  gap: 12px;
+}
+.overview-range-popover h2 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+.overview-range-popover .button {
+  justify-self: end;
+}
