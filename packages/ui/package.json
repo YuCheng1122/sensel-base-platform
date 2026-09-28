@@ -1,0 +1,21 @@
+{
+  "name": "@sensel/ui",
+  "version": "0.1.0",
+  "type": "module",
+  "files": [
+    "src",
+    "README.md",
+    "extraction-manifest.json"
+  ],
+  "exports": {
+    ".": "./src/index.ts",
+    "./styles.css": "./src/styles.css"
+  },
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "peerDependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  }
+}

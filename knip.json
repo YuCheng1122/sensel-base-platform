@@ -1,0 +1,25 @@
+{
+  "workspaces": {
+    ".": {
+      "entry": [
+        "scripts/*.mjs",
+        "tests/**/*.ts"
+      ],
+      "project": [
+        "scripts/*.mjs",
+        "tests/**/*.ts"
+      ]
+    },
+    "packages/*": {
+      "project": [
+        "src/**/*.{ts,tsx}"
+      ]
+    },
+    "templates/project/web": {
+      "project": [
+        "src/**/*.{ts,tsx}",
+        "prisma/**/*.{ts,prisma}"
+      ]
+    }
+  }
+}

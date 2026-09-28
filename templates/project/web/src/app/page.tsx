@@ -1,0 +1,105 @@
+"use client";
+import { useEffect, useState } from "react";
+import {
+  AccessSettings,
+  ApiError,
+  Button,
+  AppShell,
+  Login,
+  ModelSettings,
+  Notice,
+  ProfileSettings,
+  request,
+  type User,
+} from "@sensel/ui";
+import { ChatWorkspace } from "@sensel/chat";
+export default function Home() {
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [active, setActive] = useState("chat");
+  const [error, setError] = useState("");
+  const [loginNotice, setLoginNotice] = useState("");
+  useEffect(() => {
+    request<{ user: User }>("/auth/me")
+      .then((result) => setUser(result.user))
+      .catch((cause) => {
+        setUser(null);
+        if (!(cause instanceof ApiError && cause.status === 401))
+          setError("無法載入工作空間，請稍後重試。");
+      })
+      .finally(() => setLoading(false));
+  }, []);
+  async function logout() {
+    try {
+      await request("/auth/logout", { method: "POST" });
+      setUser(null);
+      setActive("chat");
+      setError("");
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "Logout failed");
+    }
+  }
+  if (loading)
+    return (
+      <main className="login-page">
+        <p role="status">載入工作空間…</p>
+      </main>
+    );
+  if (!user && error)
+    return (
+      <main className="login-page">
+        <section className="panel stack">
+          <Notice error>{error}</Notice>
+          <Button onClick={() => window.location.reload()}>重新載入</Button>
+        </section>
+      </main>
+    );
+  if (!user)
+    return (
+      <Login
+        notice={loginNotice}
+        onLogin={(nextUser) => {
+          setUser(nextUser);
+          setLoginNotice("");
+        }}
+      />
+    );
+  const navigation = [
+    { id: "chat", label: "對話分析" },
+    ...(user.role === "ADMIN"
+      ? [
+          { id: "models", label: "模型設定" },
+          { id: "users", label: "使用者管理" },
+          { id: "groups", label: "群組管理" },
+        ]
+      : []),
+    { id: "profile", label: "個人設定" },
+  ];
+  return (
+    <AppShell
+      name={user.name}
+      navigation={navigation}
+      active={active}
+      onNavigate={setActive}
+      onLogout={() => void logout()}
+    >
+      {error && <Notice error>{error}</Notice>}
+      {active === "chat" && <ChatWorkspace />}
+      {user.role === "ADMIN" && active === "models" && <ModelSettings />}
+      {user.role === "ADMIN" && (active === "users" || active === "groups") && (
+        <AccessSettings key={active} kind={active} />
+      )}
+      {active === "profile" && (
+        <ProfileSettings
+          user={user}
+          onUpdate={setUser}
+          onPasswordChanged={() => {
+            setUser(null);
+            setActive("chat");
+            setLoginNotice("密碼已更新，請使用新密碼重新登入。");
+          }}
+        />
+      )}
+    </AppShell>
+  );
+}

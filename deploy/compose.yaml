@@ -1,0 +1,76 @@
+name: sensel-base
+x-web-environment: &web-environment
+  DATABASE_URL: postgresql://sensel:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}@postgres:5432/sensel
+  SETTINGS_ENCRYPTION_KEY: ${SETTINGS_ENCRYPTION_KEY:?Set SETTINGS_ENCRYPTION_KEY}
+  AGENT_SHARED_SECRET: ${AGENT_SHARED_SECRET:?Set AGENT_SHARED_SECRET}
+  AGENT_URL: http://agent:8001
+  PUBLIC_APP_URL: ${PUBLIC_APP_URL:?Set PUBLIC_APP_URL to the external browser origin}
+  APP_ENV: production
+  AGENT_ALLOW_FAKE: "false"
+  SECURE_COOKIES: "true"
+  MODEL_ALLOWED_ENDPOINTS: ${MODEL_ALLOWED_ENDPOINTS:-}
+services:
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: sensel
+      POSTGRES_USER: sensel
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U sensel -d sensel"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+  migrate:
+    image: ${MIGRATE_IMAGE:-ghcr.io/avocadoai-lab/sensel-base-platform-migrate:v0.1.0}
+    user: "1000:1000"
+    environment: *web-environment
+    command: [npm, run, db:migrate]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+  bootstrap:
+    profiles: [setup]
+    image: ${MIGRATE_IMAGE:-ghcr.io/avocadoai-lab/sensel-base-platform-migrate:v0.1.0}
+    user: "1000:1000"
+    environment: *web-environment
+    command: [npm, run, db:bootstrap]
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    restart: "no"
+  agent:
+    image: ${AGENT_IMAGE:-ghcr.io/avocadoai-lab/sensel-base-platform-agent:v0.1.0}
+    environment:
+      AGENT_SHARED_SECRET: ${AGENT_SHARED_SECRET:?Set AGENT_SHARED_SECRET}
+      BACKEND_URL: http://web:3000
+      APP_ENV: production
+      AGENT_ALLOW_FAKE: "false"
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8001/ready', timeout=2)"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+  web:
+    image: ${WEB_IMAGE:-ghcr.io/avocadoai-lab/sensel-base-platform-web:v0.1.0}
+    environment: *web-environment
+    ports:
+      - "127.0.0.1:${WEB_PORT:-3000}:3000"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      agent:
+        condition: service_healthy
+    healthcheck:
+      test: [CMD, node, -e, "fetch('http://127.0.0.1:3000/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+volumes:
+  postgres-data:

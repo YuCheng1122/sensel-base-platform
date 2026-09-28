@@ -1,0 +1,14 @@
+{
+  "sourceRepository": "sensel-full-stack",
+  "sourceHead": "c206fd1b2cd2c2ca29faae0811b94d1741d276da",
+  "sourceState": "Working tree read-only; another agent may modify source concurrently. Hashes identify files actually inspected.",
+  "sources": [
+    {"path": "src/styles/globals.css", "sha256": "d422ab1fa2b243b8a6a1f24d2a0a3110569ddda0cbe129eee3cc41535aebf57d", "disposition": "Retain neutral blue/gray light/dark tokens and focus semantics in src/styles.css. Exclude severity and domain styling."},
+    {"path": "DESIGN.md", "sha256": "7c8ae6169206b913cb9755a4f67155caad8f10c25e73ccc931cf7266a1a5afd7", "disposition": "Adapt shared compact spacing, labeled controls, error/empty distinction and responsive layout."},
+    {"path": "src/components/ui/button.tsx", "disposition": "Reimplement consumed native button variants without unused asChild/Slot or styling dependencies."}
+  ],
+  "newImplementations": ["REST client", "login", "app-shell", "access-settings", "model-settings", "profile-settings"],
+  "excluded": ["Domain pages and navigation", "SOC components", "unused primitive exports", "customer fonts/assets"],
+  "consumers": ["templates/project/web", "packages/chat"],
+  "compatibility": "New REST-driven components, not drop-in compatibility with source tRPC UI. Existing customer app not switched."
+}

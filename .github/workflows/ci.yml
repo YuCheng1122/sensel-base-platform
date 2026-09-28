@@ -1,0 +1,172 @@
+name: Platform CI
+on:
+  pull_request:
+  push:
+    branches: [main, development]
+  workflow_call:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_DB: sensel_ci_audit
+          POSTGRES_USER: sensel_test
+          POSTGRES_PASSWORD: synthetic-ci-db-password
+        ports: [5432:5432]
+        options: >-
+          --health-cmd "pg_isready -U sensel_test -d sensel_ci_audit"
+          --health-interval 5s --health-timeout 3s --health-retries 20
+    env:
+      DATABASE_URL: postgresql://sensel_test:synthetic-ci-db-password@127.0.0.1:5432/sensel_ci_audit
+      CORE_TEST_DATABASE_URL: postgresql://sensel_test:synthetic-ci-db-password@127.0.0.1:5432/sensel_ci_audit
+      AGENT_SHARED_SECRET: synthetic-ci-shared-secret-at-least-32-characters
+      SETTINGS_ENCRYPTION_KEY: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
+      APP_ENV: test
+      AGENT_ALLOW_FAKE: "true"
+      SECURE_COOKIES: "false"
+      ADMIN_EMAIL: admin@example.test
+      ADMIN_PASSWORD: synthetic-ci-admin-password
+      AGENT_URL: http://127.0.0.1:8211
+      BACKEND_URL: http://127.0.0.1:3210
+      BASE_URL: http://127.0.0.1:3210
+      PUBLIC_APP_URL: http://127.0.0.1:3210
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install uv==0.11.30
+      - run: npm ci
+      - run: npm run db:generate
+      - run: npm run check
+      - run: npm run dead-code
+      - run: npm run docs:check
+      - run: npm run db:migrate
+      - name: Require isolated database integration tests
+        run: node -e "const u=new URL(process.env.CORE_TEST_DATABASE_URL);if(u.hostname!=='127.0.0.1'||!u.pathname.endsWith('_audit'))process.exit(1)"
+      - run: npm test
+      - run: npm run build
+      - run: uv sync --project python --frozen
+      - run: uv run --project python ruff check python/src python/tests
+      - run: uv run --project python pytest python/tests
+      - run: uv build --project python
+      - name: Verify wheel without source paths
+        run: |
+          uv venv /tmp/agent-consumer
+          uv pip install --python /tmp/agent-consumer/bin/python python/dist/*.whl
+          cd /tmp
+          /tmp/agent-consumer/bin/python -c "from sensel_agent import Settings, create_app; assert create_app(Settings('synthetic-independent-wheel-secret'))"
+      - name: Verify independent customer package install and build
+        run: |
+          npm run pack:core
+          npm run create:project -- /tmp/platform-consumer --packages "$PWD/artifacts/packages"
+          cd /tmp/platform-consumer/web
+          npm install --ignore-scripts
+          npm run db:generate
+          npm run typecheck
+          npm run build
+      - run: npm run db:bootstrap
+      - run: npx playwright install --with-deps chromium
+      - name: Start isolated services
+        run: |
+          uv run --project python uvicorn main:app --app-dir templates/project/agent --port 8211 > /tmp/agent-test.log 2>&1 &
+          npm run start --workspace @sensel/project-web -- --port 3210 > /tmp/web-test.log 2>&1 &
+          for attempt in $(seq 1 60); do
+            if curl -fsS http://127.0.0.1:8211/ready > /dev/null && curl -fsS http://127.0.0.1:3210/api/health > /dev/null; then exit 0; fi
+            sleep 1
+          done
+          exit 1
+      - run: npm run test:ui
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: platform-test-results
+          path: |
+            test-results/
+            playwright-report/
+          if-no-files-found: ignore
+      - uses: actions/upload-artifact@v4
+        with:
+          name: platform-packages
+          path: |
+            artifacts/packages/*.tgz
+            python/dist/*.whl
+            python/dist/*.tar.gz
+  containers:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: templates/project/agent/Dockerfile
+          tags: sensel-base-agent:ci
+          load: true
+          push: false
+      - name: Agent image smoke
+        run: |
+          docker run -d --name agent-ci -p 8001:8001 -e AGENT_SHARED_SECRET=synthetic-image-secret-at-least-32-characters sensel-base-agent:ci
+          trap 'docker rm -f agent-ci' EXIT
+          for attempt in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:8001/ready; then exit 0; fi
+            sleep 1
+          done
+          exit 1
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: templates/project/web/Dockerfile
+          tags: sensel-base-web:ci
+          load: true
+          push: false
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: templates/project/web/Dockerfile
+          target: build
+          tags: sensel-base-migrate:ci
+          load: true
+          push: false
+      - name: Validate production containers against a clean database
+        env:
+          POSTGRES_PASSWORD: synthetic-config-password
+          SETTINGS_ENCRYPTION_KEY: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
+          AGENT_SHARED_SECRET: synthetic-config-secret-at-least-32-characters
+          WEB_IMAGE: sensel-base-web:ci
+          AGENT_IMAGE: sensel-base-agent:ci
+          MIGRATE_IMAGE: sensel-base-migrate:ci
+          WEB_PORT: "3300"
+          PUBLIC_APP_URL: http://127.0.0.1:3300
+          ADMIN_EMAIL: container-admin@example.test
+          ADMIN_PASSWORD: synthetic-container-admin-password
+        run: |
+          docker compose -p sensel-ci -f deploy/compose.yaml config --quiet
+          trap 'docker compose -p sensel-ci -f deploy/compose.yaml down -v' EXIT
+          docker compose -p sensel-ci -f deploy/compose.yaml up -d --wait --wait-timeout 120
+          docker compose -p sensel-ci -f deploy/compose.yaml --profile setup run --rm -e ADMIN_EMAIL -e ADMIN_PASSWORD bootstrap
+          curl -fsS http://127.0.0.1:3300/api/health > /dev/null
+          python3 - <<'PYTHON'
+          import json, os, urllib.request
+          body = json.dumps({'email': os.environ['ADMIN_EMAIL'], 'password': os.environ['ADMIN_PASSWORD']}).encode()
+          request = urllib.request.Request('http://127.0.0.1:3300/api/core/auth/login', data=body, headers={'Content-Type': 'application/json', 'Origin': os.environ['PUBLIC_APP_URL']})
+          with urllib.request.urlopen(request, timeout=10) as response:
+              assert response.status == 200
+              assert 'HttpOnly' in response.headers['Set-Cookie']
+              assert 'Secure' in response.headers['Set-Cookie']
+          print('Production Web, migration, bootstrap and login smoke passed')
+          PYTHON

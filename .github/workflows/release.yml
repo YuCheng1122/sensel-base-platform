@@ -1,0 +1,100 @@
+name: Platform release
+on:
+  release:
+    types: [published]
+permissions:
+  contents: read
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  validate-version:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Require matching release/package versions
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: |
+          python3 - <<'PY'
+          import json, os, re, tomllib
+          from pathlib import Path
+          tag = os.environ['RELEASE_TAG']
+          if not re.fullmatch(r'v\d+\.\d+\.\d+', tag):
+              raise SystemExit('Release tag must be vMAJOR.MINOR.PATCH')
+          version = tag[1:]
+          for path in [Path('package.json'), *Path('packages').glob('*/package.json')]:
+              if json.loads(path.read_text())['version'] != version:
+                  raise SystemExit(f'Version mismatch: {path}')
+          if tomllib.loads(Path('python/pyproject.toml').read_text())['project']['version'] != version:
+              raise SystemExit('Python version mismatch')
+          PY
+  verify:
+    needs: validate-version
+    uses: ./.github/workflows/ci.yml
+    permissions:
+      contents: read
+  images:
+    needs: verify
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: web
+            file: templates/project/web/Dockerfile
+            target: runtime
+          - name: agent
+            file: templates/project/agent/Dockerfile
+            target: runtime
+          - name: migrate
+            file: templates/project/web/Dockerfile
+            target: build
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/build-push-action@v6
+        id: image
+        with:
+          context: .
+          file: ${{ matrix.file }}
+          target: ${{ matrix.target }}
+          push: true
+          provenance: mode=max
+          sbom: true
+          tags: |
+            ghcr.io/avocadoai-lab/sensel-base-platform-${{ matrix.name }}:${{ github.event.release.tag_name }}
+            ghcr.io/avocadoai-lab/sensel-base-platform-${{ matrix.name }}:sha-${{ github.sha }}
+          labels: |
+            org.opencontainers.image.source=https://github.com/AvocadoAI-Lab/sensel-base-platform
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.version=${{ github.event.release.tag_name }}
+      - name: Record immutable deployment reference
+        env:
+          IMAGE_NAME: ${{ matrix.name }}
+          IMAGE_DIGEST: ${{ steps.image.outputs.digest }}
+        run: printf 'ghcr.io/avocadoai-lab/sensel-base-platform-%s@%s\n' "$IMAGE_NAME" "$IMAGE_DIGEST" >> "$GITHUB_STEP_SUMMARY"
+  package-assets:
+    needs: verify
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: platform-packages
+          path: release-assets
+      - name: Attach versioned packages to release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: find release-assets -type f \( -name '*.tgz' -o -name '*.whl' -o -name '*.tar.gz' \) -exec gh release upload "$RELEASE_TAG" {} --clobber \;

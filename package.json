@@ -1,0 +1,51 @@
+{
+  "name": "sensel-base-platform",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20.19.0"
+  },
+  "workspaces": [
+    "packages/*",
+    "templates/project/web"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace @sensel/project-web",
+    "build": "npm run build --workspace @sensel/project-web",
+    "start": "npm run start --workspace @sensel/project-web",
+    "typecheck": "tsc --noEmit && npm run typecheck --workspace @sensel/project-web",
+    "lint": "eslint packages templates/project/web/src tests --ext .ts,.tsx --no-error-on-unmatched-pattern",
+    "check": "npm run lint && npm run typecheck && npm run boundaries",
+    "boundaries": "node scripts/check-boundaries.mjs",
+    "test": "tsx --test tests/backend/*.test.ts tests/ui/*.test.ts",
+    "test:ui": "playwright test",
+    "db:generate": "npm run db:generate --workspace @sensel/project-web",
+    "db:migrate": "npm run db:migrate --workspace @sensel/project-web",
+    "db:bootstrap": "npm run db:bootstrap --workspace @sensel/project-web",
+    "pack:core": "node scripts/pack-core.mjs",
+    "create:project": "node scripts/create-project.mjs",
+    "dead-code": "knip",
+    "docs:check": "node scripts/check-docs.mjs"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.55.1",
+    "@types/node": "20.19.9",
+    "@types/react": "18.3.23",
+    "@types/bcryptjs": "2.4.6",
+    "@typescript-eslint/eslint-plugin": "8.31.0",
+    "@typescript-eslint/parser": "8.31.0",
+    "eslint": "8.57.1",
+    "eslint-config-next": "15.5.24",
+    "tsx": "4.23.12",
+    "typescript": "5.8.3",
+    "knip": "6.38.0",
+    "bcryptjs": "2.4.3",
+    "@prisma/client": "5.22.0"
+  },
+  "overrides": {
+    "next": {
+      "postcss": "8.5.26"
+    }
+  }
+}

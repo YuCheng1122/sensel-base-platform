@@ -1,0 +1,28 @@
+{
+  "name": "@sensel/project-web",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate deploy",
+    "db:bootstrap": "tsx prisma/bootstrap.ts"
+  },
+  "dependencies": {
+    "@sensel/ui": "0.1.0",
+    "@sensel/chat": "0.1.0",
+    "@sensel/server": "0.1.0",
+    "@prisma/client": "5.22.0",
+    "next": "15.5.24",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "bcryptjs": "2.4.3"
+  },
+  "devDependencies": {
+    "prisma": "5.22.0"
+  }
+}

@@ -1,0 +1,78 @@
+generator client {
+ provider = "prisma-client-js"
+}
+datasource db {
+ provider = "postgresql"
+ url = env("DATABASE_URL")
+}
+model User {
+ id String @id @default(uuid())
+ email String @unique
+ name String
+ passwordHash String
+ role String @default("USER")
+ enabled Boolean @default(true)
+ version Int @default(1)
+ groups Group[]
+ sessions Session[]
+ chats Chat[]
+}
+model Group {
+ id String @id @default(uuid())
+ name String @unique
+ description String @default("")
+ version Int @default(1)
+ users User[]
+}
+model Session {
+ tokenHash String @id
+ userId String
+ user User @relation(fields:[userId],references:[id],onDelete:Cascade)
+ expiresAt DateTime
+ @@index([expiresAt])
+}
+model ModelConnection {
+ id String @id @default(uuid())
+ name String
+ provider String
+ model String
+ baseUrl String @default("")
+ encryptedApiKey String?
+ timeoutSeconds Int @default(60)
+ maxOutputTokens Int @default(4096)
+ testedVersion Int?
+ toolsTestedVersion Int?
+ toolsSupported Boolean?
+ enabled Boolean @default(true)
+ isDefault Boolean @default(false)
+ version Int @default(1)
+}
+model Chat {
+ id String @id @default(uuid())
+ userId String
+ user User @relation(fields:[userId],references:[id],onDelete:Cascade)
+ title String
+ createdAt DateTime @default(now())
+ messages ChatMessage[]
+ @@index([userId,createdAt])
+}
+model ChatMessage {
+ id String @id @default(uuid())
+ chatId String
+ chat Chat @relation(fields:[chatId],references:[id],onDelete:Cascade)
+ role String
+ content String
+ status String
+ executionId String?
+ trace Json @default("[]")
+ createdAt DateTime @default(now())
+ @@index([chatId,createdAt])
+}
+model AuditEvent {
+ id String @id @default(uuid())
+ actorId String
+ action String
+ targetId String
+ createdAt DateTime @default(now())
+ @@index([createdAt])
+}
