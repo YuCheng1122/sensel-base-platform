@@ -25,7 +25,7 @@ For example, an Nginx web logs project can store and query data with Prisma/Post
 
 ### Features
 
-- **Accounts and settings:** authentication, users/groups/roles, profiles, platform name and time zone.
+- **Accounts and settings:** authentication, users/groups/roles, profiles, platform name and time zone. [Groups currently manage membership](docs/groups-and-permissions.md); they do not automatically grant resource access.
 - **Models and Agent:** encrypted model settings, connection/tool capability tests, OpenAI-compatible/Anthropic/Gemini providers and customer tool registration.
 - **Conversations:** history, streaming, cancellation, tool traces and truthful partial/failure states.
 - **Event overview:** shared metrics, trends, categories and event lists, populated by customer data providers.

@@ -26,6 +26,7 @@ For another customer, start with [creating an independent project](create-projec
 | Task | Guide |
 | --- | --- |
 | Check authentication, accounts, models and conversations | [Manual acceptance checklist](self-review.md) |
+| Understand groups and actual access rules | [Groups and permissions](groups-and-permissions.md) |
 | Use event overview and report downloads | [Analytics and reports](analytics-and-reports.md) |
 | Configure mail and inspect delivery states | [Mail service](mail-service.md) |
 | Understand Agent tools and execution states | [Agent runtime](agent-runtime.md) |

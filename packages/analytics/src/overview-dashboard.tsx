@@ -17,6 +17,16 @@ export function OverviewDashboard({
 }) {
   const [category, setCategory] = useState<string>();
   useEffect(() => setCategory(undefined), [data]);
+  const levelCounts = new Map<string, number>();
+  for (const event of data.events) {
+    const level = event.level || "";
+    levelCounts.set(level, (levelCounts.get(level) ?? 0) + 1);
+  }
+  const levels = [...levelCounts].map(([level, value]) => ({
+    id: level ? `level:${level}` : "missing-level",
+    label: level || "未提供",
+    value,
+  }));
   return (
     <div className="overview-dashboard">
       <section
@@ -51,23 +61,38 @@ export function OverviewDashboard({
         </header>
         <TrendChart points={data.trend} timeZone={timeZone} />
       </section>
-      <section className="overview-card">
-        <header className="overview-section-heading">
-          <h2>事件分佈</h2>
-          <span className="overview-caption">點選分類篩選下方清單</span>
-        </header>
-        <CategoryDistribution
-          categories={data.categories}
-          onSelect={(item) => setCategory(item.id)}
-        />
-      </section>
+      <div className="overview-distribution-grid">
+        <section className="overview-card" aria-label="事件分佈">
+          <header className="overview-section-heading">
+            <h2>事件分佈</h2>
+            <span className="overview-caption">點選分類篩選下方清單</span>
+          </header>
+          <CategoryDistribution
+            categories={data.categories}
+            onSelect={(item) => setCategory(item.id)}
+          />
+        </section>
+        <section className="overview-card" aria-label="最近事件等級">
+          <header className="overview-section-heading">
+            <h2>最近事件等級</h2>
+            <span className="overview-caption">
+              僅回傳清單 {data.events.length.toLocaleString("zh-TW")} 筆
+            </span>
+          </header>
+          <CategoryDistribution
+            categories={levels}
+            subtotalLabel="回傳事件小計"
+          />
+        </section>
+      </div>
       <EventTable
-        key={`${data.query.from}-${data.query.to}-${data.query.sourceId ?? "all"}-${category ?? "all"}`}
+        key={`${data.query.from}-${data.query.to}-${data.query.sourceId ?? "all"}`}
         events={data.events}
         totalEvents={data.coverage.totalEvents}
         timeZone={timeZone}
         category={category}
         categories={data.categories}
+        onCategoryChange={setCategory}
         onClearCategory={() => setCategory(undefined)}
       />
     </div>

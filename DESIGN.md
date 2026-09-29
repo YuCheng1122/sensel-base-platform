@@ -62,6 +62,8 @@ Reuse existing PageHeader, form controls, dialogs, tables and state components. 
 
 The UI stylesheet aggregates focused files. Remove obsolete rules instead of appending overrides. Customer queries, data authorization and domain-specific report schemas stay in customer code; a visual change must not bind shared components to SOC, Nginx or PCAP data models.
 
+Related distribution cards can share a two-column row, stacking below 640px. Label the scope of each card when aggregate counts and returned-event counts differ. Recent-event tables provide search, category/level filters and sortable headers; apply those operations before local pagination and keep the saved dataset unchanged.
+
 Use current light/dark color tokens. Maintain visible focus, readable contrast, associated input labels and truthful empty/loading/error states. Do not reduce opacity or remove labels merely to make a form look cleaner.
 
 ## Verification

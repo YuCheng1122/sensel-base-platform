@@ -25,6 +25,8 @@ For each explanation, ask whether it changes the user's action or interpretation
 - Example: replace the permanent caption `事件量 · UTC · 缺值保留斷點，不補為零。` with concise chart labeling; place missing-value interpretation with optional chart details. Do not remove the gap behavior or relabel unknown values as zero.
 - Never use this preference to hide mail delivery uncertainty, failed tools, missing coverage or fake results.
 
+For event-list examples, reuse EventTable search, category/level filters and sortable headers. Filtering and sorting precede local pagination; do not imply they queried the entire backend dataset or changed aggregate charts.
+
 ## Implement and verify
 
 Keep style ownership with the component's package; remove superseded rules rather than layering fixes. Reuse the shared contract and keep customer queries out of UI packages. Preserve keyboard labels, focus and disclosure behavior.

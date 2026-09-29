@@ -34,6 +34,55 @@ Implement `AnalysisProvider` in customer `web/src/server/` and inject it through
 
 See the runnable synthetic provider and [analytics package](../packages/analytics/README.md). The sample covers only the 14 UTC days preceding service startup. UI, snapshots and PDFs explicitly identify it as synthetic, not customer data.
 
+## Distribution Cards and Local Table Controls
+
+The overview and saved report preview render two distribution cards in one row on desktop, stacking them below 640px. They stay inside the shared page frame:
+
+- **事件分佈 (event distribution):** uses provider-supplied `categories`. These describe the requested query's aggregation scope, subject to its complete/partial/sampled coverage; they are not recalculated from the returned event list. Percentages use the sum of the supplied categories, not an assumed full event total. Selecting a category filters the table below.
+- **最近事件等級 (recent event levels):** counts `level` values in the returned `events` array only. Its visible count identifies that subset; absent or empty levels appear as `未提供` (not provided). Percentages use the returned-event count. This is not an aggregate of all matching events and does not assign domain-specific severity rankings.
+
+For example, a provider may return this portion of an `OverviewData` response:
+
+```json
+{
+  "categories": [
+    { "id": "request", "label": "Requests", "value": 80 },
+    { "id": "connection", "label": "Connections", "value": 20 }
+  ],
+  "coverage": { "status": "complete", "totalEvents": 100 },
+  "events": [
+    { "id": "a", "time": "2026-09-29T00:03:00Z", "title": "Request A", "category": "request", "level": "warning" },
+    { "id": "b", "time": "2026-09-29T00:02:00Z", "title": "Request B", "category": "request", "level": "info" },
+    { "id": "c", "time": "2026-09-29T00:01:00Z", "title": "Connection C", "category": "connection" }
+  ]
+}
+```
+
+The first card shows Requests 80 (80%) and Connections 20 (20%). The second explicitly represents three returned events: warning, info and not provided each count one (33.3%). It must not display those three counts as the level distribution of all 100 matches. The complete response also supplies its version, query, generation time, dataset, metrics and trend.
+
+Table search, category and level filters, sorting and pagination operate only on the returned list. Category selection is shared between the first card and the table dropdown; changing it preserves other local controls. The default order is newest event first, with IDs as a stable tie-breaker. Level sorting compares literal labels rather than inventing a severity policy. Filtering the table does not change either distribution card, provider aggregates or saved snapshot content; it does not issue a new backend query. A source or time-range change fetches a new overview instead.
+
+### Reusing the Table in a Customer Page
+
+With the shared UI and analytics styles loaded and `data` typed as `OverviewData`, the table owns its local search, filters, sorting and pagination:
+
+```tsx
+import { EventTable } from "@sensel/analytics";
+
+<EventTable
+  events={data.events}
+  categories={data.categories}
+  totalEvents={data.coverage.totalEvents}
+  timeZone="Asia/Taipei"
+/>
+```
+
+Use `OverviewDashboard` when the page also needs the metric, trend and distribution cards. For a custom chart/table composition, pass `category` and `onCategoryChange` to share the selected category; the rest of the table controls remain local. Level sorting uses label order, not a product-specific severity ranking.
+
+The running base overview is the complete example. Its synthetic distribution cards look like this:
+
+![Two distribution cards showing distinct aggregate and returned-list scopes](images/event-distributions.png)
+
 ## Report Guarantees and Limits
 
 Creating a report collects once and saves query conditions, source, coverage, display time zone and complete snapshot in PostgreSQL. Reads, previews and JSON/CSV/PDF exports use saved content without querying the source again. New data requires another snapshot. Existing reports remain readable/downloadable if the source or platform defaults cannot load; only new capture is disabled.

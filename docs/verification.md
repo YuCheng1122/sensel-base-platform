@@ -146,3 +146,14 @@ Executed checks:
 - Web image `sensel-base-web:design` built successfully: `sha256:f55d82d4a2e6c9e69460a2096c8648a07f8400703d80e6bd9cc95ba6ba00a1b8`. Only the local preview Web container was recreated; no schema migration was needed. Preview Web/Agent/PostgreSQL are healthy, login/navigation succeeded without browser page errors, and user/model/chat/report counts remained 1/1/2/1.
 
 Logs and synthetic screenshots are under `/tmp/sensel-base-design/`. Isolated test Web/Agent/PostgreSQL were stopped; preview 3300 remains available. No real mail or paid provider calls were made. Remote GitHub workflow results and published releases are not established by these local checks.
+
+
+## Event Table Examples and Group Semantics (2026-09-29)
+
+Recent events now support combined search/category/level filters and sortable time/title/category/level columns. Filtering and ordering precede pagination; source arrays and saved snapshots remain unchanged. IDs provide stable tie-breaking, and level sorting uses label order without an invented severity policy. Two distribution cards share a desktop row and stack on mobile: provider category aggregates and explicitly scoped returned-event levels.
+
+The English analytics guide includes data and component examples. The new groups-and-permissions guide documents actual membership management, separate ADMIN/USER and owner checks, and the customer AnalysisProvider extension point. No group permission policy or authorization behavior was added in this UI change.
+
+Validation: production Next and Web image builds passed; npm check/dead-code/document checks passed. The backend/core/analytics suite passed 34/34 with isolated PostgreSQL and no skips. The complete browser suite passed 22/22 in 30.7 seconds; the final two event tests were rerun after adding explicit card-geometry and chart-to-table filter assertions, and both passed. Desktop/mobile screenshots were reviewed. No provider calls or real mail were used.
+
+Preview 3300 was updated to `sensel-base-web:events`. Login, local level filtering and header sorting passed with zero page errors; Web/Agent/PostgreSQL are healthy. Only Web was recreated, with no schema changes, and existing user/model/chat/report counts were preserved. Logs and synthetic captures are under `/tmp/sensel-base-events/`. Isolated services were stopped after validation; the preview remains running.

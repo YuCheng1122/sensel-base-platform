@@ -8,8 +8,10 @@ const PAGE_SIZE = 5;
 export function CategoryDistribution({
   categories,
   onSelect,
+  subtotalLabel = "回傳分類小計",
 }: {
   categories: OverviewCategory[];
+  subtotalLabel?: string;
   onSelect?: (category: OverviewCategory) => void;
 }) {
   const [page, setPage] = useState(0);
@@ -67,7 +69,7 @@ export function CategoryDistribution({
       </ul>
       <footer>
         <p className="overview-caption">
-          比例分母為回傳分類小計 {subtotal.toLocaleString("zh-TW")}
+          比例分母為{subtotalLabel} {subtotal.toLocaleString("zh-TW")}
           ，不是完整事件數。
         </p>
         {pages > 1 && (
