@@ -60,9 +60,10 @@ export async function sendConfiguredMail(
         from: current.fromName
           ? `${current.fromName} <${current.fromEmail}>`
           : current.fromEmail,
-        apiKey: current.encryptedApiKey
-          ? decryptSecret(current.encryptedApiKey, config.encryptionKey)
-          : undefined,
+        apiKey:
+          current.provider === "resend" && current.encryptedApiKey
+            ? decryptSecret(current.encryptedApiKey, config.encryptionKey)
+            : undefined,
       },
       message,
       {

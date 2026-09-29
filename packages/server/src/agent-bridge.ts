@@ -87,6 +87,15 @@ export async function streamChat(
     })
     .parse(await request.json());
   const chat = required(await config.store.chat(user.id, chatId));
+  const history = (chat.messages ?? [])
+    .filter((message) => message.status === "completed")
+    .slice(-40);
+  if (history.some((message) => message.content.length > 32000))
+    throw new CoreError(
+      "HISTORY_TOO_LARGE",
+      400,
+      "此對話包含超過模型歷史長度限制的回覆。內容已完整保存，請開啟新對話繼續。",
+    );
   if ([...runs.values()].some((r) => r.chatId === chatId))
     throw new CoreError("CHAT_BUSY", 409);
   const models = await config.store.models();
@@ -141,10 +150,10 @@ export async function streamChat(
             executionId,
             conversationId: chatId,
             message: content,
-            messages: (chat.messages ?? [])
-              .filter((m) => m.status === "completed")
-              .slice(-40)
-              .map((m) => ({ role: m.role, content: m.content })),
+            messages: history.map((m) => ({
+              role: m.role,
+              content: m.content,
+            })),
             profileToken: profile(config, user, model, executionId),
           },
           controller.signal,

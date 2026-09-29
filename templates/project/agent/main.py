@@ -2,7 +2,14 @@
 import os
 
 import httpx
-from sensel_agent import Settings, Tool, ToolContext, ToolRegistry, ToolResult, create_app
+from sensel_agent import (
+    Settings,
+    Tool,
+    ToolContext,
+    ToolRegistry,
+    ToolResult,
+    create_app,
+)
 
 
 async def project_info(arguments: dict, context: ToolContext) -> ToolResult:
@@ -23,7 +30,7 @@ app = create_app(
         allow_fake=os.environ.get("AGENT_ALLOW_FAKE", "false").lower() == "true",
     ),
     ToolRegistry([Tool(
-        name="project_info", description="Read this project's name and enabled capabilities.",
+        name="project_info", description="Read this project's name, enabled capabilities and recent conversation count (up to 100; not a total).",
         parameters={"type": "object", "properties": {}, "additionalProperties": False},
         handler=project_info,
     )]),

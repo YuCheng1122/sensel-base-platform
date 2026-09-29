@@ -24,8 +24,8 @@ class Settings:
     def __post_init__(self):
         if len(self.shared_secret) < 32:
             raise ValueError("AGENT_SHARED_SECRET must contain at least 32 characters")
-        if self.environment == "production" and self.allow_fake:
-            raise ValueError("Fake model mode is prohibited in production")
+        if self.allow_fake and self.environment not in {"development", "test"}:
+            raise ValueError("Fake model mode requires an explicit development or test environment")
 
 
 class Message(BaseModel):

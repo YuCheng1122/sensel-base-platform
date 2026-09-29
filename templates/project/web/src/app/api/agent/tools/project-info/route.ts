@@ -8,7 +8,8 @@ export async function POST(request: Request) {
     return Response.json({
       project: "Sensel Base",
       storage: "PostgreSQL via Prisma",
-      conversationCount: chats.length,
+      recentConversationCount: chats.length,
+      historyLimit: 100,
       capabilities: ["chat", "model-settings", "customer-tools"],
     });
   } catch (error) {

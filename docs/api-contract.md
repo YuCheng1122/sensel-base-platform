@@ -43,3 +43,5 @@ Agent使用Bearer服務驗證及execution-bound profile；Web→Agent採NDJSON�
 | GET `/mail/deliveries?page=1&pageSize=20` | `{items,total,page,pageSize}`，管理員可看本專案投遞紀錄；pageSize最多100 |
 
 DTO以`@sensel/mail/contracts`為準。API未提供普通使用者任意寄信端點。accepted只代表供應商接受；unknown不自動重寄。寫入沿用same-origin與session驗證，停用／角色变更在持久層重新檢查。客戶server程式可使用`@sensel/server`的`sendConfiguredMail`，目前範本同樣要求管理員actor；詳見 [郵件服務](mail-service.md)。
+
+對話POST在發送前檢查最近40則completed歷史訊息；任何一則超過32000個JavaScript字串單位（UTF-16），回400／HISTORY_TOO_LARGE並提示開啟新對話。此時不新增本次訊息、不呼叫Agent；既有保存內容維持完整，不悄悄截斷長回覆。

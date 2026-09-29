@@ -13,3 +13,5 @@ Web驗證使用者、模型狀態及對話ownership後，簽署最長五分鐘�
 Write tool介面要求confirmation token，但客戶handler仍必須驗證token綁定的操作；本版只有唯讀示範工具，沒有提供通用寫入審批UI。工具超時且可能已寫入時須回unknown，不能盲目重試。
 
 執行registry在記憶體，尚不支援多worker取消協調或durable pause/resume。部署先用單instance；PCAP長分析需另建持久工作管理。
+
+Web組合層只取最近40則completed訊息作模型歷史；資料庫保存內容不因此截斷。若其中任何一則超過32000個JavaScript字串單位（UTF-16），會在寫入本次使用者訊息及呼叫Agent前回HISTORY_TOO_LARGE，提示開啟新對話；既有完整回覆仍可讀。這是模型請求限制，不是刪除歷史或自動摘要。

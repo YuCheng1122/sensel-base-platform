@@ -305,6 +305,10 @@ test(
         fromEmail: "synthetic@example.test",
         expectedVersion: disabled.version,
       });
+      await db.mailConfiguration.update({
+        where: { id: "mail" },
+        data: { encryptedApiKey: "synthetic-unreadable-key-not-used-by-fake" },
+      });
       const fake = await sendConfiguredMail(config, actor.id, {
         ...generic,
         expectedVersion: fakeConfig.version,

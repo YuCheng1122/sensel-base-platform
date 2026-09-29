@@ -245,3 +245,50 @@ test("concurrent model lookups cannot start two runs in the same conversation", 
     globalThis.fetch = original;
   }
 });
+
+test("oversized saved context fails before message writes or Agent dispatch without truncation", async () => {
+  const original = globalThis.fetch;
+  const { config, messages } = fixture();
+  const content = "合".repeat(32001);
+  const saved = {
+    id: "saved-long",
+    role: "assistant",
+    content,
+    status: "completed",
+    executionId: null,
+    createdAt: new Date(),
+    trace: [],
+  };
+  config.store.chat = async () => ({
+    id: "chat",
+    userId: user.id,
+    title: "Long reply",
+    createdAt: new Date(),
+    messages: [saved],
+  });
+  globalThis.fetch = async () => {
+    assert.fail("Oversized history must not dispatch");
+  };
+  try {
+    await assert.rejects(() => streamChat(config, user, "chat", request()), {
+      code: "HISTORY_TOO_LARGE",
+      status: 400,
+    });
+    assert.equal(messages.length, 0);
+    assert.equal(saved.content, content);
+    config.store.chat = async () => ({
+      id: "chat",
+      userId: user.id,
+      title: "New conversation",
+      createdAt: new Date(),
+      messages: [],
+    });
+    globalThis.fetch = async (_url, init) => fakeResponse(init?.body, true);
+    assert.match(
+      await (await streamChat(config, user, "chat", request())).text(),
+      /"status":"completed"/,
+    );
+  } finally {
+    globalThis.fetch = original;
+  }
+});

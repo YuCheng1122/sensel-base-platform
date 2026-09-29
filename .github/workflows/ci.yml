@@ -78,6 +78,7 @@ jobs:
           npm run create:project -- /tmp/platform-consumer --packages "$PWD/artifacts/packages"
           cd /tmp/platform-consumer/web
           npm install --ignore-scripts
+          node "$GITHUB_WORKSPACE/scripts/check-consumer.mjs" "$PWD"
           npm run db:generate
           npm run typecheck
           npm run build
@@ -100,6 +101,14 @@ jobs:
           path: |
             test-results/
             playwright-report/
+          if-no-files-found: ignore
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: platform-service-logs
+          path: |
+            /tmp/agent-test.log
+            /tmp/web-test.log
           if-no-files-found: ignore
       - uses: actions/upload-artifact@v4
         with:

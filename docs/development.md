@@ -32,12 +32,14 @@ bootstrap 需 ADMIN_EMAIL／ADMIN_PASSWORD；帳號已存在時不覆寫。初�
 
 本地 HTTP 使用 SECURE_COOKIES=false、PUBLIC_APP_URL=http://localhost:3000。換成127.0.0.1或不同埠時，瀏覽器URL、PUBLIC_APP_URL、BACKEND_URL需一致。正式反向代理則填外部HTTPS origin。
 
-合成 demo 須在 Web 和 Agent 都明確設定 APP_ENV=development（或 test）及 AGENT_ALLOW_FAKE=true，再從 UI 新增 fake model。預設不啟用；APP_ENV=production 拒絕 fake。正式供應商呼叫可能產生費用，不是本地測試必要步驟。
+合成 demo 須在 Web 和 Agent 都明確設定 APP_ENV=development（或 test）及 AGENT_ALLOW_FAKE=true，再從 UI 新增 fake model。預設不啟用；APP_ENV=production 拒絕 fake。郵件合成demo須另外在Web設定MAIL_ALLOW_FAKE=true，並保留同樣的APP_ENV條件；AGENT_ALLOW_FAKE不會啟用郵件fake。正式供應商呼叫可能產生費用，不是本地測試必要步驟。
 
 ## 正式模式檢查
 
 ```sh
 npm run check
+npm run dead-code
+npm run docs:check
 npm test
 npm run build
 PORT=3210 npm run start

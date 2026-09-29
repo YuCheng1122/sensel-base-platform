@@ -1,6 +1,6 @@
 # 建立獨立客戶專案
 
-平台套件目前可從本地打包或GitHub release資產安裝；尚未發布到npm/PyPI。初始化範本不等於自動獲取未來的範本更新。
+平台套件目前可本地打包；GitHub release工作流程另支援產生安裝資產，但只有遠端實際發布後才可從release取得。尚未發布到npm/PyPI。初始化範本不等於自動獲取未來的範本更新。
 
 ```sh
 npm run pack:core
@@ -15,7 +15,7 @@ npm run build
 
 產生器拒絕覆蓋非空目錄，排除node_modules/.next/.env與Python快取。平台專用Dockerfile不會複製到客戶專案，因其build context是平台workspace；客戶需按自己的套件與目錄建立映像配方。`vendor/`保存明確版本的tgz，web/package.json用相對file相依；換成private registry時改成鎖定版本並重建lockfile。六個套件（ui、chat、analytics、reports、mail、server）需採相容版本。
 
-在客戶專案建立Python venv，安裝平台建好的wheel，再以 `uvicorn main:app --app-dir agent --port 8001` 啟動。生產依賴請鎖定，不用跨repo PYTHONPATH，也不引用平台原始碼目錄。
+先離開上例的web目錄，回到客戶repo根目錄（`cd /tmp/customer-analysis`），建立Python venv並安裝平台建好的wheel。將agent/.env.example列出的必要值載入process environment，再以 `uvicorn main:app --app-dir agent --port 8001` 啟動；Agent不會自動讀取.env。生產依賴請鎖定，不用跨repo PYTHONPATH，也不引用平台原始碼目錄。
 
 ## Nginx／PCAP 擴充位置
 

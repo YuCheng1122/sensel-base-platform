@@ -4,7 +4,7 @@
 
 [CI/CD指南](ci-cd.md)記錄映像名稱與設定；`deploy/.env.example`是必要參數範例。正式使用HTTPS reverse proxy，PUBLIC_APP_URL設定外部origin，SECURE_COOKIES=true。Compose只把Web綁在127.0.0.1；反向代理與憑證由部署環境負責。
 
-每次升級：備份DB與加密根金鑰→記錄目前image digests→驗證migration→更新映像→health／登入／模型設定回讀／Chat smoke。不要在服務停機之外任意修改加密金鑰。
+每次升級：備份DB與加密根金鑰→記錄目前image digests→驗證migration→更新映像→health／登入／模型設定回讀／Chat smoke。SETTINGS_ENCRYPTION_KEY保護模型／郵件金鑰及郵件內容指紋；停機本身不會完成重新加密，不可直接替換。本版沒有自動key rotation流程。
 
 回復不是盲目啟動舊映像：先確認schema相容；不相容時依已驗證備份還原。此repo沒有提供客戶RPO/RTO保證或完成正式故障演練。
 

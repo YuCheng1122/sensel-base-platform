@@ -106,3 +106,25 @@
 - 完整瀏覽器回歸最終 18／18 通過（23.9 秒），包含新增 4 項信件測試及原有 14 項 UI／報告／對話案例。
 - 新專案 generator 已保留平台既有 dependency overrides；重新產生 consumer-secure 後，Prisma／型別／正式 build 通過，npm audit 為 0。修正避免新專案遺失既有 PostCSS 8.5.26 覆寫。
 - 隔離測試 Web／Agent／PostgreSQL 已停止並清除測試資料卷，3300 預覽保持運作。沒有 push 或遠端發布。
+
+## 文件／程式碼／CI/CD 審查（2026-09-29）
+
+在 mail 功能提交 `441ec24` 後，三位 Agent 分別審查文件、後端與 Python、CI/CD，主 Agent 交叉檢查並整合。新增 [自我檢查指南](self-review.md)，供人工驗收與閱讀程式使用。
+
+本輪修正：
+
+- 文件舊套件數量、Agent 啟動目錄、環境載入、隔離測試順序，以及 Compose／映像模式限制等說明；README 與文件索引加入自查入口。
+- Python fake 模式與 Web 一致，僅允許明確 development／test；fake mail 不再解密未使用的 Resend 金鑰。
+- 完成的歷史回覆超過 Agent 單則歷史限制時，Web 在新增訊息或 dispatch 前回報 HISTORY_TOO_LARGE，保留原文並提示另開對話。這是明確的限制處理，尚未提供長上下文摘要或無上限續聊。
+- 示範工具將最多 100 筆的近期對話數標示為 recentConversationCount，並回傳 historyLimit，避免誤報總數。
+- 郵件表單的名稱長度與必填欄位對齊後端驗證。
+- CI 新增獨立 consumer 的六個 tgz、實際安裝路徑、版本與 dependency overrides 檢查；可用的 Web／Agent log 會上傳。Release 版本檢查涵蓋範本及內部相依，明確使用 Python 3.12。
+
+實際驗證：
+
+- npm 後端／核心 31／31（含獨立 PostgreSQL 整合，無 skip）；Python 27／27 與 Ruff 通過。
+- npm check、dead-code、39 份文件連結／區塊檢查通過；npm audit 本次結果 0。
+- 正式 Next build 與完整瀏覽器 18／18（25.4 秒）通過，使用獨立 PostgreSQL／Web 3210／Agent 8211，無真供應商呼叫／寄信。
+- 六套件 consumer 檢查實跑通過；缺失 overrides 的案例被拒絕。Release 版本檢查正反案例、YAML 結構、腳本語法及 Compose config --quiet 通過。
+
+界線：本輪沒有 actionlint，也沒有 GitHub Actions 遠端執行、GHCR 發布或正式部署證據。本輪未重建 preview 3300 容器，仍是前一輪已驗證的 mail 映像；上述修正已在本機正式 build 與隔離服務驗證。既有預覽與客戶資料未修改。主 Agent 本輪 log 位於 `/tmp/sensel-base-review/`；臨時檔不屬於 repo 交付內容。

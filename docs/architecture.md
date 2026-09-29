@@ -14,7 +14,7 @@
 
 Prisma／PostgreSQL 是範本預設。Nginx 分析可新增自己的資料表與查詢服務；Digiwin 若採用平台，可保留自己的 ES 索引。PCAP 檔案、解析器及長任務另由專案實作；本版未提供 durable job engine。
 
-`project_info` 是最小示範工具：Agent 呼叫後端，後端核對簽署 profile、execution、工具授權及目前使用者狀態，回傳非敏感能力摘要與該使用者的對話數量。它不是模擬 Nginx 業務資料。
+`project_info` 是最小示範工具：Agent 呼叫後端，後端核對簽署 profile、execution、工具授權及目前使用者狀態，回傳非敏感能力摘要與該使用者近期對話數`recentConversationCount`，最多100筆（`historyLimit:100`），不是全部歷史總數。它不是模擬 Nginx 業務資料。
 
 ## 操作限制
 

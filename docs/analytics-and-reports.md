@@ -50,4 +50,4 @@ SenseL 的導覽保留「事件概覽」「報告下載」，供不同客戶專�
 
 新增 migration `202609280002_feature_modules` 只新增平台設定、設定變更及報告快照資料表。升級既有實例先備份，再以同版本migration映像執行 `npm run db:migrate`，最後更換Web映像；不使用 reset／重新bootstrap 覆寫帳號。既有Agent不須為這批功能更新。
 
-新客戶專案需安裝5個相容版本的npm套件，載入 `@sensel/ui/styles.css`、`@sensel/chat/styles.css`、`@sensel/analytics/styles.css`、`@sensel/reports/styles.css`，並保留 `public/fonts/` 的字型及授權；產生器已包含這些步驟。
+新客戶專案需安裝6個相容版本的npm套件，載入 `@sensel/ui/styles.css`、`@sensel/chat/styles.css`、`@sensel/analytics/styles.css`、`@sensel/reports/styles.css`，並保留 `public/fonts/` 的字型及授權；產生器已包含這些步驟。

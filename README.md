@@ -57,6 +57,7 @@ npm run create:project -- /tmp/my-analysis-project --packages "$PWD/artifacts/pa
 
 ## 閱讀入口
 
+- 自行驗收：[畫面、程式與 CI 檢查指南](docs/self-review.md)。
 - 開發者：[文件索引](docs/README.md)、[架構](docs/architecture.md)、[目錄規範](docs/code-organization.md)。
 - Coding Agent：[AGENTS.md](AGENTS.md)。產品 Agent：[執行與擴充](docs/agent-runtime.md)。
 - 分析與報告：[共用功能與客戶接入](docs/analytics-and-reports.md)。郵件：[寄件服務](docs/mail-service.md)。

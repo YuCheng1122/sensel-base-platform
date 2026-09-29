@@ -29,3 +29,9 @@ Tool partial/error/unknown cannot produce a completed run. Tools that mutate dat
 ## Customer tool example
 
 Agent template registers `project_info`. Backend signs `tools:['project_info']` to allow it. Handler posts `{executionId,profileToken,arguments}` to backend `/api/agent/tools/project-info`, using service bearer authentication. Backend validates profile/identity and applies authorization/query bounds. No database credentials belong in Agent.
+
+The template tool response includes `recentConversationCount` and `historyLimit:100`: it counts the current user’s bounded recent conversation list, not a total-history count.
+
+Agent input limits are 32000 characters per current message/history content and at most 100 history messages. The Web bridge selects the latest 40 completed messages. If any selected saved message exceeds 32000 JavaScript string units (UTF-16), it returns HTTP 400 `HISTORY_TOO_LARGE` before inserting the new user message or contacting Agent, with guidance to start a new conversation. It does not truncate stored history.
+
+Fake models require explicit `allow_fake` and an environment of `development` or `test`; unknown environment names are rejected when fake mode is requested. Production does not permit fake execution.

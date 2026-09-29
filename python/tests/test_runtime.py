@@ -46,9 +46,15 @@ def test_profile_rejects_invalid(token, execution, allow):
         verify_profile(token, SECRET, execution, allow)
 
 
-def test_fake_prohibited_production():
+@pytest.mark.parametrize("environment", ["production", "staging", "", "TEST", "test "])
+def test_fake_requires_explicit_nonproduction_environment(environment):
     with pytest.raises(ValueError):
-        Settings(SECRET, "production", True)
+        Settings(SECRET, environment, True)
+
+
+@pytest.mark.parametrize("environment", ["development", "test"])
+def test_fake_accepts_documented_environments(environment):
+    assert Settings(SECRET, environment, True).allow_fake
 
 
 async def collect_tool(handler, *, writes=False, confirmation=None, limits=Limits(), cancel=None):

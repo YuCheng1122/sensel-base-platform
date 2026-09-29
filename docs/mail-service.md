@@ -34,3 +34,5 @@
 Resend使用固定`https://api.resend.com/emails`，禁止redirect；預設14秒含body讀取，receipt最多128KiB，不回傳raw provider error。SMTP、附件、webhook、queue、排程、訂閱及報告自動寄送均未內建；可以由客戶在清楚的授權與防重流程上擴充。伺服器呼叫前會重讀設定，已開始的外部請求不承諾能因隨後停用而撤回。
 
 端點見 [API契約](api-contract.md)，資料表見 [儲存](data-storage.md)，mock／synthetic驗證方式見 [測試](testing.md)，來源改動見 [Mail抽離記錄](../packages/mail/EXTRACTION.md)。
+
+合成provider不解密或使用先前保存的Resend key；切換成fake不等於移除該key。回到Resend時才在server解密使用，金鑰仍由既有加密與版本流程管理。

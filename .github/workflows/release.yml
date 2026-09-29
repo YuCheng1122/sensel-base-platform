@@ -12,6 +12,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
       - name: Require matching release/package versions
         env:
           RELEASE_TAG: ${{ github.event.release.tag_name }}
@@ -23,9 +26,14 @@ jobs:
           if not re.fullmatch(r'v\d+\.\d+\.\d+', tag):
               raise SystemExit('Release tag must be vMAJOR.MINOR.PATCH')
           version = tag[1:]
-          for path in [Path('package.json'), *Path('packages').glob('*/package.json')]:
-              if json.loads(path.read_text())['version'] != version:
+          manifests = [Path('package.json'), Path('templates/project/web/package.json'), *Path('packages').glob('*/package.json')]
+          for path in manifests:
+              manifest = json.loads(path.read_text())
+              if manifest['version'] != version:
                   raise SystemExit(f'Version mismatch: {path}')
+              for name, dependency_version in manifest.get('dependencies', {}).items():
+                  if name.startswith('@sensel/') and dependency_version != version:
+                      raise SystemExit(f'Internal dependency mismatch: {path}: {name}')
           if tomllib.loads(Path('python/pyproject.toml').read_text())['project']['version'] != version:
               raise SystemExit('Python version mismatch')
           PY

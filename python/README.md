@@ -11,7 +11,7 @@ uv run --project python pytest python/tests
 uv build --project python
 ```
 
-Install the resulting wheel in an independent Python 3.12+ environment. Template entry is `templates/project/agent/main.py`; set `AGENT_SHARED_SECRET` to a private 32+ character secret and run `uvicorn main:app --app-dir templates/project/agent --port 8001`. `BACKEND_URL` defaults to `http://127.0.0.1:3000`. `APP_ENV` defaults to production. Deterministic fake mode requires both `APP_ENV=development` and `AGENT_ALLOW_FAKE=true`; production refuses fake mode.
+Install the resulting wheel in an independent Python 3.12+ environment. Template entry is `templates/project/agent/main.py`; set `AGENT_SHARED_SECRET` to a private 32+ character secret and run `uvicorn main:app --app-dir templates/project/agent --port 8001`. `BACKEND_URL` defaults to `http://127.0.0.1:3000`. `APP_ENV` defaults to production. Deterministic fake mode requires `APP_ENV=development` or `APP_ENV=test`, together with `AGENT_ALLOW_FAKE=true`; production and unrecognized environment names refuse fake mode.
 
 Register project tools with `ToolRegistry`, return a truthful `ToolResult`, and pass a project prompt to `create_app`. Write handlers must verify backend-issued confirmation tokens against exact operations; do not treat token presence as authorization. Only names present in the signed profile are available to the model.
 

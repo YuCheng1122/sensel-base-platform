@@ -171,14 +171,15 @@ function MailEditor({
             <Field label="寄件者名稱">
               <input
                 value={fromName}
-                maxLength={120}
+                maxLength={100}
+                required
                 onChange={(event) => setFromName(event.target.value)}
               />
             </Field>
             <Field label="寄件者電子郵件">
               <input
                 type="email"
-                required={enabled}
+                required
                 value={fromEmail}
                 maxLength={320}
                 onChange={(event) => setFromEmail(event.target.value)}

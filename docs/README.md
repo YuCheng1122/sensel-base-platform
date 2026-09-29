@@ -8,7 +8,7 @@
 
 資料與 Agent：[儲存](data-storage.md)、[Agent runtime](agent-runtime.md)、[API 契約](api-contract.md)。
 
-品質：[測試](testing.md)、[死碼檢查](dead-code.md)、[搬移清冊](extraction-inventory.md)、[本輪驗證](verification.md)。
+品質：[自行檢查](self-review.md)、[測試](testing.md)、[死碼檢查](dead-code.md)、[搬移清冊](extraction-inventory.md)、[本輪驗證](verification.md)。
 
 發布維運：[部署](deployment.md)、[CI/CD](ci-cd.md)、[發布](release.md)、[升級](upgrading.md)。
 
