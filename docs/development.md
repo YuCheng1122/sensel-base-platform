@@ -1,5 +1,7 @@
 # 本地開發
 
+[文件首頁](README.md) · [專案首頁](../README.md)
+
 支援 Node >=20.19、Python >=3.12；使用 repo package-lock.json 與 python/uv.lock。系統只有 Node18 時請切換版本，不能以略過 engine 警告當作驗證。
 
 ## 設定與初始化

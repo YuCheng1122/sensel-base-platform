@@ -1,6 +1,15 @@
 # CI/CD
 
+[文件首頁](README.md) · [專案首頁](../README.md)
+
 The platform owns independent workflows; they do not push to, build from, or deploy the original customer repositories. No production endpoints or paid models run in CI.
+
+## Table of Contents
+
+1. [Continuous integration](#continuous-integration)
+2. [Release publishing](#release-publishing)
+3. [Production deployment](#production-deployment)
+4. [Local validation](#local-validation)
 
 ## Continuous integration
 

@@ -1,5 +1,7 @@
 # 共用郵件服務
 
+[文件首頁](README.md) · [專案首頁](../README.md)
+
 郵件能力供不同客戶的通知及報告流程使用。`@sensel/mail`提供純TypeScript transport與runtime；`@sensel/server`的`sendConfiguredMail`協調授權、設定解密、版本檢查及持久防重；`@sensel/ui`提供管理員設定、固定內容測試與投遞紀錄。具體Prisma adapter與migration由客戶專案擁有。一般使用者沒有任意收件者／本文的寄信API。
 
 ## 管理流程
@@ -36,3 +38,9 @@ Resend使用固定`https://api.resend.com/emails`，禁止redirect；預設14秒
 端點見 [API契約](api-contract.md)，資料表見 [儲存](data-storage.md)，mock／synthetic驗證方式見 [測試](testing.md)，來源改動見 [Mail抽離記錄](../packages/mail/EXTRACTION.md)。
 
 合成provider不解密或使用先前保存的Resend key；切換成fake不等於移除該key。回到Resend時才在server解密使用，金鑰仍由既有加密與版本流程管理。
+
+## 畫面預覽
+
+以下為合成供應商的測試畫面，沒有寄出真實郵件；accepted 表示供應商接受要求，尚未確認送達。來源見 [圖片說明](images/README.md)。
+
+<kbd>![SenseL 信件服務：加密設定、合成測試與投遞狀態](images/mail.png)</kbd>

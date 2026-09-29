@@ -1,66 +1,103 @@
 # SenseL Base Platform
 
-不同客戶、不同分析用途共用的應用程式與 Agent 底座。此 repo 名稱為 `sensel-base`，遠端為 `AvocadoAI-Lab/sensel-base-platform`；TypeScript 套件使用 `@sensel/*`，Python 套件為 `sensel-agent-core`。
+[![Platform CI](https://github.com/AvocadoAI-Lab/sensel-base-platform/actions/workflows/ci.yml/badge.svg?branch=development)](https://github.com/AvocadoAI-Lab/sensel-base-platform/actions/workflows/ci.yml)
+[![Node.js](https://img.shields.io/badge/Node.js-%E2%89%A520.19-339933?style=flat)](docs/development.md)
+[![Python](https://img.shields.io/badge/Python-%E2%89%A53.12-3776AB?style=flat)](python/README.md)
 
-共用的是帳號、群組、UI、模型管理、對話、工具紀錄與執行機制。客戶資料模型、分析工具、提示詞及頁面由各客戶 repo 擁有。Nginx 可只用 Prisma／PostgreSQL；未來 PCAP 可另接檔案儲存及解析工作。平台不需要 Elasticsearch 或 Redis，也不內含 SOC、Nginx 或 PCAP 分析產品。
+不同客戶、不同分析用途共用的應用程式與 Agent 底座。
 
-## 已提供
+[文件首頁](docs/README.md) · [開始使用](docs/development.md) · [建立客戶專案](docs/create-project.md) · [自行驗收](docs/self-review.md)
 
-- 登入／登出、使用者啟停與角色、群組、個人資料和密碼。
-- 加密模型設定、連線與工具能力檢查、設定版本與預設模型門檻。
-- Chat 歷史、串流、取消、工具輸入輸出、部分結果及失敗狀態。
-- Python runtime 支援 OpenAI 相容、Anthropic、Gemini 文字／工具呼叫；合成測試可使用明確啟用的 fake provider。
-- 事件概覽與共用指標／趨勢／分類圖表，來源、時間範圍與資料完整性呈現。
-- 報告快照保存、預覽、搜尋／分頁與中文PDF／CSV／JSON下載。
-- 平台名稱、時區、報告預設與版本化設定變更紀錄。
-- 共用 Resend 寄件 runtime、管理員郵件設定／測試與持久投遞紀錄；未知結果不自動重寄。
-- 客戶擁有的 Prisma schema／migration 與工具註冊範本。
-- 套件打包、獨立專案產生器、測試及 CI/CD／Compose 配置。
+## Table of Contents
 
-這是從 Digiwin 選擇性抽取並調整介面的第一版，不是原專案的整包副本或資料庫直接替代品。尚未搬入通知訂閱／排程、settings operation replay、完整帳號／模型稽核 UI、分散式取消與長任務恢復。詳見 [搬移清冊](docs/extraction-inventory.md) 與 [驗證紀錄](docs/verification.md)。
+1. [About SenseL](#about-sensel)
+2. [Screenshots](#screenshots)
+3. [Getting Started](#getting-started)
+4. [Documentation](#documentation)
+5. [Contributing](#contributing)
+6. [Project Status](#project-status)
 
-## 開始使用
+## About SenseL
 
-需要 Node.js >=20.19、npm、Python >=3.12、uv 與 PostgreSQL 15。從 repo 根目錄：
+SenseL Base Platform 提供帳號、群組、模型管理、Agent 對話、共用圖表、報告與郵件服務。新的客戶專案可以沿用這些基礎功能，再加入自己的資料模型、分析工具與頁面。
 
-```sh
-npm ci
-npm run db:generate
-uv sync --project python --frozen
-cp templates/project/web/.env.example templates/project/web/.env
-```
+例如，Nginx Web Logs 專案可使用 Prisma／PostgreSQL 保存與查詢資料；未來的 PCAP 專案則可接入自己的檔案儲存與解析流程。Elasticsearch 是客戶可選的整合，不是底座的啟動需求。
 
-填入自己的隔離開發資料庫、兩個獨立隨機金鑰與管理員資料；參考 [設定說明](docs/configuration.md)。Prisma CLI 會讀 web/.env；bootstrap 和 Agent 命令需明確載入同一組必要環境變數，詳見 [開發指南](docs/development.md)。
+### Features
 
-```sh
-npm run db:migrate
-npm run db:bootstrap
-npm run dev
-```
+- **帳號與設定**：登入、使用者／群組／角色、個人資料、平台名稱與時區。
+- **模型與 Agent**：加密模型設定、連線／工具能力測試、OpenAI 相容／Anthropic／Gemini provider，以及客戶工具註冊。
+- **對話分析**：歷史、串流、取消、工具紀錄與部分／失敗狀態。
+- **事件概覽**：共用指標、趨勢、分類及事件列表；透過客戶提供者接入資料。
+- **報告下載**：保存快照、預覽、搜尋及中文 PDF／CSV／JSON 匯出。
+- **信件服務**：Resend、加密設定、管理員測試與投遞紀錄；未知結果不自動重寄。
+- **專案基礎**：六個 TypeScript 套件、Python runtime、Prisma 範本、專案產生器及 CI/CD。
 
-另一個終端啟動 Agent：
+共用程式放在 `packages/` 與 `python/`，客戶組合範本放在 `templates/project/`。平台不內含 SOC、Nginx 或 PCAP 分析產品；各客戶 repo 擁有自己的資料、工具、提示詞與部署。詳見 [架構](docs/architecture.md) 與 [搬移清冊](docs/extraction-inventory.md)。
 
-```sh
-uv run --project python uvicorn main:app --app-dir templates/project/agent --port 8001
-```
+## Screenshots
 
-Web 預設 http://localhost:3000，Agent 8001。Web 登入後到模型設定：新增→保存→連線測試→工具測試→設定預設。未設定模型也能操作帳號；Web 健康檢查不需模型在線。
+以下為底座實際介面；概覽中的數字與帳號為合成示範資料。截圖版本及來源見 [圖片說明](docs/images/README.md)。
 
-## 建立客戶專案
+**登入與品牌介面**
+
+<kbd>![SenseL 登入畫面：左側帳號表單與右側品牌面板](docs/images/login.png)</kbd>
+
+**事件概覽與共用圖表**
+
+<kbd>![SenseL 事件概覽：合成資料來源、指標卡與事件趨勢](docs/images/overview.png)</kbd>
+
+信件設定與投遞狀態的畫面見 [信件服務指南](docs/mail-service.md#畫面預覽)。
+
+## Getting Started
+
+### Installation
+
+開發環境需要 Node.js >=20.19、Python >=3.12、npm、uv 與 PostgreSQL 15。
+
+- [本地安裝與啟動 Web／Agent](docs/development.md)
+- [環境變數、金鑰與管理員初始化](docs/configuration.md)
+- [Docker Compose 部署與回復](docs/deployment.md)
+
+### Create a Customer Project
+
+在已安裝依賴的底座 repo 根目錄執行：
 
 ```sh
 npm run pack:core
 npm run create:project -- /tmp/my-analysis-project --packages "$PWD/artifacts/packages"
 ```
 
-生成的是獨立的 `web/`、`agent/` 與文件；不會建立遠端、啟動服務或覆蓋既有目錄。Python wheel 另行安裝。完整步驟見 [新專案指南](docs/create-project.md)。
+產生獨立的 `web/`、`agent/` 與文件，不覆蓋既有非空目錄。Python wheel 需另行建置與安裝；完整步驟見 [建立客戶專案](docs/create-project.md)。
 
-## 閱讀入口
+### Using SenseL
 
-- 自行驗收：[畫面、程式與 CI 檢查指南](docs/self-review.md)。
-- 開發者：[文件索引](docs/README.md)、[架構](docs/architecture.md)、[目錄規範](docs/code-organization.md)。
-- Coding Agent：[AGENTS.md](AGENTS.md)。產品 Agent：[執行與擴充](docs/agent-runtime.md)。
-- 分析與報告：[共用功能與客戶接入](docs/analytics-and-reports.md)。郵件：[寄件服務](docs/mail-service.md)。
-- UI：[DESIGN.md](DESIGN.md)。維運：[部署](docs/deployment.md)、[CI/CD](docs/ci-cd.md)。
+- [逐頁操作與自行驗收](docs/self-review.md)
+- [事件概覽、圖表與報告](docs/analytics-and-reports.md)
+- [信件設定、測試與投遞紀錄](docs/mail-service.md)
+- [Agent 執行與工具擴充](docs/agent-runtime.md)
 
-本地驗證結果記錄於驗證文件；遠端工作流程與正式部署須另行確認。
+## Documentation
+
+從 [文件首頁](docs/README.md) 選擇閱讀路線，或直接查看：
+
+| 主題 | 文件 |
+| --- | --- |
+| 架構與擴充 | [責任邊界](docs/architecture.md) · [目錄規範](docs/code-organization.md) · [API 契約](docs/api-contract.md) |
+| 儲存與模型 | [Prisma／資料儲存](docs/data-storage.md) · [Python runtime](python/README.md) |
+| 品質與維運 | [測試](docs/testing.md) · [CI/CD](docs/ci-cd.md) · [升級](docs/upgrading.md) |
+| 設計與驗證 | [UI 規範](DESIGN.md) · [搬移清冊](docs/extraction-inventory.md) · [驗證紀錄](docs/verification.md) |
+
+## Contributing
+
+修改平台前，請先閱讀 [貢獻指南](CONTRIBUTING.md)。其中說明共用與客戶程式的歸屬、必要檢查，以及提交變更時應提供的驗證資訊。
+
+- 開發者：[本地開發](docs/development.md) · [測試指南](docs/testing.md)
+- Coding Agent：[AGENTS.md](AGENTS.md)
+- 問題回報：[如何描述與重現問題](CONTRIBUTING.md#回報問題)
+
+## Project Status
+
+目前為第一版共用底座，套件採本地 tgz／wheel 安裝；GitHub Release 工作流程可發布安裝附件，但尚未發布至 npm／PyPI。頂端 CI 徽章連結至 `development` 分支的實際工作流程狀態，不代表正式部署結果。
+
+目前驗證範圍為單一 Web／Agent instance。通知訂閱／排程、完整帳號／模型稽核 UI、settings operation replay、分散式取消、長任務恢復與舊客戶資料遷移尚未完成。最新實測與限制見 [驗證紀錄](docs/verification.md)。
