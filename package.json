@@ -18,7 +18,7 @@
     "lint": "eslint packages templates/project/web/src tests --ext .ts,.tsx --no-error-on-unmatched-pattern",
     "check": "npm run lint && npm run typecheck && npm run boundaries",
     "boundaries": "node scripts/check-boundaries.mjs",
-    "test": "tsx --test tests/backend/*.test.ts tests/ui/*.test.ts packages/analytics/tests/*.test.ts",
+    "test": "tsx --test tests/backend/*.test.ts tests/ui/*.test.ts packages/analytics/tests/*.test.ts packages/mail/tests/*.test.ts",
     "test:ui": "playwright test",
     "db:generate": "npm run db:generate --workspace @sensel/project-web",
     "db:migrate": "npm run db:migrate --workspace @sensel/project-web",

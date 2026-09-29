@@ -6,7 +6,8 @@ packages/
   chat/src/               對話、工具紀錄、SSE parser
   analytics/src/          圖表、事件概覽、通用資料契約
   reports/src/            報告快照UI、PDF／CSV／JSON匯出
-  server/src/             CoreStore 契約、auth、model settings、Agent bridge
+  mail/src/               郵件契約、Resend transport、受控寄件runtime
+  server/src/             CoreStore 契約、auth、model settings、Agent bridge、郵件coordinator
 python/
   src/sensel_agent/        FastAPI factory、provider、runtime、profile、tools、trace
   tests/                  Python 合成契約測試

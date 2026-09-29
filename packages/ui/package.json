@@ -22,6 +22,7 @@
     "lucide-react": "0.479.0",
     "@radix-ui/react-dropdown-menu": "2.1.15",
     "@radix-ui/react-dialog": "1.1.14",
-    "next-themes": "0.4.6"
+    "next-themes": "0.4.6",
+    "@sensel/mail": "0.1.0"
   }
 }

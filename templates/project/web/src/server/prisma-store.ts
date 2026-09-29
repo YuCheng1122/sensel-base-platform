@@ -1,3 +1,4 @@
+import { createMailStore } from "./prisma-mail-store";
 import { admin } from "./prisma-authorization";
 import { createFeatureStore } from "./prisma-feature-store";
 import { PrismaClient, Prisma } from "@prisma/client";
@@ -38,6 +39,7 @@ const audit = (tx: Tx, actorId: string, action: string, targetId: string) =>
 export function createPrismaStore(db: PrismaClient): CoreStore {
   return {
     ...createFeatureStore(db),
+    ...createMailStore(db),
     async userByEmail(email) {
       const u = await db.user.findUnique({
         where: { email },

@@ -25,3 +25,7 @@ export type {
   FeatureStore,
 } from "./feature-types";
 export { defaultPlatformSettings } from "./feature-types";
+
+export type { MailStore, StoredMailSettings } from "./mail-types";
+export { defaultMailSettings } from "./mail-types";
+export { sendConfiguredMail } from "./mail-service";

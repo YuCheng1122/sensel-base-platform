@@ -30,3 +30,7 @@ npm run test:ui
 另驗：npm pack→repo外生成客戶→獨立install／typecheck／build／start；Python wheel→新venv→health/readiness。容器流程需乾淨PG→migration→bootstrap→Web/Agent health，不只檢查Dockerfile格式。
 
 CI步驟見 [CI/CD](ci-cd.md)，本地本輪結果見 [驗證](verification.md)。
+
+## 郵件驗證
+
+`packages/mail/tests/`用mock HTTP驗證固定endpoint、回應界限、版本／啟停、逾時／取消及不重試；後端隔離DB驗證設定秘密、持久防重和權限。郵件瀏覽器測試需額外設定MAIL_ALLOW_FAKE=true，並維持APP_ENV=test；AGENT_ALLOW_FAKE不會開啟郵件fake。不得將測試流程指向真Resend或使用真API key。SMTP、實際送達、webhook與客戶通知整合不在這些合成測試的證明範圍。

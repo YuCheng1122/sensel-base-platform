@@ -13,10 +13,11 @@
 - 事件概覽與共用指標／趨勢／分類圖表，來源、時間範圍與資料完整性呈現。
 - 報告快照保存、預覽、搜尋／分頁與中文PDF／CSV／JSON下載。
 - 平台名稱、時區、報告預設與版本化設定變更紀錄。
+- 共用 Resend 寄件 runtime、管理員郵件設定／測試與持久投遞紀錄；未知結果不自動重寄。
 - 客戶擁有的 Prisma schema／migration 與工具註冊範本。
 - 套件打包、獨立專案產生器、測試及 CI/CD／Compose 配置。
 
-這是從 Digiwin 選擇性抽取並調整介面的第一版，不是原專案的整包副本或資料庫直接替代品。尚未搬入通知寄送、settings operation replay、完整帳號／模型稽核 UI、分散式取消與長任務恢復。詳見 [搬移清冊](docs/extraction-inventory.md) 與 [驗證紀錄](docs/verification.md)。
+這是從 Digiwin 選擇性抽取並調整介面的第一版，不是原專案的整包副本或資料庫直接替代品。尚未搬入通知訂閱／排程、settings operation replay、完整帳號／模型稽核 UI、分散式取消與長任務恢復。詳見 [搬移清冊](docs/extraction-inventory.md) 與 [驗證紀錄](docs/verification.md)。
 
 ## 開始使用
 
@@ -58,7 +59,7 @@ npm run create:project -- /tmp/my-analysis-project --packages "$PWD/artifacts/pa
 
 - 開發者：[文件索引](docs/README.md)、[架構](docs/architecture.md)、[目錄規範](docs/code-organization.md)。
 - Coding Agent：[AGENTS.md](AGENTS.md)。產品 Agent：[執行與擴充](docs/agent-runtime.md)。
-- 分析與報告：[共用功能與客戶接入](docs/analytics-and-reports.md)。
+- 分析與報告：[共用功能與客戶接入](docs/analytics-and-reports.md)。郵件：[寄件服務](docs/mail-service.md)。
 - UI：[DESIGN.md](DESIGN.md)。維運：[部署](docs/deployment.md)、[CI/CD](docs/ci-cd.md)。
 
 本地驗證結果記錄於驗證文件；遠端工作流程與正式部署須另行確認。

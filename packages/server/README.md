@@ -52,3 +52,33 @@ settings; before/after values are saved atomically. Admin audit reads expose up 
 rows and a nextCursor. Settings are name, IANA display timezone, report title and default
 range days (1–90), not mail credentials. Query instants remain UTC regardless of display
 timezone. Report snapshots freeze the display timezone at creation.
+
+## Mail configuration and durable delivery
+
+`GET/PATCH /api/core/mail/settings`, `POST /api/core/mail/test` and
+`GET /api/core/mail/deliveries` require a freshly active administrator. Settings expose
+`hasApiKey`, never plaintext, partial key text or ciphertext. Blank API-key input retains
+the stored encrypted key. Configuration updates require `expectedVersion` and save a
+redacted before/after audit row in the same transaction. MailSettingsAudit is storage-only;
+there is no audit browsing endpoint in this module yet.
+
+`sendConfiguredMail(config, actorId, message)` is the customer-server entry point. It
+consumes pure `@sensel/mail/contracts` and the bounded runtime transport; it requires an
+active admin actor, a UUID idempotency key and an expected configuration version. It
+stores a globally unique key with a keyed content fingerprint. Reusing a key for different
+content or a different actor fails with 409. A reservation is committed before transport
+I/O; a second caller never dispatches the same key again. Current configuration and
+actor authorization are checked again immediately before dispatch, outside the reservation
+transaction. No network request is held inside a database transaction.
+
+Receipts distinguish `accepted`, `rejected`, `unknown` and `cancelled`. Provider acceptance
+is not confirmed mailbox delivery. Reservations start as `unknown` with
+`IN_PROGRESS_OR_INTERRUPTED`; if the process stops, they remain conservatively unknown.
+A response-persistence failure also returns unknown. Unknown outcomes are never automatically
+resent, including after restart. Settings changes do not recall an already dispatched email.
+
+The template enables the fake transport only with **both** `MAIL_ALLOW_FAKE=true` and
+`APP_ENV=test|development`. This is independent of Agent fake mode. The controlled test
+endpoint accepts one recipient; the generic server service accepts up to ten, with bounded
+subject/body lengths. Delivery history is admin-only and paginated (maximum 100 per page).
+Tests use synthetic addresses plus injected/fake transports and do not contact a mail provider.

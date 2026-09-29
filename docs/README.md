@@ -13,3 +13,5 @@
 發布維運：[部署](deployment.md)、[CI/CD](ci-cd.md)、[發布](release.md)、[升級](upgrading.md)。
 
 架構理由：[核心與客戶邊界](decisions/0001-independent-customer-projects.md)。
+
+郵件：[共用寄件服務、設定與投遞語意](mail-service.md)。

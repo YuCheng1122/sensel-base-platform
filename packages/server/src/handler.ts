@@ -1,3 +1,4 @@
+import { handleMail } from "./mail-handler";
 import { handleFeatures } from "./feature-handler";
 import bcrypt from "bcryptjs";
 import { randomBytes, randomUUID } from "node:crypto";
@@ -158,6 +159,8 @@ async function handle(config: CoreConfig, request: Request): Promise<Response> {
   )
     throw new CoreError("UNAUTHORIZED", 401);
   const user = session.user;
+  const mailResponse = await handleMail(config, user, path, request);
+  if (mailResponse) return mailResponse;
   const featureResponse = await handleFeatures(config, user, path, request);
   if (featureResponse) return featureResponse;
   if (path.join("/") === "auth/logout" && method === "POST") {

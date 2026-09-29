@@ -19,10 +19,11 @@ const manifestPath = path.join(destination, 'web/package.json');
 const manifest = JSON.parse(await readFile(manifestPath, 'utf8'));
 const rootManifest = JSON.parse(await readFile(path.join(platform, 'package.json'), 'utf8'));
 manifest.name = 'customer-web';
+if (rootManifest.overrides) manifest.overrides = rootManifest.overrides;
 manifest.devDependencies = { ...manifest.devDependencies, typescript: rootManifest.devDependencies.typescript, tsx: rootManifest.devDependencies.tsx, '@types/node': rootManifest.devDependencies['@types/node'], '@types/react': rootManifest.devDependencies['@types/react'], '@types/bcryptjs': rootManifest.devDependencies['@types/bcryptjs'] };
 if (tarballs) {
   await mkdir(path.join(destination, 'vendor'), { recursive: true });
-  for (const name of ['ui', 'chat', 'analytics', 'reports', 'server']) {
+  for (const name of ['ui', 'chat', 'analytics', 'reports', 'mail', 'server']) {
     const version = manifest.dependencies[`@sensel/${name}`];
     const filename = `sensel-${name}-${version}.tgz`;
     await cp(path.join(tarballs, filename), path.join(destination, 'vendor', filename));

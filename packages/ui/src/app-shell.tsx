@@ -52,6 +52,7 @@ export function AppShell({
           overview: "Event overview",
           reports: "Report downloads",
           platform: "Platform settings",
+          mail: "Mail service",
           users: "Users",
           groups: "Groups",
           profile: "Profile",
@@ -59,11 +60,11 @@ export function AppShell({
       : {};
   const label = (item: NavigationItem) => labels[item.id] ?? item.label;
   const settings = navigation.filter((item) =>
-    ["platform", "models", "users", "groups"].includes(item.id),
+    ["platform", "mail", "models", "users", "groups"].includes(item.id),
   );
   const general = navigation.filter(
     (item) =>
-      !["platform", "models", "users", "groups", "profile"].includes(item.id),
+      !["platform", "mail", "models", "users", "groups", "profile"].includes(item.id),
   );
   const navigate = (id: string) => {
     onNavigate(id);

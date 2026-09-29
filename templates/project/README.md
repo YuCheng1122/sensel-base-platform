@@ -10,8 +10,10 @@ PUBLIC_APP_URL應等於瀏覽器origin，AGENT_URL與BACKEND_URL互指服務，A
 
 平台的Dockerfile使用平台workspace作build context，不會直接複製到這個repo；客戶需建立自己的容器與部署設定。
 
-共用功能包含事件概覽、報告下載（固定快照、PDF／CSV／JSON）、平台設定與變更紀錄。五個npm套件為 `@sensel/ui`、`@sensel/chat`、`@sensel/analytics`、`@sensel/reports`、`@sensel/server`。保留SenseL品牌與原導覽，也可配置客戶名稱及圖片。
+共用功能包含事件概覽、報告下載（固定快照、PDF／CSV／JSON）、平台設定與變更紀錄。六個npm套件為 `@sensel/ui`、`@sensel/chat`、`@sensel/analytics`、`@sensel/reports`、`@sensel/mail`、`@sensel/server`。保留SenseL品牌與原導覽，也可配置客戶名稱及圖片。
 
 `web/src/server/synthetic-analysis-provider.ts` 是明確的示範資料，正式接案時以自己的 `AnalysisProvider` 替換，在 `web/src/server/core.ts` 注入。依使用者id／role／groupIds限制來源與查詢，資料時間使用UTC瞬間；分類使用穩定ID，未知統計用null。Nginx可只查自己Prisma表；PCAP解析及檔案保存另由專案處理。
 
 報告建立只查詢一次，保存完整快照，之後預覽與匯出不重新查詢來源。新提供者必須描述完整／部分／抽樣覆蓋，不可把清單前50筆當成全量。`public/fonts/`包含中文PDF字型與OFL授權，部署時一起保留。舊報告的時區及內容不跟著平台預設變更。
+
+郵件設定由管理員保存，Resend金鑰以SETTINGS_ENCRYPTION_KEY加密。`@sensel/server`的sendConfiguredMail提供持久防重與授權，`@sensel/mail`提供可替換transport；範本目前要求管理員actor。same UUID重放只回原紀錄，accepted不代表已送達，unknown不自動重寄。測試須MAIL_ALLOW_FAKE=true且APP_ENV=test／development，正式關閉fake。SMTP、webhook、排程與訂閱未內建；客戶通知／報告流程需明確設計並注入。

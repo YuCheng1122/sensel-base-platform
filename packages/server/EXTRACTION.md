@@ -47,7 +47,7 @@ no customer ES index or business event schema was extracted into core. Additive 
 `202609280002_feature_modules` creates ReportSnapshot, PlatformSettings and its audit table.
 It never resets the database or copies source customer migrations.
 
-Read-only mail/notification inventory:
+Initial read-only mail/notification inventory (mail transport/configuration candidates were subsequently implemented in the section below):
 
 | Source | Reusable candidate | Kept out of this delivery |
 | --- | --- | --- |
@@ -56,6 +56,27 @@ Read-only mail/notification inventory:
 | `src/server/services/notification-delivery-status.service.ts` | Provider receipt-status mapping | Source Prisma deliveries, vendor scopes and permission service |
 | `src/server/services/sync/sync-notification-policy.ts` | Bounded sender, unknown-outcome semantics and retry limits | Vendor/site authorization and legacy customer recipient policy |
 
-No SMTP/notification test buttons or successful-delivery claims were added. A future mail
-module must first preserve encryption/versioning, delivery receipts and unknown-outcome
-behavior with synthetic transport tests; the source's customer triggers stay in that project.
+No SMTP or domain-notification triggers were copied. The subsequent mail module below implements real transport/configuration boundaries with synthetic verification; provider acceptance is never labelled mailbox delivery. The source customer notification triggers stay in that project.
+
+## Mail extraction follow-through (2026-09-29)
+
+The bounded transport and typed outcomes now live in `@sensel/mail`; its own extraction
+manifest identifies source files and retained transport behavior. `@sensel/server` owns
+encrypted configuration, typed admin HTTP routes and durable send coordination. The
+customer Prisma adapter owns MailConfiguration, MailDelivery and MailSettingsAudit,
+created by additive migration `202609290001_mail`. No customer mail setting, API key,
+recipient list or historical receipt was copied.
+
+Existing `admin()` advisory transaction locking was reused for configuration writes and
+reservations. The new generic store strips the encrypted key before constructing audit
+JSON. Deliveries store recipient metadata, subject and a keyed fingerprint, not message
+bodies or credentials. A single committed reservation prevents repeat transport calls
+across concurrent requests and process restarts; ambiguous outcomes remain unknown.
+The new controlled test route sends only its fixed subject/body; arbitrary mail is exposed
+only as a trusted customer-server function with an authorized admin actor.
+
+True PostgreSQL tests cover competing configuration versions, competing idempotency keys,
+unknown outcomes, interrupted receipt persistence, client reconnection, configuration changes
+before dispatch, authorization revocation, secret masking, fake-mode isolation and history
+pagination. All transports in verification were synthetic or injected. Source sync/vendor/site
+notification policy and account-email templates remain customer-owned and were not copied.

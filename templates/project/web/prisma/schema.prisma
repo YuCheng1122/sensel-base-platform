@@ -103,3 +103,38 @@ model PlatformSettingsAudit {
  createdAt DateTime @default(now())
  @@index([createdAt])
 }
+
+model MailConfiguration {
+ id String @id @default("mail")
+ provider String
+ enabled Boolean @default(false)
+ fromName String
+ fromEmail String
+ encryptedApiKey String?
+ version Int @default(1)
+}
+model MailDelivery {
+ id String @id @default(uuid())
+ idempotencyKey String @unique
+ fingerprint String
+ actorId String
+ to String[]
+ subject String
+ configVersion Int
+ state String
+ providerMessageId String?
+ errorCode String?
+ synthetic Boolean @default(false)
+ createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
+ @@index([createdAt])
+}
+model MailSettingsAudit {
+ id String @id @default(uuid())
+ actorId String
+ before Json
+ after Json
+ secretChanged Boolean
+ createdAt DateTime @default(now())
+ @@index([createdAt])
+}

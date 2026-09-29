@@ -88,3 +88,21 @@
 - 先將本機預覽資料庫備份至私有暫存檔，再只套用`202609280002_feature_modules`。未reset／重新bootstrap；既有模型1筆、對話1筆與原管理員登入均保留。
 - `localhost:3300` 的Web／Agent／PostgreSQL healthy；實際開啟概覽、保存一份標示合成的「SenseL 共用功能示範報告」、下載131464 bytes的真PDF，快照回讀一致，瀏覽器pageerror為0。
 - 已停止隔離測試Web／Agent及測試PostgreSQL；3300預覽繼續運作。没有push、registry發布或遠端部署。
+
+## 郵件擴充驗證範圍（2026-09-29）
+
+本輪新增第六個npm套件`@sensel/mail`、管理員UI／API與第三個資料庫migration。上方歷史測試數量、五套件consumer及容器digest僅代表當時版本，不可當成本輪結果。最終整合檢查、瀏覽器、六套件獨立安裝及建置結果由本輪驗收另行記錄。所有郵件測試限制使用synthetic／mock HTTP；不驗證真Resend key、寄件網域或收件匣送達。功能與限制见 [郵件服務](mail-service.md)。
+
+本輪最終驗證（2026-09-29）：
+
+- `npm test` 30 項全通過：包括真 PostgreSQL 的版本衝突、加密／遮罩、並行防重、未知結果保留，以及寄送前撤權／停用檢查；全程 mock／synthetic，沒有真實寄信。
+- `npm run check`、`npm run dead-code`、`npm run docs:check` 通過；新增模組均符合 400 行上限。
+- 信件設定桌面 1440／手機 390 圖片已人工檢查；設定、測試與投遞紀錄沿用來源三區版型。
+- 六個 tgz 經正式 generator 建立獨立專案，安裝、Prisma generate、typecheck、Next 正式 build 通過。
+- Web `sensel-base-web:mail` 與 migration `sensel-base-migrate:mail` 本機映像建置通過。預覽資料庫先備份，再套用 additive mail migration，沒有重建資料庫或 bootstrap；使用者 1、模型 1、對話 2、報告 1 筆皆保留。
+- `localhost:3300` 實際登入並開啟信件設定頁成功，pageerror 0，寄信預設關閉且沒有設定金鑰。三個預覽服務 healthy；其他服務未變動。
+
+本輪紀錄位於 `/tmp/sensel-base-mail/`；真實 Resend 投遞、GitHub Actions 遠端執行及 SMTP 不在本次驗證範圍。
+- 完整瀏覽器回歸最終 18／18 通過（23.9 秒），包含新增 4 項信件測試及原有 14 項 UI／報告／對話案例。
+- 新專案 generator 已保留平台既有 dependency overrides；重新產生 consumer-secure 後，Prisma／型別／正式 build 通過，npm audit 為 0。修正避免新專案遺失既有 PostCSS 8.5.26 覆寫。
+- 隔離測試 Web／Agent／PostgreSQL 已停止並清除測試資料卷，3300 預覽保持運作。沒有 push 或遠端發布。

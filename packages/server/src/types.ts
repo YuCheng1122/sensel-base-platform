@@ -1,3 +1,5 @@
+import type { MailTransport } from "@sensel/mail/contracts";
+import type { MailStore } from "./mail-types";
 import type { AnalysisProvider, FeatureStore } from "./feature-types";
 export type User = {
   id: string;
@@ -47,7 +49,7 @@ export type Chat = {
   createdAt: Date;
   messages?: Message[];
 };
-export interface CoreStore extends FeatureStore {
+export interface CoreStore extends FeatureStore, MailStore {
   userByEmail(email: string): Promise<User | null>;
   userById(id: string): Promise<User | null>;
   session(tokenHash: string): Promise<{ user: User; expiresAt: Date } | null>;
@@ -108,5 +110,7 @@ export type CoreConfig = {
   secureCookies: boolean;
   allowedModelEndpoints: string[];
   allowFake: boolean;
+  allowFakeMail?: boolean;
+  mailTransport?: MailTransport;
   tools?: string[];
 };

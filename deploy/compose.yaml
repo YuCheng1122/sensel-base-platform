@@ -7,6 +7,7 @@ x-web-environment: &web-environment
   PUBLIC_APP_URL: ${PUBLIC_APP_URL:?Set PUBLIC_APP_URL to the external browser origin}
   APP_ENV: production
   AGENT_ALLOW_FAKE: "false"
+  MAIL_ALLOW_FAKE: "false"
   SECURE_COOKIES: "true"
   MODEL_ALLOWED_ENDPOINTS: ${MODEL_ALLOWED_ENDPOINTS:-}
 services:

@@ -7,6 +7,7 @@ COPY packages/chat/package.json packages/chat/package.json
 COPY packages/server/package.json packages/server/package.json
 COPY packages/analytics/package.json packages/analytics/package.json
 COPY packages/reports/package.json packages/reports/package.json
+COPY packages/mail/package.json packages/mail/package.json
 COPY templates/project/web/package.json templates/project/web/package.json
 RUN npm ci --ignore-scripts --no-audit --no-fund
 COPY packages ./packages

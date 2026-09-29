@@ -15,3 +15,9 @@ Nginx可以把log存PostgreSQL；有ES需求的專案另行安裝adapter、定�
 ## 共用分析與報告
 
 新增 `PlatformSettings`、`PlatformSettingsAudit`、`ReportSnapshot` 由範本Prisma adapter擁有；migration只新增表，不重設舊資料。報告保存完整JSON快照，以ownerId限制存取；客戶業務事件仍屬客戶schema或儲存服務，不進平台資料表。設定寫入與before／after紀錄同交易提交。詳見 [共用功能](analytics-and-reports.md)。
+
+## 郵件設定與投遞
+
+`202609290001_mail`新增`MailConfiguration`、`MailDelivery`與`MailSettingsAudit`。設定金鑰使用同一AES-256-GCM加密介面；設定及before／after審計同交易保存，審計僅含hasApiKey與secretChanged，不保存秘密。管理員交易使用共用PostgreSQL advisory transaction lock，序列化授權、版本檢查和防重預留。
+
+投遞先以資料庫唯一UUID idempotencyKey建立unknown預留，再執行外部HTTP。相同actor／內容／設定版本只讀回原結果，不重新寄送；不同內容或actor重用key回409。保留收件者、主旨、版本、內容HMAC指紋與供應商receipt，不保存郵件本文。unknown可能代表仍在處理、程序中斷或結果保存失敗，不能刪除紀錄後自動重寄。此範本每客戶獨立DB，未提供共享多租戶schema或自動清理投遞紀錄。詳細語意見 [郵件服務](mail-service.md)。

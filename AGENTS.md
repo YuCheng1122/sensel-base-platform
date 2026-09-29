@@ -9,6 +9,7 @@ This repo contains reusable application and Agent capabilities for independent c
 - Core never imports a customer repo, its `@/` alias, Prisma generated client, SOC models or mandatory Elasticsearch.
 - Prisma/PostgreSQL is the default template storage. Elasticsearch is optional, never a core startup requirement.
 - Analytics/report UI consumes shared DTOs; customer AnalysisProvider owns queries and authorization scopes. Reports persist snapshots once and render/export saved data, even when the live provider is unavailable. Never treat synthetic, partial or unknown data as a complete customer result.
+- Mail uses @sensel/mail for transport and @sensel/server for durable reservations and authorization. Never treat accepted as delivered or automatically resend unknown results. Fake mail requires its own explicit non-production gate; customer notification triggers and recipients remain customer-owned.
 - Customer tools, prompts, scopes, pages and schemas belong in customer repos. Future PCAP integrations follow the same rule.
 - Source Digiwin repos are read-only during extraction; another agent may be working there. Do not change existing services, environments or data.
 - The user authorized CI/CD configuration after core verification. Implement and validate workflows; do not push, publish or deploy remotely without an explicit request.

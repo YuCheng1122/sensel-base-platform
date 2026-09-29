@@ -20,6 +20,9 @@ export const coreConfig: CoreConfig = {
   allowFake:
     process.env.AGENT_ALLOW_FAKE === "true" &&
     ["development", "test"].includes(process.env.APP_ENV ?? ""),
+  allowFakeMail:
+    process.env.MAIL_ALLOW_FAKE === "true" &&
+    ["development", "test"].includes(process.env.APP_ENV ?? ""),
   tools: ["project_info"],
 };
 export const handleCore = createCoreHandler(coreConfig);

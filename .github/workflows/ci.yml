@@ -32,6 +32,7 @@ jobs:
       SETTINGS_ENCRYPTION_KEY: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
       APP_ENV: test
       AGENT_ALLOW_FAKE: "true"
+      MAIL_ALLOW_FAKE: "true"
       SECURE_COOKIES: "false"
       ADMIN_EMAIL: admin@example.test
       ADMIN_PASSWORD: synthetic-ci-admin-password

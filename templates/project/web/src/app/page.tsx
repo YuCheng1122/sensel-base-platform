@@ -7,6 +7,7 @@ import {
   AppShell,
   Login,
   ModelSettings,
+  MailServiceSettings,
   Notice,
   ProfileSettings,
   PlatformSettings,
@@ -96,6 +97,7 @@ export default function Home() {
     ...(user.role === "ADMIN"
       ? [
           { id: "platform", label: "平台設定" },
+          { id: "mail", label: "信件服務" },
           { id: "models", label: "模型設定" },
           { id: "users", label: "使用者管理" },
           { id: "groups", label: "群組管理" },
@@ -144,6 +146,7 @@ export default function Home() {
           }}
         />
       )}
+      {user.role === "ADMIN" && active === "mail" && <MailServiceSettings actorId={user.id} />}
       {user.role === "ADMIN" && active === "models" && <ModelSettings />}
       {user.role === "ADMIN" && (active === "users" || active === "groups") && (
         <AccessSettings key={active} kind={active} />
