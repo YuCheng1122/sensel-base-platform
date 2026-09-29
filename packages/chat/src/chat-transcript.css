@@ -66,7 +66,6 @@
   background: var(--muted);
 }
 .chat-message-content code {
-  font-family: ui-monospace, monospace;
   font-size: 13px;
 }
 .chat-message-content table {

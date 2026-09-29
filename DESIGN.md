@@ -1,49 +1,77 @@
-# SenseL Base UI 規範
+# SenseL UI Design
 
-本次抽離以原專案的實際介面為視覺基準，不另設計登入頁或應用殼層。先前的置中登入卡與簡化側欄已移除。資料與業務相依可以拆開，既有視覺配置、控制項及操作層次應保留；差異必須有實際功能或客戶設定的理由。
+This is the shared design contract for SenseL Base and customer projects generated from it. Apply these defaults when implementing or reviewing frontend work. A customer's explicit requirement can change a default; document the reason and update the shared owner instead of layering page-specific overrides.
 
-## 基準與責任
+## Page layout
 
-- 登入：來源 `src/app/auth/signin/page.tsx`，桌面左側45%表單、右側55%品牌面板；小於768px只顯示表單。使用原橫式／直式 logo、380px表單、44px圓角輸入、40px提交按鈕、footer語言選單、深藍漸層與原幾何裝飾。
-- 殼層：來源 `app-sidebar.tsx`、`top-nav/top-nav-layout.tsx` 與 `ui/nav-*`；256px浮動側欄、8px外框間距、56px頂列、折疊圖示模式、分組及巢狀設定、底部語言／主題／使用者選單。手機以對話框展開288px導覽。
-- 字型與色彩：沿用 Geist Sans／Mono 及原始 light/dark OKLCH tokens；不以「相似色」取代。字型由範本入口載入。
-- 共用控制項：沿用原按鈕、輸入、選單的高度、圓角、焦點、間距與狀態。Radix負責選單／對話框的鍵盤、焦點與關閉行為。
-- 設定：帳號／群組採原全寬列表及對話框編輯；模型採設定表單、已儲存模型清單與詳情／測試面板。Chat自身的版面由 `packages/chat` 維護。
+Overview, reports, platform settings, mail settings, model settings, users, groups and profile use the same `.sensel-page` frame:
 
-## 原始碼組織
-
-`packages/ui/src/styles.css` 僅作聚合入口，不累加修補覆寫：
-
-| 檔案 | 責任 |
+| Property | Default |
 | --- | --- |
-| `tokens.css` | 原始共用色彩與主題 tokens |
-| `primitives.css` | 表單、按鈕、表格、訊息、Radix選單等基本樣式 |
-| `login.css` | 原登入幾何配置、品牌面板、動畫及手機行為 |
-| `shell.css` | 浮動側欄、設定層次、頂列、折疊及手機抽屜 |
-| `sidebar-user.css` | 使用者頭像、帳號資料及選單呈現 |
-| `settings.css` | 管理列表、編輯對話框及模型清單／詳情 |
+| Page maximum width | 1280px, including horizontal padding |
+| Alignment | Centered within the workspace after the sidebar |
+| Desktop page padding | 24px |
+| Mobile page padding | 16px below 640px |
+| Vertical section gap | 24px |
+| Wide-screen behavior | Stop growing at the shared maximum; equal margins on both sides |
 
-舊置中登入、水平手機選單、固定比例的舊設定表格及放在UI套件內的Chat樣式已移除。新增樣式應放在負責該元件的檔案，不建立另一份相互覆寫的實作。
+`@sensel/ui` owns the frame and tokens. Reuse its exported stylesheet and `.sensel-page` class on a page's outer content element. In the base source, see `packages/ui/src/page-layout.css`; customer projects consume the installed stylesheet rather than copying it. Components can arrange form fields into readable columns without narrowing the page frame itself.
 
-## 必要且明列的差異
+Do not add a second max-width or page padding inside the frame. A report's embedded overview is a component, not another page frame. Cards, tables and popovers manage their own internal spacing and overflow. On mobile, controls stack and wide tables scroll inside their own containers rather than widening the document.
 
-- 新底座以電子郵件登入，所以欄位名稱不沿用尚未支援的「使用者名稱」。
-- 尚無自助註冊，預設顯示聯絡管理員；有註冊功能的客戶才傳入 `registrationHref`，不顯示失效連結。
-- 移除客戶專用選單及SOC業務文案；登入品牌文案和logo可由props配置，版面保留。
-- 語言選單目前翻譯登入與殼層；設定與Chat頁內容仍為繁體中文，不宣稱已完整國際化。
-- 個人設定／密碼入口保留在使用者選單；由底座目前的個人設定頁完成操作。不是宣稱所有原功能均已一比一搬入。
-- 保留原始輕量入場動畫與 `prefers-reduced-motion` 行為。主題持久化及系統預設由next-themes處理。
+Login and full-height Chat deliberately use separate layouts. Do not wrap them in the standard page frame. Keep the existing login composition, floating sidebar, mobile drawer and Chat interaction hierarchy.
 
-## 行為與驗證
+## Typography
 
-所有輸入有可見label；錯誤用 `role="alert"`、操作結果用 `role="status"`。選單、抽屜及對話框應可用鍵盤操作、按Escape關閉並合理恢復焦點。UI隱藏管理選項不代替伺服器授權。
+Use the project's Geist Sans token with system sans-serif fallbacks for headings, body text, controls and chart labels. All controls inherit the application font. Use the Geist Mono token with monospace fallbacks for code, IDs and technical payloads only. Do not introduce a new font family for a page or a chart.
 
-設定保存後讀回伺服器結果，版本衝突不得靜默覆寫；API金鑰僅顯示設定狀態。模型連線與工具能力分開驗證。Chat必須維持串流、停止、歷史、工具紀錄、錯誤／部分结果的可信狀態，不以視覺還原犧牲行為。
+Default scale: body and controls 14px; secondary labels 12px; page titles 24px/32px on desktop and 20px/28px on mobile; section headings 16px/24px. Use weight and spacing to express hierarchy instead of accumulating font sizes or faint explanatory text. PDF documents retain their separately bundled CJK font and license; browser font rules do not replace PDF font registration.
 
-驗收採相同viewport對照原登入截圖及抽離版，並檢查1440px／390px、light/dark、導覽層次、設定及Chat。原專案只唯讀取得公開登入畫面；不提交客戶畫面或資料。截圖比較與幾何斷言不等於完整像素一致性或無障礙認證；目前不作此宣稱。
+## Date and time filters
 
-## 共用分析與報告
+Reuse the shared analytics range picker. Its sizing follows Digiwin's existing TimeRangePicker:
 
-保留「SenseL」「事件概覽」「報告下載」名稱與原介面層級。Analytics擁有範圍／來源切換、指標卡、趨勢、分類及事件列表；報告重用同一OverviewDashboard顯示保存快照。Reports維持建立表單→報告清單→快照預覽／下載，PDF沿用來源A4封面、頁尾與向量摘要。平台設定沿用既有設定表單格線與變更紀錄列表。各套件擁有自身樣式，不把圖表或PDF規則塞入ui全域CSS。
+- Compact trigger with the selected preset label, or a concise custom range; keep the text within 256px.
+- Popover width up to 512px and no wider than viewport minus 32px.
+- Four preset columns and two date/time columns on desktop; two preset columns and one date/time column on mobile.
+- Date/time inputs have a 36px height. Preserve accessible labels, keyboard focus and viewport containment.
 
-合成資料、未知數字、部分涵蓋、回傳清單與完整事件數必須清楚區分；來源離線不得讓舊報告下載失效。日期標明UTC輸入與實際顯示時區；保存快照不隨平台時區設定變動。
+Keep the selected interval and relevant timezone clear. Range validation and query semantics remain explicit; changing the presentation does not change stored UTC values or maximum supported duration.
+
+## Concise UI copy
+
+Prefer a useful label or control over an explanatory paragraph. Do not automatically add a gray subtitle under every heading, field or chart. Remove statements that repeat the title or explain implementation details without helping the user decide what to do.
+
+| Information | Presentation |
+| --- | --- |
+| Field name, unit or necessary timezone | A concise label near the relevant control or chart |
+| Validation error or failed action | Visible, actionable feedback |
+| Synthetic data, incomplete coverage or unknown outcome | Visible status near the affected result |
+| Optional methodology or technical detail | A labeled, keyboard-accessible disclosure or developer documentation |
+| Repeated description of an obvious action | Omit it |
+
+For example, a chart does not need the permanent sentence `事件量 · UTC · 缺值保留斷點，不補為零。` below it. Keep necessary unit/timezone context concise, and place gap-handling detail with optional chart data. Missing values must still remain gaps; never convert them to zero to simplify the display.
+
+This preference does not authorize hiding important state. Keep partial analysis, source errors, synthetic data and mail delivery uncertainty understandable. Provider acceptance is not confirmed delivery; unknown mail outcomes must not appear successful or trigger automatic resends.
+
+UI labels currently remain Traditional Chinese. English documentation and coding-agent skills do not imply a product-language change.
+
+## Components and style ownership
+
+Reuse existing PageHeader, form controls, dialogs, tables and state components. Each package owns its component styles: UI primitives and frames in `@sensel/ui`, Chat in `@sensel/chat`, charts and filters in `@sensel/analytics`, report presentation and exports in `@sensel/reports`.
+
+The UI stylesheet aggregates focused files. Remove obsolete rules instead of appending overrides. Customer queries, data authorization and domain-specific report schemas stay in customer code; a visual change must not bind shared components to SOC, Nginx or PCAP data models.
+
+Use current light/dark color tokens. Maintain visible focus, readable contrast, associated input labels and truthful empty/loading/error states. Do not reduce opacity or remove labels merely to make a form look cleaner.
+
+## Verification
+
+For a shared layout change, compare overview, reports and every settings page at the same viewport. Use 1440px and a wider desktop viewport such as 1920px to expose max-width differences, plus 390px for mobile. Check actual content bounds, not only declared CSS. Inspect mobile drawers, long values, charts and open filter popovers.
+
+Exercise interactions affected by the change, including keyboard operation and range validation. Use synthetic fixtures. Record what was checked, and distinguish screenshot review from behavior tests or a full accessibility audit.
+
+## Design provenance and customer adaptation
+
+The login, sidebar, basic controls and Chat were adapted from the Digiwin UI. Source provenance is tracked in the base package extraction manifests. This contract adds the user's shared-width, typography and concise-copy preferences; it does not require access to the original customer repo when building a new project.
+
+A generated project's copy of this file is a starting contract. Document customer-specific changes here and keep their scope explicit. Use `sensel-frontend` when implementing pages and `sensel-ui-review` when checking them; both read this file rather than duplicating its numeric design values.

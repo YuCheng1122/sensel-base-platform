@@ -1,11 +1,12 @@
 # @sensel/analytics
 
-Reusable event overview and the charts it actually uses. The package preserves the source overview's bounded 1600px content, heading/filters, equal metric cards, 256px trend, horizontal category bars, and shared event-list destination. It does not include vendor cards, SOC severity rules, investigation, correlation, or tuning workflows.
+Reusable event overview and the charts it actually uses. The package preserves the source overview's heading/filter hierarchy, equal metric cards, 256px trend, horizontal category bars, and shared event-list destination. Its page now uses the shared `@sensel/ui` `.sensel-page` container: a centered 1280px maximum including 24px desktop or 16px mobile padding, matching reports and settings. It does not include vendor cards, SOC severity rules, investigation, correlation, or tuning workflows.
 
 ## Interactive overview
 
 ```tsx
 import { EventOverview, type OverviewAdapter } from '@sensel/analytics';
+import '@sensel/ui/styles.css';
 import '@sensel/analytics/styles.css';
 
 const adapter: OverviewAdapter = {
@@ -28,7 +29,7 @@ const adapter: OverviewAdapter = {
 
 Keep the adapter reference stable. The customer supplies transport, credentials and source authorization; the shared package never imports a Prisma client, Elasticsearch adapter, customer alias or server module. Source choices are loaded first. Only advertised source IDs can be queried; `all` is available only if the provider explicitly advertises it. An empty source list and a source-load failure are distinct states. Scope changes abort old work and ignore late results; failed requests never appear as zero events.
 
-`initialQuery` and `title` are optional. Presets resolve to absolute timestamps once on selection. Custom inputs explicitly use UTC, while display uses `timeZone`; the range is `[from,to)`, positive and at most90days. Root composition can initialize defaults from project settings.
+`initialQuery` and `title` are optional. Presets resolve to absolute timestamps once on selection. Custom inputs explicitly use UTC, while display uses `timeZone`; the range is `[from,to)`, positive and at most 90 days. Root composition can initialize defaults from project settings.
 
 ## Snapshot/chart reuse
 
@@ -38,7 +39,7 @@ Also exported and consumed by the overview: `MetricCards`, `TrendChart`, `Catego
 
 ## Data contract and completeness
 
-Import shared DTOs from **`@sensel/analytics/contracts`**, a pure TypeScript entry without React, chart or browser imports. `OverviewData.version` is1. The backend and report snapshot use the same contract.
+Import shared DTOs from **`@sensel/analytics/contracts`**, a pure TypeScript entry without React, chart or browser imports. `OverviewData.version` is 1. The backend and report snapshot use the same contract.
 
 - `dataset.kind` is `synthetic` or `customer`; synthetic data is visibly labeled.
 - `coverage.status` describes aggregate coverage: `complete`, `partial`, or `sampled`.

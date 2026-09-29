@@ -58,9 +58,7 @@ export function SettingsAudit({ revision }: { revision: number }) {
           更新紀錄
         </Button>
       </div>
-      <p className="muted">
-        顯示最近 50 筆平台設定變更。帳號與模型操作不包含在此紀錄中。
-      </p>
+      <p className="muted">顯示最近 50 筆平台設定變更。</p>
       {error ? (
         <Notice error>{error}</Notice>
       ) : loading ? (

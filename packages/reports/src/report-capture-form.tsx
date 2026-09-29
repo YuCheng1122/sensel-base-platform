@@ -105,9 +105,7 @@ export function ReportCaptureForm({
             />
           </Field>
         </fieldset>
-        <p className="muted">
-          建立時擷取並保存固定內容。之後來源變動不會重算這份報告；需更新內容時請建立新快照。
-        </p>
+        <p className="muted">報告保存建立當下的資料；更新內容請建立新報告。</p>
         {!sources.length && (
           <Notice error>目前沒有可用資料來源，無法建立報告。</Notice>
         )}

@@ -1,9 +1,9 @@
-# ADR 0001：獨立客戶專案與共用核心
+# ADR 0001: Independent Customer Projects and Shared Core
 
-狀態：採用。
+Status: accepted.
 
-需要支援不同客戶的SOC、Nginx及未來PCAP分析。採用有版本的共用套件，加上一次性初始化範本；各客戶獨立repo、資料庫與部署。
+The platform must support different customers and domains, including SOC, Nginx and future PCAP analysis. Use versioned shared packages plus a one-time initialization template; every customer owns an independent repository, database and deployment.
 
-不採「全部客戶邏輯放平台並以customer條件分支開關」，因為不同資料領域會讓核心耦合。也不只提供整包複製範本，避免修正無法持續共用。
+Do not place all customer logic in the platform behind customer-specific switches: different data domains would couple the core. A copy-only template is also insufficient because fixes could not remain shared over time.
 
-Prisma／PostgreSQL作第一版預設，ES選配。Agent依工具契約工作，不持有DB帳密。代價是客戶需維護自己的薄adapter與migration，平台需明確發布契約和升級指南。
+Prisma/PostgreSQL is the initial default; Elasticsearch is optional. Agent uses tool contracts and holds no database credentials. The tradeoff is that customers maintain thin adapters and migrations, while the platform must publish clear contracts and upgrade instructions.

@@ -4,13 +4,14 @@ Source-derived report capture, saved report library, immutable preview and JSON/
 
 ```tsx
 import { ReportsCenter } from "@sensel/reports";
+import "@sensel/ui/styles.css";
 import "@sensel/reports/styles.css";
 import "@sensel/analytics/styles.css";
 
 <ReportsCenter
   adapter={reportsAdapter}
   sources={authorizedSources}
-  defaults={{ title: "期間分析報告", rangeDays: 7, timeZone: "Asia/Taipei" }}
+  defaults={{ title: "Period analysis report", rangeDays: 7, timeZone: "Asia/Taipei" }}
   fontSrc="/fonts/NotoSansCJKtc-Regular.otf"
 />;
 ```
@@ -41,4 +42,6 @@ SOC vendors, severity/status/verdict filters, site/device scopes, event-ID conve
 
 Tests: repository `tests/ui/reports.test.ts` verifies CSV injection handling, null preservation, snapshot fidelity and multi-page Chinese PDF rendering with synthetic data only.
 
-設定或來源尚未就緒時傳入 `captureEnabled={false}`；建立表單會在就緒後才掛載並採用設定預設值，已保存報告的查閱與下載不受影響。
+Pass `captureEnabled={false}` while settings or authorized sources are unavailable. The creation form mounts with the configured defaults once they are ready; viewing and downloading previously saved reports remains available.
+
+The report page uses the shared `.sensel-page` 1280px container and heading scale from `@sensel/ui`, matching overview and settings. Browser typography inherits the platform's shared font tokens. PDF typography remains independent: `SenseLReportCJK` embeds the licensed CJK font for exported documents and is not replaced with browser font variables.

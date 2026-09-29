@@ -116,7 +116,7 @@ export function EventOverview({
     return () => abort.abort();
   }, [adapter, query, sourcesReady, sources, sourcesError]);
   return (
-    <div className="event-overview">
+    <div className="sensel-page event-overview">
       <header className="overview-page-header">
         <div>
           <h1>

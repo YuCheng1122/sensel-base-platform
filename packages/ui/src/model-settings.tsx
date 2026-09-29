@@ -93,7 +93,7 @@ export function ModelSettings() {
     }
   }
   return (
-    <>
+    <div className="sensel-page">
       <PageHeader title="模型設定" />
       <div className="stack">
         {error && <Notice error>{error}</Notice>}
@@ -124,6 +124,6 @@ export function ModelSettings() {
           />
         </div>
       </div>
-    </>
+    </div>
   );
 }

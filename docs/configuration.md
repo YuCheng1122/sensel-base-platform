@@ -1,26 +1,26 @@
-# 設定參考
+# Configuration Reference
 
-Web 範例為 `templates/project/web/.env.example`；Compose 範例為 `deploy/.env.example`。秘密沒有可用預設值。變更 runtime 環境設定後需重啟相關服務；UI 模型設定依保存版本在新請求生效。
+Web examples are in `templates/project/web/.env.example`; Compose examples are in `deploy/.env.example`. Secrets have no usable defaults. Restart affected services after runtime environment changes; UI model settings apply by saved version to new requests.
 
-| 變數 | 讀取者 | 說明 |
+| Variable | Reader | Meaning |
 | --- | --- | --- |
-| DATABASE_URL | Web／Prisma | 必填 PostgreSQL URL，屬秘密；Agent 不需要 |
-| SETTINGS_ENCRYPTION_KEY | Web | 必填32-byte base64，加密保存模型及郵件金鑰，亦用於郵件內容指紋；與 DB 一起妥善備份，不能任意替換 |
-| AGENT_SHARED_SECRET | Web／Agent | 必填至少32字元，跨服務驗證及 profile 簽署；兩邊一致 |
-| AGENT_URL | Web | Agent 服務位址；程式預設 http://127.0.0.1:8000；設定範例改用 http://127.0.0.1:8001 |
-| BACKEND_URL | Agent 範本 | 客戶工具回連的 Web 位址；預設 http://127.0.0.1:3000 |
-| PUBLIC_APP_URL | Web | 可信任瀏覽器 origin；正式部署必填，含scheme/host/port、不含path；不信任任意 forwarded host |
-| MODEL_ALLOWED_ENDPOINTS | Web | 逗號分隔的精確模型baseURL allowlist；OpenAI-compatible自訂端點必須符合；內網端點由部署者明確加入 |
-| SECURE_COOKIES | Web | 預設true；只在本地HTTP測試設false |
-| APP_ENV | Web／Agent | production／development／test；明確非正式模式才能啟用fake |
-| MAIL_ALLOW_FAKE | Web | 預設false；另須APP_ENV=test或development才允許合成郵件，不沿用AGENT_ALLOW_FAKE |
-| AGENT_ALLOW_FAKE | Web／Agent | 預設false，僅合成開發測試；production禁止 |
-| ADMIN_EMAIL／ADMIN_PASSWORD | bootstrap | 初次建立管理員用；密碼12–72字元，不是每次啟動的必要設定 |
-| BASE_URL | browser tests | 測試Web origin，預設 http://127.0.0.1:3210 |
-| CORE_TEST_DATABASE_URL | DB tests | 明確opt-in的隔離localhost PostgreSQL，資料庫名以_audit結尾 |
+| DATABASE_URL | Web/Prisma | Required secret PostgreSQL URL; Agent does not need it |
+| SETTINGS_ENCRYPTION_KEY | Web | Required 32-byte base64 key for model/mail encryption and mail fingerprints; back it up with the database and never replace it casually |
+| AGENT_SHARED_SECRET | Web/Agent | Required, at least 32 characters; service authentication and profile signing; identical on both sides |
+| AGENT_URL | Web | Agent address; code default is http://127.0.0.1:8000, while examples use http://127.0.0.1:8001 |
+| BACKEND_URL | Agent template | Web address for customer tool callbacks; defaults to http://127.0.0.1:3000 |
+| PUBLIC_APP_URL | Web | Trusted browser origin; required in production, with scheme/host/port and no path; arbitrary forwarded hosts are not trusted |
+| MODEL_ALLOWED_ENDPOINTS | Web | Comma-separated exact model base URL allowlist; custom OpenAI-compatible endpoints must match; operators explicitly add internal endpoints |
+| SECURE_COOKIES | Web | Defaults to true; use false only for local HTTP tests |
+| APP_ENV | Web/Agent | production/development/test; fake providers require explicit development or test |
+| MAIL_ALLOW_FAKE | Web | Defaults to false; also requires APP_ENV=test/development; independent of AGENT_ALLOW_FAKE |
+| AGENT_ALLOW_FAKE | Web/Agent | Defaults to false; synthetic development/testing only; prohibited in production |
+| ADMIN_EMAIL / ADMIN_PASSWORD | Bootstrap | Initial administrator creation; password length 12–72 characters; not required at every service start |
+| BASE_URL | Browser tests | Test Web origin, default http://127.0.0.1:3210 |
+| CORE_TEST_DATABASE_URL | Database tests | Explicit opt-in isolated localhost PostgreSQL database with a name ending in _audit |
 
-Anthropic/Gemini 使用各自預設官方端點；自訂baseURL仍須allowlist。未呼叫真provider的合成測試不能證明正式端點可用。
+Anthropic/Gemini use their default official endpoints; custom base URLs still require the allowlist. Synthetic tests do not establish real provider availability.
 
-範本不要求 ES_HOST、REDIS_URL 或原 Digiwin 的環境變數。新增選配儲存時由客戶明列用途與啟停需求。
+The template does not require `ES_HOST`, `REDIS_URL` or original Digiwin environment variables. Customers must document the purpose and startup conditions of optional storage integrations.
 
-Resend API key、寄件者、啟停與版本由管理員在郵件設定保存至資料庫；API只回傳hasApiKey。留空金鑰保留原值，不表示刪除。Resend endpoint固定，不使用MODEL_ALLOWED_ENDPOINTS，也沒有SMTP環境設定。詳見 [郵件服務](mail-service.md)。
+Administrators save Resend API keys, sender identity, enabled state and version in the database. Read APIs expose only `hasApiKey`. Leaving the key blank preserves it; it does not delete it. Resend has a fixed endpoint, does not use `MODEL_ALLOWED_ENDPOINTS`, and has no SMTP environment configuration. See [mail service](mail-service.md).

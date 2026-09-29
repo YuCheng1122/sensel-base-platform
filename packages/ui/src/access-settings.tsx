@@ -88,7 +88,7 @@ export function AccessSettings({ kind }: { kind: "users" | "groups" }) {
   );
   const user = editing && "email" in editing ? editing : null;
   return (
-    <>
+    <div className="sensel-page">
       <PageHeader title={kind === "users" ? "使用者管理" : "群組管理"}>
         <Button
           disabled={busy || loading || !ready}
@@ -273,6 +273,6 @@ export function AccessSettings({ kind }: { kind: "users" | "groups" }) {
           </SettingsDialog>
         </div>
       </div>
-    </>
+    </div>
   );
 }

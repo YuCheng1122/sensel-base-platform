@@ -89,7 +89,7 @@ export function PlatformSettings({
     }
   }
   return (
-    <>
+    <div className="sensel-page">
       <PageHeader title="平台設定">
         <Button variant="secondary" disabled={busy} onClick={() => void load()}>
           重新載入設定
@@ -147,8 +147,7 @@ export function PlatformSettings({
               />
             </Field>
             <p className="muted settings-form-wide">
-              時區使用 IANA 名稱，例如 Asia/Taipei 或
-              UTC。此設定影響顯示；查詢起訖以明確的 UTC 時間保存。
+              顯示時區，例如 Asia/Taipei 或 UTC。
             </p>
             <div className="row settings-form-wide">
               <Button disabled={busy}>
@@ -160,6 +159,6 @@ export function PlatformSettings({
         )}
         <SettingsAudit revision={auditRevision} />
       </div>
-    </>
+    </div>
   );
 }

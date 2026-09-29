@@ -1,0 +1,4 @@
+interface:
+  display_name: "SenseL UI Review"
+  short_description: "Review SenseL layout, typography, and responsive UI"
+  default_prompt: "Use $sensel-ui-review to check these pages against DESIGN.md and report verified findings."

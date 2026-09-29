@@ -1,9 +1,3 @@
-.reports-center {
-  display: grid;
-  gap: 16px;
-  max-width: 1440px;
-  margin: 0 auto;
-}
 .report-capture,
 .report-library,
 .report-preview {
@@ -12,7 +6,6 @@
 }
 .reports-center h2 {
   margin: 0 0 16px;
-  font-size: 18px;
 }
 .report-capture-fields {
   display: grid;

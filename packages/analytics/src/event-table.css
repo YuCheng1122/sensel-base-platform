@@ -31,7 +31,7 @@
 .overview-event-table td:nth-child(2) > small {
   display: block;
   margin-top: 4px;
-  font-family: var(--font-geist-mono), monospace;
+  font-family: var(--font-mono);
   font-size: 11px;
 }
 .overview-event-table time {

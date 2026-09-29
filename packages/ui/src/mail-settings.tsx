@@ -30,7 +30,7 @@ export function MailServiceSettings({ actorId }: { actorId: string }) {
     return () => abort.abort();
   }, [revision, actorId]);
   return (
-    <div className="mail-settings">
+    <div className="sensel-page mail-settings">
       <PageHeader title="寄信服務" />
       {loading ? (
         <p role="status">載入寄信服務設定…</p>
@@ -122,7 +122,7 @@ function MailEditor({
           <h2>
             共用寄件服務 · {saved.provider === "fake" ? "合成測試" : "Resend"}
           </h2>
-          <p>金鑰加密保存；空白保留目前金鑰。保存設定不會寄出測試信。</p>
+          <p>保存設定不會寄出測試信。</p>
         </header>
         <dl className="mail-config-summary">
           <div>
@@ -138,10 +138,9 @@ function MailEditor({
             </dd>
           </div>
         </dl>
-        <p className="mail-summary">
-          Resend
-          寄件者需使用已驗證的網域；此介面不代辦網域驗證。合成供應商僅在部署明確開放的開發／測試環境提供。
-        </p>
+        {provider === "resend" && (
+          <p className="mail-summary">Resend 寄件者需使用已驗證的網域。</p>
+        )}
         <form
           onSubmit={(event) => {
             event.preventDefault();

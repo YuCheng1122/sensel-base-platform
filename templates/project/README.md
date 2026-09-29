@@ -1,19 +1,19 @@
-# 客戶分析專案
+# Customer Analysis Project
 
-由SenseL Base Platform初始化。`web/`是Next.js組合層及Prisma儲存；`agent/`是Python工具／prompt組合層。平台共用功能從npm套件及Python wheel安裝，不從原平台路徑import。
+Initialized from SenseL Base Platform. `web/` contains the Next.js composition layer and Prisma persistence; `agent/` contains project tools and prompts. Install shared capabilities from npm packages and the Python wheel rather than importing from the platform repository.
 
-在web/執行npm install、npm run db:generate。複製web/.env.example，設定獨立PostgreSQL及秘密；載入必要環境後執行db:migrate、db:bootstrap、dev。另在Python venv安裝對應sensel-agent-core wheel，回到本repo根目錄、將agent/.env.example列出的必要值載入process environment後執行`uvicorn main:app --app-dir agent --port 8001`。
+In `web/`, run `npm install` and `npm run db:generate`. Copy `web/.env.example` and configure an independent PostgreSQL database and secrets. Load the required environment variables, then run `npm run db:migrate`, `npm run db:bootstrap`, and `npm run dev`. Install the matching `sensel-agent-core` wheel in a Python virtual environment. From this repository's root, load the required values listed in `agent/.env.example` into the process environment and run `uvicorn main:app --app-dir agent --port 8001`.
 
-PUBLIC_APP_URL應等於瀏覽器origin，AGENT_URL與BACKEND_URL互指服務，AGENT_SHARED_SECRET兩端一致。正式關閉fake，啟用Secure cookie／HTTPS。Nginx或PCAP schema、查詢、頁面與工具自行加在本repo；Elasticsearch不是必要服務。
+Set `PUBLIC_APP_URL` to the browser origin. Set `AGENT_URL` and `BACKEND_URL` to the corresponding services, and use the same `AGENT_SHARED_SECRET` in both. Disable fake modes in production and enable secure cookies and HTTPS. Add Nginx or PCAP schemas, queries, pages and tools in this repository; Elasticsearch is optional.
 
-客戶需補充自己的業務需求、工具清單、資料保存及部署方式。不要保留真實資料在Git。
+Document your project's business requirements, tools, retention policy and deployment process. Never commit real customer data or secrets.
 
-平台的Dockerfile使用平台workspace作build context，不會直接複製到這個repo；客戶需建立自己的容器與部署設定。
+The platform Dockerfile uses the platform workspace as its build context and is not copied into this repository. Provide project-specific container and deployment configuration.
 
-共用功能包含事件概覽、報告下載（固定快照、PDF／CSV／JSON）、平台設定與變更紀錄。六個npm套件為 `@sensel/ui`、`@sensel/chat`、`@sensel/analytics`、`@sensel/reports`、`@sensel/mail`、`@sensel/server`。保留SenseL品牌與原導覽，也可配置客戶名稱及圖片。
+Shared features include event overviews, report downloads (immutable snapshots, PDF, CSV and JSON), platform settings and settings history. The six npm packages are `@sensel/ui`, `@sensel/chat`, `@sensel/analytics`, `@sensel/reports`, `@sensel/mail`, and `@sensel/server`. The template retains the SenseL brand and navigation; customer names and images are configurable.
 
-`web/src/server/synthetic-analysis-provider.ts` 是明確的示範資料，正式接案時以自己的 `AnalysisProvider` 替換，在 `web/src/server/core.ts` 注入。依使用者id／role／groupIds限制來源與查詢，資料時間使用UTC瞬間；分類使用穩定ID，未知統計用null。Nginx可只查自己Prisma表；PCAP解析及檔案保存另由專案處理。
+`web/src/server/synthetic-analysis-provider.ts` supplies explicitly synthetic demonstration data. Replace it with your own `AnalysisProvider` and inject it in `web/src/server/core.ts`. Restrict sources and queries using the actor's `id`, `role` and `groupIds`. Represent event times as UTC instants, categories with stable IDs, and unknown statistics with `null`. A Nginx project can query only its own Prisma tables; PCAP parsing and file storage remain project-owned.
 
-報告建立只查詢一次，保存完整快照，之後預覽與匯出不重新查詢來源。新提供者必須描述完整／部分／抽樣覆蓋，不可把清單前50筆當成全量。`public/fonts/`包含中文PDF字型與OFL授權，部署時一起保留。舊報告的時區及內容不跟著平台預設變更。
+Report creation queries the provider once and persists the complete snapshot. Subsequent previews and exports do not query the source again. Providers must identify complete, partial or sampled coverage; the first 50 returned rows are not the full dataset. Keep the Chinese PDF font and its OFL license in `web/public/fonts/` when deploying. Saved report content and display timezones do not change when platform defaults change.
 
-郵件設定由管理員保存，Resend金鑰以SETTINGS_ENCRYPTION_KEY加密。`@sensel/server`的sendConfiguredMail提供持久防重與授權，`@sensel/mail`提供可替換transport；範本目前要求管理員actor。same UUID重放只回原紀錄，accepted不代表已送達，unknown不自動重寄。測試須MAIL_ALLOW_FAKE=true且APP_ENV=test／development，正式關閉fake。SMTP、webhook、排程與訂閱未內建；客戶通知／報告流程需明確設計並注入。
+Administrators manage mail settings. Resend credentials are encrypted using `SETTINGS_ENCRYPTION_KEY`. `sendConfiguredMail` from `@sensel/server` provides durable deduplication and authorization, while `@sensel/mail` supplies a replaceable transport. The template currently requires an administrator actor. Replaying the same UUID returns the existing receipt; `accepted` does not mean delivered, and `unknown` outcomes are never automatically resent. Fake testing requires both `MAIL_ALLOW_FAKE=true` and `APP_ENV=test` or `APP_ENV=development`; disable fake mode in production. SMTP, webhooks, scheduling and subscriptions are not built in. Design and inject customer notification and report workflows explicitly.

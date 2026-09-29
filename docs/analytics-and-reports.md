@@ -1,53 +1,55 @@
-# 共用事件概覽、報告下載與設定
+# Shared Event Overview, Reports and Settings
 
-SenseL 的導覽保留「事件概覽」「報告下載」，供不同客戶專案沿用。共用的是呈現、查詢契約、快照儲存與匯出機制；客戶提供實際資料。平台不要求 Elasticsearch，也不內含 Nginx／PCAP 分析器。
+SenseL retains the navigation labels “事件概覽” and “報告下載” for customer reuse. Shared code owns presentation, query contracts, snapshot storage and exports; customers provide the actual data. Neither Elasticsearch nor an Nginx/PCAP parser is required or included.
 
-## 套件及檔案責任
+## Package and File Responsibilities
 
-| 位置 | 責任 |
+| Location | Responsibility |
 | --- | --- |
-| `packages/analytics/src/contracts.ts` | 來源、時間範圍、指標、趨勢、分類、事件與完整性契約 |
-| `packages/analytics/src/event-overview.tsx` | 事件概覽、合法來源選擇、載入／錯誤／空資料與刷新 |
-| `packages/analytics/src/overview-dashboard.tsx` | 共用指標卡、趨勢圖、分類圖與事件表格；可呈現報告快照 |
-| `packages/reports/src/contracts.ts` | 不可變報告快照及列表／建立／讀取／刪除介面 |
-| `packages/reports/src/reports-center.tsx` | 報告下載頁、建立表單、搜尋、分頁、預覽 |
-| `packages/reports/src/snapshot-pdf.tsx` | 中文 PDF、向量摘要圖、明細與頁首頁尾 |
-| `packages/reports/src/report-exports.ts` | CSV／JSON 與下載檔名；CSV 防止儲存格公式執行 |
-| `packages/ui/src/platform-settings.tsx` | 平台名稱、時區、報告標題及預設查詢天數 |
-| `packages/ui/src/settings-audit.tsx` | 最近50筆平台設定變更；API另支援游標分頁 |
-| `packages/server/src/feature-handler.ts` | 登入／權限下的概覽、報告、設定 API |
-| `templates/project/web/src/server/prisma-feature-store.ts` | 客戶擁有的 PostgreSQL 持久層與設定交易 |
-| `templates/project/web/src/server/synthetic-analysis-provider.ts` | 明確標示的合成示範資料；客戶接案時替換此提供者 |
-| `templates/project/web/src/app/feature-adapters.ts` | 範本 UI 的 HTTP 組合層 |
+| `packages/analytics/src/contracts.ts` | Sources, ranges, metrics, trends, categories, events and coverage |
+| `packages/analytics/src/event-overview.tsx` | Overview, authorized source selection, loading/error/empty states and refresh |
+| `packages/analytics/src/overview-dashboard.tsx` | Shared metric/trend/category/event presentation, including saved reports |
+| `packages/reports/src/contracts.ts` | Immutable snapshot and list/create/get/delete interfaces |
+| `packages/reports/src/reports-center.tsx` | Capture form, saved list, search, paging and preview |
+| `packages/reports/src/snapshot-pdf.tsx` | Chinese PDF, vector summary, details and page chrome |
+| `packages/reports/src/report-exports.ts` | CSV/JSON and filenames; neutralizes spreadsheet formula prefixes |
+| `packages/ui/src/platform-settings.tsx` | Platform name, time zone, report title and default range |
+| `packages/ui/src/settings-audit.tsx` | Latest 50 platform setting changes; API also supports cursor paging |
+| `packages/server/src/feature-handler.ts` | Authorized overview/report/settings APIs |
+| `templates/project/web/src/server/prisma-feature-store.ts` | Customer-owned PostgreSQL persistence and settings transactions |
+| `templates/project/web/src/server/synthetic-analysis-provider.ts` | Explicit synthetic sample, replaced for customer work |
+| `templates/project/web/src/app/feature-adapters.ts` | Template HTTP composition for UI |
 
-原版型與互動層級依來源程式抽離，沒有保留 SOC 專用欄位或假設。兩個套件的 README 與 extraction-manifest.json 記錄來源與差異。
+Layout and interaction hierarchy come from the source without SOC-specific fields or assumptions. Package READMEs and extraction-manifest.json record sources and differences.
 
-## 客戶如何接入
+## Customer Integration
 
-在客戶的 `web/src/server/` 實作 `AnalysisProvider`，透過 `coreConfig.analysisProvider` 注入。提供者收到的 actor 僅有 `id`、`role`、`groupIds`；必須用這些身分條件限制可讀資料，不能把 UI 隱藏選單當授權。
+Implement `AnalysisProvider` in customer `web/src/server/` and inject it through `coreConfig.analysisProvider`. Actor contains only `id`, `role`, `groupIds`; use these to restrict data access. Hiding a UI menu is not authorization.
 
-- `sources(actor)` 回傳這位使用者可讀的來源 ID／名稱。`all` 不是強制來源，UI 不自行擴大來源範圍。
-- `collect({actor, query})` 依 ISO 時間 `from <= time < to` 和指定來源取資料，回傳 `OverviewData`。後端驗證來源、範圍、數值、類別 ID、筆數及內容大小。
-- Nginx 專案可在自己的 Prisma schema 放請求資料，提供狀態分類、請求趨勢等聚合；PCAP 專案可提供解析結果／協定聚合，解析器、檔案與長任務仍由客戶專案擁有。
-- `events[].category` 對應 `categories[].id`，顯示文字放 `label`。未知值用 `null`，不可用0假裝已確認沒有資料。
-- `coverage` 區分完整聚合、部分、抽樣；回傳事件清單可比總數少。清單搜尋／分類只篩選已回傳事件，不代表後端全量搜尋。
+- `sources(actor)` returns authorized source IDs/labels. `all` is not mandatory, and UI does not broaden scope automatically.
+- `collect({actor, query})` queries ISO instants with `from <= time < to` and the requested source, returning `OverviewData`. Backend validates source, range, values, category IDs, counts and payload size.
+- Nginx projects may aggregate requests from customer Prisma tables. PCAP projects may aggregate parsed results/protocols, but parsers, files and durable jobs stay customer-owned.
+- `events[].category` references `categories[].id`; display text uses label. Use null for unknown values, never zero to imply confirmed absence.
+- Coverage distinguishes complete, partial and sampled aggregation. The returned event list may be smaller than the total. Search/category filtering affects only returned events, not the full backend dataset.
 
-參考可運行的合成提供者及 [Analytics 套件](../packages/analytics/README.md)。合成資料只有服務啟動日前14個UTC日，不是客戶真實事件，畫面、快照與PDF皆標示。
+See the runnable synthetic provider and [analytics package](../packages/analytics/README.md). The sample covers only the 14 UTC days preceding service startup. UI, snapshots and PDFs explicitly identify it as synthetic, not customer data.
 
-## 報告保證與限制
+## Report Guarantees and Limits
 
-建立報告只採集一次，將查詢條件、資料來源、完整性、顯示時區和完整快照保存至 PostgreSQL。之後讀取、預覽、JSON／CSV／PDF 都使用保存內容，不重新查詢資料來源。更新資料需建立另一份快照。來源離線或無法載入平台預設時，既有報告仍可瀏覽與下載，僅停止建立新報告。
+Creating a report collects once and saves query conditions, source, coverage, display time zone and complete snapshot in PostgreSQL. Reads, previews and JSON/CSV/PDF exports use saved content without querying the source again. New data requires another snapshot. Existing reports remain readable/downloadable if the source or platform defaults cannot load; only new capture is disabled.
 
-每次下載先重新檢查目前登入及報告擁有權。管理員不自動擁有其他使用者報告。PDF採本機Noto中文字型，連同OFL授權分發；長文與跨頁保留完整已保存明細，分類摘要圖最多顯示8項且另有完整分類表。CSV明確為快照內容，不是原始資料全量匯出。
+Each download rechecks login and report ownership. Administrators do not automatically own other users' reports. PDF uses a local Noto Chinese font distributed with OFL licensing. Long text and pagination preserve all saved details; category summaries show at most eight items with a full category table below. CSV exports snapshot content, not all raw source data.
 
-查詢最多90天，回傳事件最多1000筆、快照資料最多5MiB；提供者須自行限制查詢成本，並正確描述截斷／抽樣。此版本採同步、受限大小的報告，不是背景排程或大型批次匯出工作引擎。
+Queries span at most 90 days, return at most 1000 events and produce at most 5 MiB of snapshot data. Providers must bound query cost and describe truncation/sampling honestly. Reports are synchronous and bounded, not a background scheduler or bulk export engine.
 
-目前平台沒有 SOC 報告修訂／敘事編輯、報告自動寄送、排程訂閱、舊資料遷移或 PCAP 解析服務。共用 [郵件runtime](mail-service.md) 可供客戶報告流程接入；不會在建立快照時自動寄送，也未內建SMTP、附件或訂閱queue。
+SOC report revisions/narrative editing, automatic report mail, subscriptions, legacy data migration and PCAP parsing are not included. Customers may connect the shared [mail runtime](mail-service.md), but snapshot creation does not send mail and SMTP, attachments and subscription queues are not built in.
 
-## 設定與部署
+## Settings and Deployment
 
-一般登入者可讀安全的共用設定，只有管理員可寫入。儲存攜帶 `expectedVersion`；資料庫交易內保存新版本與 before／after 稽核。並行同版本寫入只允許一次成功，其餘回409。這一頁只顯示平台設定稽核，沒有假裝包含帳號／模型所有操作。
+Authenticated users can read safe shared settings; only administrators can update them. Writes carry expectedVersion and save the next version with before/after audit data in one transaction. Concurrent writes at the same version allow one success; others return 409. This page displays platform settings audit only, not every account/model operation.
 
-新增 migration `202609280002_feature_modules` 只新增平台設定、設定變更及報告快照資料表。升級既有實例先備份，再以同版本migration映像執行 `npm run db:migrate`，最後更換Web映像；不使用 reset／重新bootstrap 覆寫帳號。既有Agent不須為這批功能更新。
+Migration `202609280002_feature_modules` adds platform settings, audit and report tables. Back up an existing instance, run `npm run db:migrate` using the matching migration image, then replace Web. Do not reset or bootstrap over accounts. These features do not require Agent changes.
 
-新客戶專案需安裝6個相容版本的npm套件，載入 `@sensel/ui/styles.css`、`@sensel/chat/styles.css`、`@sensel/analytics/styles.css`、`@sensel/reports/styles.css`，並保留 `public/fonts/` 的字型及授權；產生器已包含這些步驟。
+New customer projects install six compatible npm packages and load `@sensel/ui/styles.css`, `@sensel/chat/styles.css`, `@sensel/analytics/styles.css` and `@sensel/reports/styles.css`. Preserve `public/fonts/` and its license; the generator includes these assets. Shared UI dimensions and typography are defined in [DESIGN.md](../DESIGN.md), not separate chart-specific page widths.
+
+Overview, reports and settings use the shared 1280px page frame and shared Sans/Mono font tokens. The source-style time-range popover is bounded to 512px and the viewport, with presets and custom UTC inputs. Keep these values authoritative in [DESIGN.md](../DESIGN.md); [frontend skills](frontend-skills.md) provide portable implementation/review guidance. PDF retains its separately embedded CJK font.

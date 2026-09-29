@@ -1,8 +1,8 @@
 # SenseL Documentation
 
-[專案首頁](../README.md) · [貢獻指南](../CONTRIBUTING.md) · [Coding Agent 指南](../AGENTS.md)
+[Project home](../README.md) · [Contributing](../CONTRIBUTING.md) · [Coding agent guide](../AGENTS.md)
 
-從安裝、使用到客戶擴充與部署，這裡集中各階段的文件入口。
+Documentation for installation, daily use, customer extensions and operations.
 
 ## Table of Contents
 
@@ -14,47 +14,45 @@
 
 ## Getting Started
 
-第一次接觸 SenseL，建議依序閱讀：
+1. [About the platform](../README.md#about-sensel): shared capabilities and customer responsibilities.
+2. [Local development](development.md): dependencies, initialization and Web/Agent startup.
+3. [Configuration](configuration.md): database, keys, service addresses and administrator setup.
+4. [Self-review](self-review.md): inspect pages, code and CI.
 
-1. [認識底座](../README.md#about-sensel)：有哪些共用功能，哪些由客戶自行實作。
-2. [本地開發](development.md)：安裝依賴、初始化與啟動 Web／Agent。
-3. [環境設定](configuration.md)：資料庫、金鑰、服務位址與管理員設定。
-4. [自行驗收](self-review.md)：逐頁操作、檢查程式與查看 CI。
-
-要開始另一個客戶專案，直接看 [建立獨立客戶專案](create-project.md)。
+For another customer, start with [creating an independent project](create-project.md).
 
 ## User Guides
 
-| 我要做什麼 | 閱讀文件 |
+| Task | Guide |
 | --- | --- |
-| 確認登入、帳號、模型及對話功能 | [畫面操作與驗收清單](self-review.md) |
-| 使用事件概覽與報告下載 | [共用分析與報告](analytics-and-reports.md) |
-| 設定寄件服務及查看投遞狀態 | [信件服務](mail-service.md) |
-| 理解 Agent、工具與執行狀態 | [Agent runtime](agent-runtime.md) |
+| Check authentication, accounts, models and conversations | [Manual acceptance checklist](self-review.md) |
+| Use event overview and report downloads | [Analytics and reports](analytics-and-reports.md) |
+| Configure mail and inspect delivery states | [Mail service](mail-service.md) |
+| Understand Agent tools and execution states | [Agent runtime](agent-runtime.md) |
 
 ## Developer Guides
 
-| 主題 | 文件 |
+| Topic | Documents |
 | --- | --- |
-| 共用與客戶責任 | [架構](architecture.md) · [架構決策](decisions/0001-independent-customer-projects.md) |
-| 目錄、檔名與程式組織 | [目錄規範](code-organization.md) · [UI 設計規範](../DESIGN.md) |
-| 客戶擴充 | [新專案指南](create-project.md) · [圖表與報告接入](analytics-and-reports.md) |
-| 資料庫與 HTTP | [資料儲存](data-storage.md) · [API 契約](api-contract.md) |
-| Python 與跨服務協定 | [Python 套件](../python/README.md) · [Runtime v1](../contracts/runtime-v1.md) |
-| 修改與提交 | [貢獻指南](../CONTRIBUTING.md) · [Coding Agent 指南](../AGENTS.md) |
+| Shared/customer ownership | [Architecture](architecture.md) · [Decision record](decisions/0001-independent-customer-projects.md) |
+| Directories, filenames and code | [Code organization](code-organization.md) · [UI design](../DESIGN.md) · [Frontend skills](frontend-skills.md) |
+| Customer extensions | [Create a project](create-project.md) · [Analytics/report integration](analytics-and-reports.md) |
+| Database and HTTP | [Storage](data-storage.md) · [API contract](api-contract.md) |
+| Python and service protocol | [Python package](../python/README.md) · [Runtime v1](../contracts/runtime-v1.md) |
+| Changes and submissions | [Contributing](../CONTRIBUTING.md) · [Coding agent guide](../AGENTS.md) |
 
 ## Operations
 
-- [部署與回復](deployment.md)：服務組合、HTTPS、備份與回復界線。
-- [CI/CD](ci-cd.md)：自動檢查、映像建置、Release 及部署步驟。
-- [發布](release.md)：套件版本與發布檢查。
-- [升級](upgrading.md)：底座套件、客戶範本與 migration 的更新責任。
+- [Deployment and recovery](deployment.md): services, HTTPS, backups and recovery limits.
+- [CI/CD](ci-cd.md): automated checks, images, releases and deployment commands.
+- [Releases](release.md): package versions and release checks.
+- [Upgrading](upgrading.md): package, customer template and migration responsibilities.
 
 ## Quality and Project Status
 
-- [測試與驗證](testing.md)：隔離環境、後端、Python、瀏覽器與套件驗收。
-- [冗餘程式檢查](dead-code.md)：檢查工具與判讀方式。
-- [搬移與清理清冊](extraction-inventory.md)：已搬能力、保留項目與延後項目。
-- [驗證紀錄](verification.md)：實際測試結果、修正及尚未驗證的界線。
+- [Testing](testing.md): isolated backend, Python, browser and package verification.
+- [Dead-code review](dead-code.md): tools and interpretation.
+- [Extraction inventory](extraction-inventory.md): moved, retained and deferred capabilities.
+- [Verification record](verification.md): executed checks, fixes and unverified boundaries.
 
-文件與程式應一起更新；新增共用能力時，也要同步搬移清冊、測試說明與此索引。
+Update code and documentation together. New shared capabilities also require updates to the extraction inventory, testing instructions and this index.

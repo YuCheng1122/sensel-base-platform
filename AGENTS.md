@@ -25,3 +25,7 @@ Use fake providers and isolated synthetic databases for testing. Do not call liv
 Keep production modules below 400 lines and give them one responsibility. Avoid generic utility buckets, copied implementations, unused abstractions and broad lint suppressions. Dead-code tools report candidates; verify framework routes, tool registrations, scripts and runtime consumers before deletion.
 
 Update the extraction inventory and applicable documents with behavior changes. Do not claim a provider, package install, browser path, migration or deployment is verified without executing the corresponding check. Record unresolved limitations explicitly. Commit only coherent verified work; no push or production promotion unless requested.
+
+## Frontend skills
+
+For frontend implementation, use [sensel-frontend](skills/sensel-frontend/SKILL.md); for visual acceptance, use [sensel-ui-review](skills/sensel-ui-review/SKILL.md). DESIGN.md owns the current shared layout, typography, filter sizing and copy preferences. Skills have one canonical source under skills/ and discovery links for Codex and Claude Code. Keep documentation in English; product UI language is a separate concern.

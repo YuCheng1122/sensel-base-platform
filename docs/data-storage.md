@@ -1,23 +1,23 @@
-# 資料儲存與 Prisma
+# Data Storage and Prisma
 
-Prisma是ORM；PostgreSQL是實際資料庫。每個客戶維護一份schema、一個generated client及一個migration序列。平台server套件只依賴CoreStore介面，具體adapter在範本 `web/src/server/prisma-store.ts`。
+Prisma is the ORM; PostgreSQL is the database. Each customer owns a schema, generated client and migration sequence. The platform server depends only on CoreStore; concrete adapters live in template `web/src/server/prisma-store.ts` and related files.
 
-核心契約包含User、Group、Session、ModelConnection、Chat、ChatMessage、AuditEvent。ChatMessage保存文字、execution ID、狀態及遮蔽後工具trace；Session保存雜湊token而非cookie明文。ModelConnection金鑰以AES-256-GCM保存，API不回傳明文。
+Core contracts include User, Group, Session, ModelConnection, Chat, ChatMessage and AuditEvent. ChatMessage stores content, execution ID, state and redacted tool traces. Sessions store hashed tokens, not plaintext cookies. ModelConnection keys use AES-256-GCM and never return through read APIs as plaintext.
 
-本版群組是身分管理基礎，沒有假設SOC vendor/site scope。客戶必須在業務資料查詢加入自己的資源權限；不能只隱藏前端選單。示範工具回傳目前使用者近期對話數（recentConversationCount，historyLimit=100），不宣稱歷史總數。
+Groups are identity-management primitives, not assumed SOC vendor/site scopes. Customers must enforce resource authorization in business queries; hiding navigation is insufficient. The sample tool returns the current user's bounded recent conversation count (`recentConversationCount`, `historyLimit=100`), not a historical total.
 
-資料庫migration不由套件import或一般服務啟動隱式執行。使用 `npm run db:migrate` 或Compose一次性migrate服務。新的核心schema版本須提供遷移說明，客戶整合後在隔離DB驗證。
+Migrations do not run implicitly when importing a package or starting the application. Use `npm run db:migrate` or Compose's one-shot migration service. New core schema versions need migration instructions, customer integration and isolated-database verification.
 
-原Digiwin的schema及migration未搬入；不得拿新migration覆蓋舊DB。未來接回時，需逐表mapping、歷史資料讀回、加密資料相容與還原演練。
+Original Digiwin schemas and migrations were not copied. Never apply the new migrations over an old database as a replacement. Future integration requires explicit table mapping, historical reads, encryption compatibility and recovery testing.
 
-Nginx可以把log存PostgreSQL；有ES需求的專案另行安裝adapter、定義mapping與索引生命周期。PCAP原始檔不必塞進資料庫，可存檔案／物件儲存，DB記錄索引和分析結果。平台不提供通用SQL-to-ES轉換層。
+Nginx logs may live in PostgreSQL. Projects needing Elasticsearch install adapters and own mappings/index lifecycles separately. PCAP files can use filesystem/object storage while the database holds indexes and results. The platform does not provide a generic SQL-to-Elasticsearch conversion layer.
 
-## 共用分析與報告
+## Shared Analytics and Reports
 
-新增 `PlatformSettings`、`PlatformSettingsAudit`、`ReportSnapshot` 由範本Prisma adapter擁有；migration只新增表，不重設舊資料。報告保存完整JSON快照，以ownerId限制存取；客戶業務事件仍屬客戶schema或儲存服務，不進平台資料表。設定寫入與before／after紀錄同交易提交。詳見 [共用功能](analytics-and-reports.md)。
+The template Prisma adapter owns `PlatformSettings`, `PlatformSettingsAudit` and `ReportSnapshot`. Their additive migration creates tables without resetting existing data. Reports store complete JSON snapshots with ownerId-based access; customer business events remain in customer schemas or services. Settings and before/after audit entries commit in one transaction. See [analytics and reports](analytics-and-reports.md).
 
-## 郵件設定與投遞
+## Mail Configuration and Delivery
 
-`202609290001_mail`新增`MailConfiguration`、`MailDelivery`與`MailSettingsAudit`。設定金鑰使用同一AES-256-GCM加密介面；設定及before／after審計同交易保存，審計僅含hasApiKey與secretChanged，不保存秘密。管理員交易使用共用PostgreSQL advisory transaction lock，序列化授權、版本檢查和防重預留。
+Migration `202609290001_mail` adds `MailConfiguration`, `MailDelivery` and `MailSettingsAudit`. Credentials use the same AES-256-GCM interface. Settings and redacted before/after audit entries commit together; audit data includes only hasApiKey and secretChanged, not secrets. Administrator transactions use a shared PostgreSQL advisory transaction lock to serialize authorization, version checks and deduplication reservations.
 
-投遞先以資料庫唯一UUID idempotencyKey建立unknown預留，再執行外部HTTP。相同actor／內容／設定版本只讀回原結果，不重新寄送；不同內容或actor重用key回409。保留收件者、主旨、版本、內容HMAC指紋與供應商receipt，不保存郵件本文。unknown可能代表仍在處理、程序中斷或結果保存失敗，不能刪除紀錄後自動重寄。此範本每客戶獨立DB，未提供共享多租戶schema或自動清理投遞紀錄。詳細語意見 [郵件服務](mail-service.md)。
+Mail reserves an unknown record with a database-unique UUID idempotencyKey before external HTTP. Replaying the same actor/content/configuration version returns the saved outcome without resending; conflicting actor/content returns 409. The ledger stores recipients, subject, version, content HMAC and provider receipt, but not the body. Unknown can mean in progress, interrupted, or receipt persistence failure. Never delete a receipt to trigger an automatic resend. The template uses one database per customer; shared multitenant schemas and automatic receipt cleanup are not included. See [mail service](mail-service.md).

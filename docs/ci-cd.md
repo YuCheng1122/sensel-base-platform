@@ -1,6 +1,6 @@
 # CI/CD
 
-[文件首頁](README.md) · [專案首頁](../README.md)
+[Documentation](README.md) · [Project home](../README.md)
 
 The platform owns independent workflows; they do not push to, build from, or deploy the original customer repositories. No production endpoints or paid models run in CI.
 

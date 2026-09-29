@@ -21,10 +21,21 @@ for (const directory of await readdir(path.join(platform, 'packages'))) {
   assert.equal(installed.version, expected.version, `${expected.name} version mismatch`);
   count++;
 }
+// Agent discovery must remain local to the generated customer project.
+const project = path.dirname(consumer);
+for (const skill of await readdir(path.join(platform, 'skills'))) {
+  const canonical = await realpath(path.join(project, 'skills', skill));
+  assert.ok(canonical.startsWith(project + path.sep), 'Skill source must stay inside the generated project');
+  for (const agent of ['.agents', '.claude']) {
+    assert.equal(await realpath(path.join(project, agent, 'skills', skill)), canonical, `${agent} skill discovery must use the customer copy`);
+  }
+  await readFile(path.join(canonical, 'SKILL.md'), 'utf8');
+}
+for (const file of ['DESIGN.md', 'CLAUDE.md']) await readFile(path.join(project, file), 'utf8');
 // Verify the actual transitive install, not only the manifest declaration.
 if (root.overrides?.next?.postcss) {
   const nextRequire = createRequire(path.join(consumer, 'node_modules', 'next', 'package.json'));
   const postcss = await readJson(nextRequire.resolve('postcss/package.json'));
   assert.equal(postcss.version, root.overrides.next.postcss, 'Next must use the pinned PostCSS version');
 }
-console.log(`Verified ${count} independent package archives and inherited security overrides.`);
+console.log(`Verified ${count} independent package archives, inherited security overrides, and local agent skills.`);

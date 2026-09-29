@@ -120,7 +120,7 @@ export function ReportsCenter({
     }
   }
   return (
-    <div className="reports-center">
+    <div className="sensel-page reports-center">
       <PageHeader title="報告下載">
         <Button
           variant="secondary"

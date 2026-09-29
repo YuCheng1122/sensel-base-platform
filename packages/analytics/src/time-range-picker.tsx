@@ -34,6 +34,13 @@ export function TimeRangePicker({
 }) {
   const [open, setOpen] = useState(false);
   const [error, setError] = useState("");
+  const rangeLabel = `${formatOverviewTime(value.from, timeZone, true)} — ${formatOverviewTime(value.to, timeZone, true)} (${timeZone})`;
+  const activePreset = PRESETS.find(
+    (preset) =>
+      Math.abs(
+        Date.parse(value.to) - Date.parse(value.from) - preset.days * 86400000,
+      ) < 1000,
+  );
   function custom(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
@@ -65,12 +72,11 @@ export function TimeRangePicker({
           variant="secondary"
           disabled={disabled}
           className="overview-range-trigger"
+          aria-label={`時間範圍：${rangeLabel}`}
+          title={rangeLabel}
         >
           <CalendarClock size={16} />
-          <span>
-            {formatOverviewTime(value.from, timeZone, true)} —{" "}
-            {formatOverviewTime(value.to, timeZone, true)}
-          </span>
+          <span>{activePreset?.label ?? rangeLabel}</span>
         </Button>
       </Popover.Trigger>
       <Popover.Portal>
@@ -78,6 +84,7 @@ export function TimeRangePicker({
           className="overview-range-popover"
           align="end"
           sideOffset={8}
+          collisionPadding={16}
           aria-label="時間範圍"
         >
           <div className="overview-range-presets">
@@ -85,6 +92,7 @@ export function TimeRangePicker({
               <button
                 type="button"
                 key={preset.label}
+                aria-pressed={activePreset === preset}
                 onClick={() => {
                   onChange(presetRange(preset.days));
                   setOpen(false);
@@ -96,25 +104,28 @@ export function TimeRangePicker({
           </div>
           <form key={`${value.from}-${value.to}`} onSubmit={custom}>
             <h2>自訂時間（UTC）</h2>
-            <Field label="起始時間（UTC）">
-              <input
-                name="from"
-                type="datetime-local"
-                defaultValue={utcInput(value.from)}
-                required
-              />
-            </Field>
-            <Field label="結束時間（UTC）">
-              <input
-                name="to"
-                type="datetime-local"
-                defaultValue={utcInput(value.to)}
-                required
-              />
-            </Field>
-            <p className="overview-caption">
-              起點包含、終點不包含；最多 90 天。圖表時區：{timeZone}。
-            </p>
+            <div className="overview-range-fields">
+              <Field label="起始時間（UTC）">
+                <input
+                  name="from"
+                  type="datetime-local"
+                  defaultValue={utcInput(value.from)}
+                  required
+                />
+              </Field>
+              <Field label="結束時間（UTC）">
+                <input
+                  name="to"
+                  type="datetime-local"
+                  defaultValue={utcInput(value.to)}
+                  required
+                />
+              </Field>
+            </div>
+            <details className="overview-data-table">
+              <summary>時間設定說明</summary>
+              <p>起點包含、終點不包含；最多 90 天。圖表時區：{timeZone}。</p>
+            </details>
             {error && <Notice error>{error}</Notice>}
             <Button>
               <Check size={14} />

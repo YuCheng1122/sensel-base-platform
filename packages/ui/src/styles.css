@@ -1,5 +1,6 @@
 @import "./tokens.css";
 @import "./primitives.css";
+@import "./page-layout.css";
 @import "./login.css";
 @import "./shell.css";
 @import "./sidebar-user.css";

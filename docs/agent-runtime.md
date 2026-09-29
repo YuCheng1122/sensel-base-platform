@@ -1,17 +1,17 @@
-# 產品 Agent 執行與擴充
+# Product Agent Runtime and Extensions
 
-Coding Agent 的作業規範在根AGENTS.md；此處介紹產品實際執行的Python Agent。
+The root AGENTS.md guides coding agents. This document describes the Python Agent that runs in the product.
 
-公開介面為 `Settings`、`Limits`、`Tool`、`ToolContext`、`ToolResult`、`ToolRegistry`、`create_app`。客戶在自己的 `agent/main.py` 註冊工具及prompt。核心沒有SOC、Nginx、PCAP或直接DB存取。
+Public API: `Settings`, `Limits`, `Tool`, `ToolContext`, `ToolResult`, `ToolRegistry`, `create_app`. Customers register tools and prompts in their own `agent/main.py`. Core contains no SOC, Nginx, PCAP or direct database access.
 
-Web驗證使用者、模型狀態及對話ownership後，簽署最長五分鐘的profile，綁定user、execution、模型設定及允許工具。Agent透過HTTP呼叫後端工具，後端再次核對帳號啟用狀態及業務授權。工具不應直接取得資料庫帳密。
+After authorizing the user, model and conversation ownership, Web signs a profile valid for at most five minutes, bound to the user, execution, model settings and permitted tools. Agent calls backend tools over HTTP; the backend checks current account state and business authorization again. Tools should not receive database credentials.
 
-模型支援OpenAI-compatible、Anthropic、Gemini基本文字與函式呼叫串流，經假HTTP測試。這次改用精簡transport，沒有照搬LangGraph/LiteLLM，因此不是舊API或所有SDK功能的等價替代。完整範圍見 [Python README](../python/README.md)。
+OpenAI-compatible, Anthropic and Gemini adapters support basic streaming text and function calls, tested with mock HTTP. These lightweight transports replace rather than copy LangGraph/LiteLLM and are not equivalent to all legacy API/SDK features. See the [Python README](../python/README.md).
 
-每次執行有時間／步數／工具呼叫上限，取消會中止pending I/O。工具狀態與最終狀態可區分error、partial、cancelled及unknown；工具trace有秘密、raw payload與內部推理遮蔽。後端先保存assistant結果再發送完成，保存失敗不回報成功。
+Executions have time, step and tool-call budgets. Cancellation stops pending I/O. Tool/final states distinguish errors, partial results, cancellation and unknown outcomes. Traces redact secrets, raw payloads and internal reasoning. The backend saves the assistant result before emitting completion; persistence failure is not reported as success.
 
-Write tool介面要求confirmation token，但客戶handler仍必須驗證token綁定的操作；本版只有唯讀示範工具，沒有提供通用寫入審批UI。工具超時且可能已寫入時須回unknown，不能盲目重試。
+Write tools require a confirmation token, but the customer handler must verify its binding to the exact operation. This version contains only a read-only sample tool, not a general approval UI. A timed-out tool that may already have written data must return unknown rather than be retried blindly.
 
-執行registry在記憶體，尚不支援多worker取消協調或durable pause/resume。部署先用單instance；PCAP長分析需另建持久工作管理。
+The execution registry is in memory; multi-worker cancellation and durable pause/resume are not supported. Deploy one instance initially. Long PCAP analysis needs separate persistent job management.
 
-Web組合層只取最近40則completed訊息作模型歷史；資料庫保存內容不因此截斷。若其中任何一則超過32000個JavaScript字串單位（UTF-16），會在寫入本次使用者訊息及呼叫Agent前回HISTORY_TOO_LARGE，提示開啟新對話；既有完整回覆仍可讀。這是模型請求限制，不是刪除歷史或自動摘要。
+Web sends only the latest 40 completed messages as model history; stored content is not truncated. If any selected entry exceeds 32000 JavaScript string units (UTF-16), Web returns `HISTORY_TOO_LARGE` before inserting the new user message or calling Agent, with guidance to start a new conversation. Existing full replies remain readable. This is a request limit, not history deletion or automatic summarization.

@@ -48,9 +48,9 @@ export function ProfileSettings({
     }
   }
   return (
-    <>
+    <div className="sensel-page">
       <PageHeader title="個人設定" />
-      <form className="panel stack" style={{ maxWidth: 560 }} onSubmit={save}>
+      <form className="panel stack" onSubmit={save}>
         <p className="muted">
           {user.email} · {user.role}
         </p>
@@ -77,6 +77,6 @@ export function ProfileSettings({
         {notice && <Notice>{notice}</Notice>}
         <Button disabled={busy}>儲存</Button>
       </form>
-    </>
+    </div>
   );
 }

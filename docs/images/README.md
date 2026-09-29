@@ -1,15 +1,15 @@
-# 文件圖片
+# Documentation Images
 
-[文件首頁](../README.md) · [專案首頁](../../README.md)
+[Documentation](../README.md) · [Project home](../../README.md)
 
-這些 PNG 是 SenseL base 的實際瀏覽器畫面，供文件說明使用；沒有引用 Timesketch 圖片，也不是產生的概念稿。
+These PNGs are actual SenseL Base browser captures, not Timesketch images or generated concept art.
 
-| 圖片 | 內容 | 來源 |
+| Image | Content | Source |
 | --- | --- | --- |
-| [login.png](login.png) | 未登入的品牌與帳號表單 | 2026-09-28 底座 UI 還原驗證，1440 × 900 |
-| [overview.png](overview.png) | 概覽指標與趨勢，合成示範來源 | 2026-09-28 底座 features 預覽，1440 × 900 |
-| [mail.png](mail.png) | 信件設定、模擬測試及投遞紀錄 | 2026-09-29 mail 瀏覽器驗證，1440px 寬，完整頁面 |
+| [login.png](login.png) | Public login and brand panel | 2026-09-28 base UI restoration verification, 1440 × 900 |
+| [overview.png](overview.png) | Metrics and trends from a synthetic source | 2026-09-29 shared-layout preview with synthetic source data, 1440 × 1000 |
+| [mail.png](mail.png) | Mail settings, simulated test and delivery records | 2026-09-29 mail browser verification, 1440px wide, full page |
 
-帳號使用 `example.test`；分析資料與郵件結果皆為合成資料，沒有真實寄信。截圖保留拍攝版本的側欄與日期，因此舊畫面可能尚未列出後續新增的功能；功能範圍以目前文件與程式為準。
+Accounts use `example.test`. Analysis data and mail outcomes are synthetic; no real mail was sent. Captures retain the sidebar and dates of their recorded version, so older screens may not show later additions. Current code and documentation define the feature scope.
 
-更新圖片時以隔離環境重新擷取，檢查資料、金鑰與個人資訊後再提交，並更新此來源說明。圖檔採 repo 相對路徑，可隨 clone 一起取得。
+Recapture images in an isolated environment. Review data, credentials and personal information before committing, and update this provenance record. Images use repository-relative paths and are available with a clone.

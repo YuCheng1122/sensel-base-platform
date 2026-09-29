@@ -44,9 +44,6 @@ export function ReportPreview({
           <p>{snapshot.coverage.explanation}</p>
         )}
       </div>
-      <p className="muted">
-        內容為已保存快照，不會重新查詢來源。明細僅呈現擷取時保存的資料。
-      </p>
       <ReportDownloads
         snapshot={snapshot}
         adapter={adapter}
@@ -63,6 +60,7 @@ export function ReportPreview({
       ))}
       <details>
         <summary>快照追溯資訊</summary>
+        <p>內容為已保存快照，不會重新查詢來源。明細僅呈現擷取時保存的資料。</p>
         <p>報告 ID：{snapshot.id}</p>
         <p>資料擷取：{snapshot.data.generatedAt}</p>
         <p>擁有者：{snapshot.ownerId}</p>

@@ -47,16 +47,14 @@ export function OverviewDashboard({
       <section className="overview-card">
         <header className="overview-section-heading">
           <h2>事件趨勢</h2>
-          <span className="overview-caption">依目前來源與時間範圍</span>
+          <span className="overview-caption">{timeZone}</span>
         </header>
         <TrendChart points={data.trend} timeZone={timeZone} />
       </section>
       <section className="overview-card">
         <header className="overview-section-heading">
           <h2>事件分佈</h2>
-          <span className="overview-caption">
-            點選分類只篩選下方回傳清單，聚合範圍保持不變。
-          </span>
+          <span className="overview-caption">點選分類篩選下方清單</span>
         </header>
         <CategoryDistribution
           categories={data.categories}

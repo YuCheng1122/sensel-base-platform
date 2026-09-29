@@ -1,4 +1,4 @@
-import { cp, mkdir, readdir, readFile, writeFile } from 'node:fs/promises';
+import { cp, mkdir, readdir, readFile, writeFile, symlink } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 const platform = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -15,6 +15,16 @@ if (existing.length) throw new Error('Destination must be empty; existing projec
 const blocked = new Set(['node_modules', '.next', '__pycache__', '.venv', '.env', '.git', 'next-env.d.ts', 'Dockerfile']);
 await mkdir(destination, { recursive: true });
 await cp(path.join(platform, 'templates/project'), destination, { recursive: true, filter: source => !blocked.has(path.basename(source)) && !source.endsWith('.tsbuildinfo') && (!path.basename(source).startsWith('.env.') || source.endsWith('.env.example')) });
+// Ship one canonical skill source and relative discovery links for both agents.
+await cp(path.join(platform, 'skills'), path.join(destination, 'skills'), { recursive: true });
+for (const file of ['DESIGN.md', 'CLAUDE.md']) await cp(path.join(platform, file), path.join(destination, file));
+for (const agent of ['.agents', '.claude']) {
+  const directory = path.join(destination, agent, 'skills');
+  await mkdir(directory, { recursive: true });
+  for (const skill of await readdir(path.join(platform, 'skills'))) {
+    await symlink(path.join('..', '..', 'skills', skill), path.join(directory, skill), 'dir');
+  }
+}
 const manifestPath = path.join(destination, 'web/package.json');
 const manifest = JSON.parse(await readFile(manifestPath, 'utf8'));
 const rootManifest = JSON.parse(await readFile(path.join(platform, 'package.json'), 'utf8'));

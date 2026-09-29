@@ -1,0 +1,36 @@
+/* Shared content geometry for analysis, reports and settings; chat owns its viewport. */
+:root {
+  --page-content-max-width: 1280px;
+  --page-content-padding: 24px;
+  --page-title-size: 24px;
+  --page-title-line-height: 32px;
+  --section-title-size: 16px;
+  --section-title-line-height: 24px;
+}
+.sensel-page {
+  width: 100%;
+  min-width: 0;
+  max-width: var(--page-content-max-width);
+  margin-inline: auto;
+  padding: var(--page-content-padding);
+  display: grid;
+  gap: 24px;
+  align-content: start;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.sensel-page h1 {
+  font-size: var(--page-title-size);
+  line-height: var(--page-title-line-height);
+}
+.sensel-page h2 {
+  font-size: var(--section-title-size);
+  line-height: var(--section-title-line-height);
+}
+@media (max-width: 639px) {
+  .sensel-page {
+    --page-content-padding: 16px;
+    --page-title-size: 20px;
+    --page-title-line-height: 28px;
+  }
+}

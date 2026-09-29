@@ -236,7 +236,7 @@
   color: var(--muted-foreground);
 }
 .main-content {
-  padding: 12px;
+  padding: 0;
   min-width: 0;
   flex: 1;
   overflow: auto;
@@ -340,8 +340,5 @@
   }
   .mobile-sidebar-toggle {
     display: inline-flex;
-  }
-  .main-content {
-    padding: 8px;
   }
 }

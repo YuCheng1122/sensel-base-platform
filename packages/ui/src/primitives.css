@@ -5,7 +5,7 @@ body {
   margin: 0;
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-sans);
   font-size: 14px;
   line-height: 1.5;
 }
@@ -128,8 +128,16 @@ img {
 small {
   color: var(--muted-foreground);
 }
-.mono {
-  font-family: var(--font-geist-mono), ui-monospace, monospace;
+.mono,
+code,
+pre,
+kbd,
+samp {
+  font-family: var(--font-mono);
+}
+small {
+  font-size: 12px;
+  line-height: 1.5;
 }
 .panel {
   padding: 24px;
@@ -143,7 +151,6 @@ small {
   gap: 16px;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 24px;
   flex-wrap: wrap;
 }
 .field {

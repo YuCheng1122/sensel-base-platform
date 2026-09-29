@@ -65,7 +65,7 @@ export function MailTest({
       <section className="panel mail-card" aria-label="測試寄件服務">
         <header>
           <h2>測試已保存的寄件服務</h2>
-          <p>只寄送一封固定內容的測試信，不會訂閱任何來源通知。</p>
+          <p>寄送一封固定內容的測試信。</p>
         </header>
         <div className="mail-summary">
           <p>
@@ -100,9 +100,7 @@ export function MailTest({
               }}
             />
           </Field>
-          {dirty && (
-            <p>請先保存或放棄設定變更；測試不使用未保存的金鑰或寄件者。</p>
-          )}
+          {dirty && <p>請先保存或放棄設定變更。</p>}
           {!saved.enabled && <p>寄信服務尚未啟用，無法測試。</p>}
           <div className="row">
             <Button

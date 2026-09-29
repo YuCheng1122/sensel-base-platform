@@ -92,11 +92,9 @@ export function TrendChart({
           </LineChart>
         </ResponsiveContainer>
       </div>
-      <figcaption className="overview-caption">
-        {label} · {timeZone} · 缺值保留斷點，不補為零。
-      </figcaption>
       <details className="overview-data-table">
         <summary>以表格檢視趨勢數值</summary>
+        <p className="overview-caption">時區：{timeZone}；缺值以斷點表示。</p>
         <div className="overview-table-scroll">
           <table>
             <thead>

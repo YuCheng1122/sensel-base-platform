@@ -1,0 +1,4 @@
+interface:
+  display_name: "SenseL Frontend"
+  short_description: "Build consistent SenseL pages with clear UI copy"
+  default_prompt: "Use $sensel-frontend to implement this page using the project's shared design rules."

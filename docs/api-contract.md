@@ -1,47 +1,47 @@
-# API 契約
+# API Contract
 
-Web template掛載 `/api/core/[...path]`，使用HttpOnly session cookie。mutation核對PUBLIC_APP_URL／Origin，跨來源請求拒絕。錯誤回傳 `{error:{code,message}}`，不把內部例外或秘密暴露到UI。
+The Web template mounts `/api/core/[...path]` and uses an HttpOnly session cookie. Mutations validate PUBLIC_APP_URL/Origin and reject cross-origin requests. Errors use `{error:{code,message}}` without exposing internal exceptions or secrets.
 
-| 路徑（/api/core下） | 方法 | 功能 |
+| Path under /api/core | Method | Behavior |
 | --- | --- | --- |
-| auth/login、auth/logout | POST | 建立／撤銷session |
-| auth/me | GET、PATCH | 目前使用者、資料／密碼變更 |
-| users、groups | GET、POST、PATCH | 管理員操作，變更使用expectedVersion |
-| models | GET、POST、PATCH | 一般用戶讀啟用模型；管理員保存設定 |
-| models/:id/test | POST | mode=connection或tools，保存當前版本檢查結果 |
-| chats | GET、POST | 自己的對話清單／建立 |
-| chats/:id | GET、DELETE | 自己的對話內容／刪除 |
-| chats/:id/messages | POST | content及可選modelId，回傳SSE |
-| chats/:id/cancel | POST | executionId取消，驗證執行ownership |
+| auth/login, auth/logout | POST | Create/revoke a session |
+| auth/me | GET, PATCH | Current user, profile/password changes |
+| users, groups | GET, POST, PATCH | Administrator operations; updates use expectedVersion |
+| models | GET, POST, PATCH | Users read enabled models; administrators save settings |
+| models/:id/test | POST | mode=connection or tools; save checks for the current version |
+| chats | GET, POST | List/create the current user's conversations |
+| chats/:id | GET, DELETE | Read/delete an owned conversation |
+| chats/:id/messages | POST | content and optional modelId; returns SSE |
+| chats/:id/cancel | POST | Cancel executionId after checking ownership |
 
-`/api/health`僅驗證Web儲存就緒，不等待Agent或模型。`/api/agent/tools/project-info`為範本工具端點，不屬通用資料API。
+`/api/health` checks Web storage, not Agent/model availability. `/api/agent/tools/project-info` is a template tool endpoint, not a general data API.
 
-Agent使用Bearer服務驗證及execution-bound profile；Web→Agent採NDJSON，Web→browser採SSE。欄位與事件定義以 [runtime-v1](../contracts/runtime-v1.md) 為準；不複製另一套定義。
+Agent uses service Bearer authentication and execution-bound profiles. Web→Agent uses NDJSON; Web→browser uses SSE. The authoritative field/event definitions are [runtime-v1](../contracts/runtime-v1.md), not a duplicated contract.
 
-此平台v1不是Digiwin原 `/api/agent/v1` 的相容升級。客戶接入時必須採新契約或自行保留相容adapter。
+Platform v1 is not a compatible upgrade to Digiwin's `/api/agent/v1`. Consumers must adopt the new contract or maintain a compatibility adapter.
 
-## 事件概覽、報告與平台設定
+## Overview, Reports and Platform Settings
 
-| Endpoint（`/api/core`下） | 行為 |
+| Endpoint under /api/core | Behavior |
 | --- | --- |
-| GET `/overview/sources` | 目前使用者可讀來源 |
-| GET `/overview?from=…&to=…&sourceId=…` | 含完整性標示的通用聚合，最多90天 |
-| GET／POST `/reports` | 目前使用者報告清單（query/page/pageSize）／採集並保存快照 |
-| GET／DELETE `/reports/:id` | 讀取／刪除目前使用者保存的快照 |
-| GET／PATCH `/settings` | 安全共用設定／管理員攜expectedVersion更新 |
-| GET `/settings/audit?cursor=…` | 管理員讀取每頁50筆平台設定變更 |
+| GET `/overview/sources` | Sources available to the current user |
+| GET `/overview?from=…&to=…&sourceId=…` | Generic aggregation with coverage labels, maximum 90 days |
+| GET/POST `/reports` | Owned reports (query/page/pageSize) / collect and save a snapshot |
+| GET/DELETE `/reports/:id` | Read/delete an owned saved snapshot |
+| GET/PATCH `/settings` | Safe shared settings / administrator update with expectedVersion |
+| GET `/settings/audit?cursor=…` | Administrator audit history, 50 entries per page |
 
-分析與報告契約分別以 `@sensel/analytics/contracts`、`@sensel/reports/contracts` 為準。日期為UTC瞬間、開始包含／結束不包含；報告保存IANA顯示時區。來源缺失／離線回503而非假空資料；已保存報告讀取不依賴來源在線。所有寫入沿用登入、same-origin檢查，報告擁有權由伺服器處理。詳見 [客戶接入](analytics-and-reports.md)。
+Contracts live in `@sensel/analytics/contracts` and `@sensel/reports/contracts`. Query dates are UTC instants with inclusive start/exclusive end; reports save an IANA display time zone. Missing/offline sources return 503, not fabricated empty data. Saved report reads do not depend on live sources. All writes require authentication and same-origin checks; ownership is enforced server-side. See [customer integration](analytics-and-reports.md).
 
-## 郵件服務（僅管理員）
+## Mail Service: Administrators Only
 
-| Endpoint（`/api/core`下） | 行為 |
+| Endpoint under /api/core | Behavior |
 | --- | --- |
-| GET `/mail/settings` | `{item}`：provider、enabled、fromName、fromEmail、version、hasApiKey、allowedProviders；無秘密 |
-| PATCH `/mail/settings` | 保存provider／enabled／fromName／fromEmail／expectedVersion及可選apiKey；版本衝突409；空金鑰保留原值 |
-| POST `/mail/test` | `{to,expectedVersion,idempotencyKey}`；key必須UUID，收件者單一地址；本文與主旨由伺服器固定，回`{item,replayed}` |
-| GET `/mail/deliveries?page=1&pageSize=20` | `{items,total,page,pageSize}`，管理員可看本專案投遞紀錄；pageSize最多100 |
+| GET `/mail/settings` | `{item}`: provider, enabled, fromName, fromEmail, version, hasApiKey, allowedProviders; no secrets |
+| PATCH `/mail/settings` | Save provider/enabled/fromName/fromEmail/expectedVersion and optional apiKey; stale version returns 409; blank key preserves it |
+| POST `/mail/test` | `{to,expectedVersion,idempotencyKey}`; UUID key and one recipient; server-owned subject/body; returns `{item,replayed}` |
+| GET `/mail/deliveries?page=1&pageSize=20` | `{items,total,page,pageSize}`; project delivery history for administrators; maximum pageSize 100 |
 
-DTO以`@sensel/mail/contracts`為準。API未提供普通使用者任意寄信端點。accepted只代表供應商接受；unknown不自動重寄。寫入沿用same-origin與session驗證，停用／角色变更在持久層重新檢查。客戶server程式可使用`@sensel/server`的`sendConfiguredMail`，目前範本同樣要求管理員actor；詳見 [郵件服務](mail-service.md)。
+DTOs live in `@sensel/mail/contracts`. Ordinary users have no arbitrary-send API. Accepted means provider acceptance, not delivery; unknown results are not resent automatically. Writes use same-origin/session checks, and storage rechecks disabled accounts/role changes. Customer server code may call `sendConfiguredMail` from `@sensel/server`; the template still requires an administrator actor. See [mail service](mail-service.md).
 
-對話POST在發送前檢查最近40則completed歷史訊息；任何一則超過32000個JavaScript字串單位（UTF-16），回400／HISTORY_TOO_LARGE並提示開啟新對話。此時不新增本次訊息、不呼叫Agent；既有保存內容維持完整，不悄悄截斷長回覆。
+Before dispatch, conversation POST checks the latest 40 completed history entries. Any entry exceeding 32000 JavaScript string units (UTF-16) produces HTTP 400 `HISTORY_TOO_LARGE` with guidance to start a new conversation. It neither inserts the new message nor calls Agent; previously saved content remains complete instead of silently truncating long replies.

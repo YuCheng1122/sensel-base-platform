@@ -1,15 +1,17 @@
 .overview-range-trigger {
-  font-size: 12px;
+  font-size: 14px;
+  gap: 6px;
   max-width: 100%;
 }
 .overview-range-trigger > span {
+  max-width: 256px;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 .overview-range-popover {
   z-index: 80;
-  width: 360px;
-  max-width: calc(100vw - 32px);
+  width: calc(100vw - 32px);
+  max-width: 512px;
   max-height: 85dvh;
   overflow: auto;
   background: var(--popover);
@@ -22,20 +24,20 @@
 .overview-range-presets {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 4px;
-  padding-bottom: 16px;
+  gap: 6px;
+  padding-bottom: 12px;
   border-bottom: 1px solid var(--border);
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 }
 .overview-range-presets > button {
   height: 32px;
   text-align: left;
-  border: 0;
+  border: 1px solid var(--border);
   border-radius: 6px;
   padding: 4px 8px;
   background: transparent;
   color: var(--foreground);
-  font-size: 13px;
+  font-size: 12px;
 }
 .overview-range-presets > button:hover {
   background: var(--accent);
@@ -51,4 +53,32 @@
 }
 .overview-range-popover .button {
   justify-self: end;
+}
+
+.overview-range-presets > button[aria-pressed="true"] {
+  background: var(--primary);
+  color: var(--primary-foreground);
+  border-color: var(--primary);
+}
+.overview-range-fields {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+.overview-range-fields .field {
+  min-width: 0;
+}
+.overview-range-fields input {
+  min-width: 0;
+  height: 36px;
+  padding: 4px 8px;
+  font-size: 12px;
+}
+@media (min-width: 640px) {
+  .overview-range-presets {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .overview-range-fields {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }

@@ -1,8 +1,6 @@
-# 建立獨立客戶專案
+# Create an Independent Customer Project
 
-[文件首頁](README.md) · [專案首頁](../README.md)
-
-平台套件目前可本地打包；GitHub release工作流程另支援產生安裝資產，但只有遠端實際發布後才可從release取得。尚未發布到npm/PyPI。初始化範本不等於自動獲取未來的範本更新。
+Packages can be built locally. GitHub Release workflows can also generate installation assets, but those exist remotely only after a release actually runs. Packages are not published to npm/PyPI. Initializing a template does not automatically apply future template updates.
 
 ```sh
 npm run pack:core
@@ -15,16 +13,18 @@ npm run typecheck
 npm run build
 ```
 
-產生器拒絕覆蓋非空目錄，排除node_modules/.next/.env與Python快取。平台專用Dockerfile不會複製到客戶專案，因其build context是平台workspace；客戶需按自己的套件與目錄建立映像配方。`vendor/`保存明確版本的tgz，web/package.json用相對file相依；換成private registry時改成鎖定版本並重建lockfile。六個套件（ui、chat、analytics、reports、mail、server）需採相容版本。
+The generator refuses nonempty destinations and excludes node_modules/.next/.env and Python caches. Platform Dockerfiles are excluded because their build context is the platform workspace; customers must supply image recipes for their own packages and directories. `vendor/` holds explicitly versioned tgz files, referenced through relative file dependencies in web/package.json. When moving to a private registry, pin versions and regenerate the lockfile. All six packages (ui, chat, analytics, reports, mail, server) must be compatible.
 
-先離開上例的web目錄，回到客戶repo根目錄（`cd /tmp/customer-analysis`），建立Python venv並安裝平台建好的wheel。將agent/.env.example列出的必要值載入process environment，再以 `uvicorn main:app --app-dir agent --port 8001` 啟動；Agent不會自動讀取.env。生產依賴請鎖定，不用跨repo PYTHONPATH，也不引用平台原始碼目錄。
+Leave the web directory and return to the customer repository root (`cd /tmp/customer-analysis`). Create a Python venv and install the platform wheel. Load the necessary variables listed in agent/.env.example into the process environment, then run `uvicorn main:app --app-dir agent --port 8001`. Agent does not load .env implicitly. Lock production dependencies; do not use cross-repository PYTHONPATH or import platform source paths.
 
-## Nginx／PCAP 擴充位置
+## Nginx and PCAP Extensions
 
-Nginx：新增客戶 Prisma model＋migration、log parser、授權查詢service、UI頁面及Agent工具即可，ES不是前提。PCAP：檔案保存、封包解析、結果schema、查詢及長任務生命週期由客戶自行實作；本版沒有內建PCAP分析。
+For Nginx, add customer Prisma models/migrations, log parsers, authorized query services, pages and Agent tools. Elasticsearch is not required. For PCAP, the customer owns file storage, parsing, result schemas, queries and long-running job lifecycles; PCAP analysis is not built in.
 
-帳號／模型／Chat保留平台套件，客戶自訂導覽、工具與資料scope。在 `web/src/server/core.ts` 的允許工具名單與 `agent/main.py` 的ToolRegistry同時註冊；工具後端透過 `authorizeTool` 查驗執行profile和目前帳號狀態。
+Keep accounts/models/Chat in platform packages and customize customer navigation, tools and data scopes. Register each tool in both `web/src/server/core.ts`'s allowlist and `agent/main.py`'s ToolRegistry. Tool backends use `authorizeTool` to verify the execution profile and current account state.
 
-客戶repo擁有自己的schema、migration、README、AGENTS、部署及發布流程。不得把其業務程式複製回平台核心。完整產品功能與資料量驗收由該客戶專案另做。
+The customer repository owns its schema, migrations, README, AGENTS, deployment and releases. Do not copy its business code back into platform core. Product completeness and data-volume acceptance require separate customer testing.
 
-郵件設定預設停用。需要通知時，在客戶server呼叫`sendConfiguredMail`並由客戶決定收件者授權、固定通知內容及穩定操作UUID；不要建立普通使用者任意寄信端點。先套用郵件migration並配置加密金鑰。合成測試另設`MAIL_ALLOW_FAKE=true`與`APP_ENV=test`；正式使用Resend且關閉fake。報告不會因建立快照而自動寄送，排程／訂閱由客戶另行設計。詳見 [郵件服務](mail-service.md)。
+Mail is disabled by default. Customer server code can call `sendConfiguredMail`, with customer-owned recipient authorization, notification content and stable operation UUIDs. Do not expose an arbitrary-mail API to ordinary users. Apply the mail migration and configure the encryption key first. Synthetic tests require `MAIL_ALLOW_FAKE=true` and `APP_ENV=test`; production uses Resend with fake disabled. Creating a report snapshot does not send mail automatically. Scheduling/subscriptions remain customer work; see [mail service](mail-service.md).
+
+The generator also copies DESIGN.md, CLAUDE.md and canonical project skills, exposing relative discovery links for Codex and Claude Code. These are independent customer-owned instructions after generation; package upgrades do not overwrite them. See [portable frontend skills](frontend-skills.md).

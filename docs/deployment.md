@@ -1,13 +1,13 @@
-# 部署與回復
+# Deployment and Recovery
 
-最小正式組合為PostgreSQL、Web、Agent；Compose另有一次性migration與可選bootstrap，沒有ES／Redis。映像分Web runtime、Agent runtime與migration，避免把開發工具全部帶進Web執行映像。
+The minimum production services are PostgreSQL, Web and Agent. Compose adds a one-shot migration service and optional bootstrap; it requires neither Elasticsearch nor Redis. Web runtime, Agent runtime and migration images have separate responsibilities so the Web image does not carry all development tools.
 
-[CI/CD指南](ci-cd.md)記錄映像名稱與設定；`deploy/.env.example`是必要參數範例。正式使用HTTPS reverse proxy，PUBLIC_APP_URL設定外部origin，SECURE_COOKIES=true。Compose只把Web綁在127.0.0.1；反向代理與憑證由部署環境負責。
+The [CI/CD guide](ci-cd.md) documents image names and configuration; `deploy/.env.example` lists required parameters. Use an HTTPS reverse proxy, set `PUBLIC_APP_URL` to its external origin and keep `SECURE_COOKIES=true`. Compose exposes Web only on 127.0.0.1; proxy and certificates belong to the deployment environment.
 
-每次升級：備份DB與加密根金鑰→記錄目前image digests→驗證migration→更新映像→health／登入／模型設定回讀／Chat smoke。SETTINGS_ENCRYPTION_KEY保護模型／郵件金鑰及郵件內容指紋；停機本身不會完成重新加密，不可直接替換。本版沒有自動key rotation流程。
+For upgrades: back up database and encryption key → record current image digests → validate migration → update images → check health, login, saved model settings and Chat. `SETTINGS_ENCRYPTION_KEY` protects model/mail credentials and mail fingerprints. Stopping services does not re-encrypt data; do not simply replace the key. Automated key rotation is not implemented.
 
-回復不是盲目啟動舊映像：先確認schema相容；不相容時依已驗證備份還原。此repo沒有提供客戶RPO/RTO保證或完成正式故障演練。
+Recovery is not blindly restarting an old image. Verify schema compatibility first, and restore a tested backup when needed. This repository does not provide customer RPO/RTO guarantees or evidence of a production disaster-recovery exercise.
 
-Web health驗證DB，Agent ready驗證runtime啟動；不代表正式模型或客戶工具外部服務一定可用。檢查模型需在UI明確操作。不要在health中觸發付費推論。
+Web health checks storage; Agent readiness checks local runtime startup. Neither proves availability of real model providers or customer tools. Model checks require an explicit UI action; never trigger paid inference from health checks.
 
-單一Web／Agent instance是本版已驗證界線。共用多租戶、橫向擴展、持久長任務及客戶資料遷移需另排驗收。
+One Web/Agent instance is the verified boundary. Shared multitenancy, horizontal scaling, durable jobs and customer data migration need separate acceptance work.
