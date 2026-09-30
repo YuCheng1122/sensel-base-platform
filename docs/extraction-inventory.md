@@ -33,3 +33,8 @@ Core has no generated Prisma client, Elasticsearch, BullMQ/Redis, SOC graph or c
 Knip candidates were addressed: removed the unused direct react-dom type dependency, enabled the actual Next lint configuration, and declared bcrypt/Prisma used by bootstrap/tests. Public entry points are defined by package exports. Broad ignores were not used to conceal findings.
 
 Thin adapters remain where required by entry points, service boundaries and packaging. Different responsibilities were not merged into a generic utility bucket. Source code was not copied wholesale, so customer secrets/data and historical builds were not imported. Exact check results belong in the verification record.
+
+
+## Nginx-derived second-pass review
+
+The [shared capability evolution plan](base-evolution.md) records the 2026-09-30 read-only source comparison and user-required defaults: editable sectioned graphic/text reports, model usage/quota, composed overview, raw-event and entity detail, pagination, addressable routes and per-answer tool history. These are extraction candidates and acceptance requirements, not completed package capabilities. The current source quota adapter is TokenFleet-specific, source entity detail covers domain/IP, and browser/PDF report content needs reconciliation before reuse. No customer source was changed and no runtime/browser acceptance checks were executed in this review.

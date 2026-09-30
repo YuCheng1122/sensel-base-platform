@@ -28,3 +28,8 @@ The customer repository owns its schema, migrations, README, AGENTS, deployment 
 Mail is disabled by default. Customer server code can call `sendConfiguredMail`, with customer-owned recipient authorization, notification content and stable operation UUIDs. Do not expose an arbitrary-mail API to ordinary users. Apply the mail migration and configure the encryption key first. Synthetic tests require `MAIL_ALLOW_FAKE=true` and `APP_ENV=test`; production uses Resend with fake disabled. Creating a report snapshot does not send mail automatically. Scheduling/subscriptions remain customer work; see [mail service](mail-service.md).
 
 The generator also copies DESIGN.md, CLAUDE.md and canonical project skills, exposing relative discovery links for Codex and Claude Code. These are independent customer-owned instructions after generation; package upgrades do not overwrite them. See [portable frontend skills](frontend-skills.md).
+
+
+## Reuse and product-completeness requirements
+
+Before composing customer pages, read DESIGN.md and the base's [shared-capability status and recipes requirement](base-evolution.md). The current template still needs the routing and richer report/detail/usage extraction described there; do not assume planned APIs are installed. New product implementations must provide distinct page URLs, event raw-record inspection, entity details and paginated relationships. Preserve editable report chapters and graphic/text preview/export when adopting the next report implementation. Shared capability documentation must identify actual exports, runnable examples and the customer data/authorization adapter, rather than only visual instructions.

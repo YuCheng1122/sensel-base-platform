@@ -37,6 +37,7 @@ For another customer, start with [creating an independent project](create-projec
 | --- | --- |
 | Shared/customer ownership | [Architecture](architecture.md) · [Decision record](decisions/0001-independent-customer-projects.md) |
 | Directories, filenames and code | [Code organization](code-organization.md) · [UI design](../DESIGN.md) · [Frontend skills](frontend-skills.md) |
+| Reuse roadmap and required defaults | [Nginx capability review and implementation batches](base-evolution.md) |
 | Customer extensions | [Create a project](create-project.md) · [Analytics/report integration](analytics-and-reports.md) |
 | Database and HTTP | [Storage](data-storage.md) · [API contract](api-contract.md) |
 | Python and service protocol | [Python package](../python/README.md) · [Runtime v1](../contracts/runtime-v1.md) |

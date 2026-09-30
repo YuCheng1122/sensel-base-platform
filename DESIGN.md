@@ -77,3 +77,18 @@ Exercise interactions affected by the change, including keyboard operation and r
 The login, sidebar, basic controls and Chat were adapted from the Digiwin UI. Source provenance is tracked in the base package extraction manifests. This contract adds the user's shared-width, typography and concise-copy preferences; it does not require access to the original customer repo when building a new project.
 
 A generated project's copy of this file is a starting contract. Document customer-specific changes here and keep their scope explicit. Use `sensel-frontend` when implementing pages and `sensel-ui-review` when checking them; both read this file rather than duplicating its numeric design values.
+
+
+## Required customer-product defaults
+
+These are acceptance requirements for new pages and the next shared-capability extraction. They do not mean every capability is already exported by base. See the implementation status in the base repository's `docs/base-evolution.md`.
+
+- **Overview:** provide compact filters, coverage status, metric cards, primary and secondary charts, related rankings, paginated analysis tables and recent-event detail actions. Match the composed quality of the reviewed Nginx overview; token reuse alone is insufficient.
+- **Reports:** users can edit every chapter's title and prose, reorder/include/omit chapters and preview text with graphics. Browser preview and PDF use the same saved chapter order, content and data. Preserve units, time zone, unknown values and limitations. Editing saved content creates a new snapshot.
+- **Events:** every event has a full authorized original-record view, not just a normalized summary. Label unavailable, redacted or truncated raw content. Keep raw payloads separate from Agent traces and report samples.
+- **Entities:** individual hosts, domains, IPs and other entities have detail destinations with attributes and related events/entities. Unbounded related lists have pagination; a top-N ranking or filter action alone does not constitute full entity detail.
+- **Navigation:** primary pages have distinct URLs, including `/overview`, `/chat`, `/reports` and `/settings/...`. Details support direct navigation and refresh, and browser Back restores meaningful context. Do not keep all screens solely in local state at `/`.
+- **Agent tools:** tool details start closed and open only on user action. Each answer exposes its own tool history; collapsed details must not hide partial/error/cancelled answer status.
+- **Usage:** display used/remaining quota with provider, unit, scope and update time. Separate key/account allowance from per-run tokens; unknown, unsupported, unavailable and unlimited are distinct states.
+
+Deliver component usage examples and customer-adapter instructions with these capabilities. Never tell a customer to import a planned API before it is implemented and exported.
