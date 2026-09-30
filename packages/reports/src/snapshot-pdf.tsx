@@ -8,6 +8,7 @@ import {
   pdf,
 } from "@react-pdf/renderer";
 import type { ReportSnapshot } from "./contracts";
+import { ChapterPDF } from "./chapter-pdf";
 import { ReportSummaryCharts } from "./report-summary-charts";
 
 /** Source SnapshotPDF font registration and A4 chrome, decoupled from its event schema. */
@@ -114,6 +115,7 @@ function Chrome({ id }: { id: string }) {
   );
 }
 export function SnapshotPDF({ snapshot: s }: { snapshot: ReportSnapshot }) {
+  if (s.chapters) return <ChapterPDF snapshot={s}/>;
   const time = (value: string) =>
     new Intl.DateTimeFormat("zh-TW", {
       timeZone: s.timeZone,

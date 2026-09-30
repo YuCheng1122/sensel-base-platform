@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { Database, Info } from "lucide-react";
 import type { OverviewData } from "./contracts";
 import { coverageDescription, formatOverviewTime } from "./overview-range";
@@ -10,8 +10,10 @@ import { EventTable } from "./event-table";
 /** Snapshot renderer: all charts/list derive solely from this data object; it never fetches. */
 export function OverviewDashboard({
   data,
-  timeZone = "UTC",
+  timeZone = "UTC", renderPanels, eventHref,
 }: {
+  renderPanels?: (data:OverviewData)=>ReactNode;
+  eventHref?: (id:string)=>string;
   data: OverviewData;
   timeZone?: string;
 }) {
@@ -85,7 +87,9 @@ export function OverviewDashboard({
           />
         </section>
       </div>
+      {renderPanels?.(data)}
       <EventTable
+        eventHref={eventHref}
         key={`${data.query.from}-${data.query.to}-${data.query.sourceId ?? "all"}`}
         events={data.events}
         totalEvents={data.coverage.totalEvents}

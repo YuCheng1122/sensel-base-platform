@@ -1,16 +1,18 @@
 "use client";
+import type { ReactNode } from "react";
 import { useState } from "react";
 import { CheckCircle2, Circle, Search } from "lucide-react";
 import type { Model } from "./api-client";
 import { Button } from "./primitives";
 export function ModelCatalog({
-  items,
+  items, renderUsage,
   selectedId,
   onSelect,
   busy,
   onEdit,
   onTest,
 }: {
+  renderUsage?: (model:Model)=>ReactNode;
   items: Model[];
   selectedId: string | null;
   onSelect: (id: string) => void;
@@ -77,6 +79,7 @@ export function ModelCatalog({
         <section className="panel model-detail" aria-label="模型詳情">
           {selected ? (
             <>
+              {renderUsage?.(selected)}
               <header>
                 <h2>{selected.name}</h2>
                 <span className="status-badge">

@@ -66,7 +66,7 @@ function fixture(failPersistence = false) {
     reserveMail: unsupported,
     completeMail: unsupported,
     mailDeliveries: unsupported,
-    settings: unsupported,
+    settings: async () => ({name:"Synthetic",timezone:"UTC",reportTitle:"Test",defaultRangeDays:7,version:1}),
     saveSettings: unsupported,
     settingsAudit: unsupported,
     reports: unsupported,
@@ -81,6 +81,8 @@ function fixture(failPersistence = false) {
       messages: [],
     }),
     models: async () => [model],
+    renameChat: async () => {throw new Error("unused");},
+    deleteChats: async () => 0,
     addMessage: async (
       _id: string,
       role: string,

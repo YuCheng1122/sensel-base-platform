@@ -1,0 +1,9 @@
+.model-usage {border-top:1px solid var(--border); padding-top:20px; min-width:0;}
+.model-usage header {display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+.model-usage h3 {font-size:16px;margin:0;}
+.model-usage dl {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:16px 0;}
+.model-usage dl div {background:var(--muted);padding:14px;border-radius:8px;min-width:0;}
+.model-usage dt,.model-usage p {font-size:12px;color:var(--muted-foreground);}
+.model-usage dd {margin:8px 0 0;font-size:20px;font-variant-numeric:tabular-nums;overflow-wrap:anywhere;}
+.model-usage progress {width:100%;accent-color:var(--primary);}
+@media(max-width:639px){.model-usage dl{grid-template-columns:1fr;}}

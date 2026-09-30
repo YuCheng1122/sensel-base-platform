@@ -50,7 +50,7 @@ for (const width of [1920, 390]) {
     ]) {
       await navigate(page, label);
       const content = page.locator("main .sensel-page");
-      await expect(content.locator("h1")).toBeVisible();
+      await expect(content.locator("h1")).toHaveText(label === "信件服務" ? "寄信服務" : label);
       const geometry = await content.evaluate((element) => {
         const bounds = element.getBoundingClientRect();
         const parent = element.closest("main")!.getBoundingClientRect();

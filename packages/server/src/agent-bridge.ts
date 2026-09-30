@@ -8,12 +8,16 @@ export function profile(
   user: User,
   model: Model,
   executionId: string,
+  deadlineMs = Date.now() + 120_000,
+  timeContext?: { now: string; timezone: string; defaultRangeDays: number },
 ) {
   return signProfile(
     {
       v: 1,
       sub: user.id,
       executionId,
+      deadlineMs,
+      ...(timeContext ? {timeContext} : {}),
       exp: Math.floor(Date.now() / 1000) + 300,
       model: {
         provider: model.provider,
@@ -50,6 +54,10 @@ const runs = new Map<
   string,
   { userId: string; chatId: string; controller: AbortController }
 >();
+export function assertChatsIdle(userId: string, chatId?: string) {
+  if ([...runs.values()].some(run => run.userId === userId && (!chatId || run.chatId === chatId)))
+    throw new CoreError("CHAT_BUSY", 409, "對話執行中，請先停止後再編輯或刪除。");
+}
 export async function cancelRun(
   config: CoreConfig,
   user: User,
@@ -104,6 +112,7 @@ export async function streamChat(
   );
   if (model.provider === "fake" && !config.allowFake)
     throw new CoreError("FAKE_DISABLED", 400);
+  const deadlineMs = Date.now() + 120_000;
   const executionId = randomUUID(),
     controller = new AbortController();
   if ([...runs.values()].some((r) => r.chatId === chatId))
@@ -125,6 +134,7 @@ export async function streamChat(
   let result = "",
     terminal = false,
     status = "error";
+  let timedOut = false;
   const trace: unknown[] = [];
   const stream = new ReadableStream<Uint8Array>({
     async start(output) {
@@ -139,10 +149,11 @@ export async function streamChat(
       request.signal.addEventListener("abort", disconnected);
       if (request.signal.aborted) controller.abort();
       const timer = setTimeout(
-        () => controller.abort(),
-        (model.timeoutSeconds + 15) * 1000,
+        () => { timedOut = true; controller.abort(); },
+        Math.max(0, deadlineMs + 5_000 - Date.now()),
       );
       try {
+        const settings = await config.store.settings();
         const upstream = await agentFetch(
           config,
           "/v1/runs",
@@ -154,7 +165,7 @@ export async function streamChat(
               role: m.role,
               content: m.content,
             })),
-            profileToken: profile(config, user, model, executionId),
+            profileToken: profile(config, user, model, executionId, deadlineMs, {now: new Date().toISOString(), timezone: settings.timezone, defaultRangeDays: settings.defaultRangeDays}),
           },
           controller.signal,
         );
@@ -200,7 +211,7 @@ export async function streamChat(
         if (buffer.trim()) process(buffer);
         if (!terminal) throw new Error("INCOMPLETE_STREAM");
       } catch {
-        status = controller.signal.aborted
+        status = timedOut ? "partial" : controller.signal.aborted
           ? "cancelled"
           : result
             ? "partial"
@@ -211,9 +222,9 @@ export async function streamChat(
           executionId,
           status,
           error: {
-            code: status === "cancelled" ? "CANCELLED" : "AGENT_FAILURE",
+            code: timedOut ? "EXECUTION_TIMEOUT" : status === "cancelled" ? "CANCELLED" : "AGENT_FAILURE",
             message:
-              status === "cancelled"
+              timedOut ? "Execution time limit reached" : status === "cancelled"
                 ? "Run cancelled"
                 : "Agent did not complete the response",
           },

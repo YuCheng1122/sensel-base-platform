@@ -2,7 +2,7 @@
 
 All verification uses synthetic data, fake models or mocked HTTP transports. Do not call paid models, send real email or connect customer data sources.
 
-PDF checks use system `pdftotext` (install `poppler-utils` on Ubuntu/Debian). Knip exempts only this explicitly documented system binary; CI installs it. This is not a blanket unused-code exclusion.
+PDF checks use system `pdftotext` and screenshot rasterization uses `pdftoppm` (install `poppler-utils` on Ubuntu/Debian). Knip exempts only these explicitly documented system binaries; CI installs it. This is not a blanket unused-code exclusion.
 
 ```sh
 npm ci

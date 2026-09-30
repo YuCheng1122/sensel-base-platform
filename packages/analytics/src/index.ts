@@ -23,3 +23,7 @@ export {
   coverageDescription,
   assertOverviewData,
 } from "./overview-range";
+
+export { StackedTrendChart, type StackedPoint } from "./stacked-trend-chart";
+
+export { RawEventView } from "./raw-event-view";

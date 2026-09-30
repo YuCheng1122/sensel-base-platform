@@ -7,6 +7,12 @@ description: Build or adjust SenseL and derived customer frontend pages using th
 
 Read the project root `DESIGN.md` and `AGENTS.md` before editing. Those files own current design values and project boundaries; do not maintain a second set of numeric tokens here. In a customer repo, use installed platform components and customer extension points, not edits inside node_modules.
 
+## Select the reusable capability
+
+For overview, reports, usage, raw-event/entity details or Chat work, read the relevant recipe in `docs/reuse-guide.md`. It lists actual package exports, working template compositions and customer adapter responsibilities. Inspect that implementation before inventing another component. Keep primary pages and details addressable by URL, preserving scope on refresh and Back.
+
+Reports need editable chapter titles/prose and matching graphic/text preview/export. Individual entities need attributes and browsable related events; recent-event summaries need an authorized original-record destination. Tool details remain closed until user action. Quota units/scope come from the provider rather than assumptions about tokens. DESIGN.md owns these product defaults; the guide describes implementation and limitations.
+
 ## Compose the page
 
 - Inspect a comparable existing page and reuse its shared page frame, PageHeader, fields, buttons and state components. Overview, reports and settings align to the same outer content edges; form internals may use columns without narrowing the entire page.

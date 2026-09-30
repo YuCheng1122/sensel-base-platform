@@ -82,6 +82,8 @@ export interface CoreStore extends FeatureStore, MailStore {
   chats(userId: string): Promise<Chat[]>;
   chat(userId: string, id: string): Promise<Chat | null>;
   createChat(userId: string, title: string): Promise<Chat>;
+  renameChat(userId: string, id: string, title: string): Promise<Chat>;
+  deleteChats(userId: string): Promise<number>;
   deleteChat(userId: string, id: string): Promise<void>;
   addMessage(
     chatId: string,
@@ -100,6 +102,8 @@ export interface CoreStore extends FeatureStore, MailStore {
   health(): Promise<void>;
 }
 export type CoreConfig = {
+  explorationProvider?: import("./exploration").ExplorationProvider;
+  usageProvider?: import("./model-usage").UsageProvider;
   /** Trusted browser origin when the framework normalizes the internal request URL. */
   publicOrigin?: string;
   analysisProvider?: AnalysisProvider;

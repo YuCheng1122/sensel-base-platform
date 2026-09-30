@@ -29,3 +29,5 @@ Update the extraction inventory and applicable documents with behavior changes. 
 ## Frontend skills
 
 For frontend implementation, use [sensel-frontend](skills/sensel-frontend/SKILL.md); for visual acceptance, use [sensel-ui-review](skills/sensel-ui-review/SKILL.md). DESIGN.md owns the current shared layout, typography, filter sizing and copy preferences. Skills have one canonical source under skills/ and discovery links for Codex and Claude Code. Keep documentation in English; product UI language is a separate concern.
+
+For shared frontend capability selection and adapter examples, read `docs/reuse-guide.md` before rebuilding reports, tables, usage, exploration or Chat. Apply DESIGN.md route/detail/report defaults to new customer composition.

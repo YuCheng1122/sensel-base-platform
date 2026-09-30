@@ -7,6 +7,8 @@ import {
   PanelLeft,
   PanelRight,
   Trash2,
+  Pencil,
+  Ellipsis,
   Wrench,
   X,
   CheckCircle2,
@@ -24,6 +26,8 @@ export function ChatSidebar({
   onNew,
   onSelect,
   onRemove,
+  onRename,
+  onRemoveAll,
 }: {
   chats: Conversation[];
   active: string;
@@ -32,7 +36,9 @@ export function ChatSidebar({
   onCollapse: () => void;
   onNew: () => void;
   onSelect: (id: string) => void;
-  onRemove: () => void;
+  onRemove: (id: string) => void;
+  onRename: (id: string) => void;
+  onRemoveAll: () => void;
 }) {
   return (
     <aside
@@ -72,17 +78,8 @@ export function ChatSidebar({
       <div className="chat-history">
         <div className="chat-history-title">
           <span>最近對話</span>
-          {active && (
-            <button
-              type="button"
-              className="chat-icon"
-              disabled={disabled}
-              onClick={onRemove}
-              aria-label="刪除對話"
-            >
-              <Trash2 size={15} />
-            </button>
-          )}
+          <button type="button" className="chat-icon" title="刪除全部對話" aria-label="刪除全部對話" disabled={disabled || !chats.length} onClick={onRemoveAll}><Trash2 size={15} /></button>
+
         </div>
         <div className="chat-history-list">
           {!chats.length ? (
@@ -92,17 +89,25 @@ export function ChatSidebar({
             </div>
           ) : (
             chats.map((chat) => (
-              <button
-                type="button"
-                className="conversation"
-                title={chat.title}
-                key={chat.id}
-                disabled={disabled}
-                aria-current={chat.id === active ? "page" : undefined}
-                onClick={() => onSelect(chat.id)}
-              >
-                <span>{chat.title}</span>
-              </button>
+              <div className="conversation-row" key={chat.id}>
+                <button
+                  type="button"
+                  className="conversation"
+                  title={chat.title}
+                  disabled={disabled}
+                  aria-current={chat.id === active ? "page" : undefined}
+                  onClick={() => onSelect(chat.id)}
+                >
+                  <span>{chat.title}</span>
+                </button>
+                <details className="conversation-menu" onBlur={event => {if (!event.currentTarget.contains(event.relatedTarget)) event.currentTarget.open=false;}} onKeyDown={event => {if(event.key === "Escape") {event.currentTarget.open=false;event.currentTarget.querySelector("summary")?.focus();}}}>
+                  <summary className="chat-icon" aria-label={`對話選項：${chat.title}`} aria-disabled={disabled} onClick={event => {if(disabled) event.preventDefault();}}><Ellipsis size={17} /></summary>
+                  <div className="conversation-menu-actions" role="group" aria-label="對話操作">
+                    <button type="button" aria-label={`編輯對話標題：${chat.title}`} disabled={disabled} onClick={event => {event.currentTarget.closest("details")!.open=false;onRename(chat.id);}}><Pencil size={14} />編輯標題</button>
+                    <button type="button" aria-label={`刪除對話：${chat.title}`} disabled={disabled} onClick={event => {event.currentTarget.closest("details")!.open=false;onRemove(chat.id);}}><Trash2 size={14} />刪除對話</button>
+                  </div>
+                </details>
+              </div>
             ))
           )}
         </div>

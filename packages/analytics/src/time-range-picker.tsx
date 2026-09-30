@@ -26,11 +26,13 @@ export function TimeRangePicker({
   onChange,
   timeZone = "UTC",
   disabled = false,
+  maxDays = 90,
 }: {
   value: OverviewRange;
-  onChange: (range: OverviewRange) => void;
+  onChange: (range: OverviewRange, options?: { relative: boolean }) => void;
   timeZone?: string;
   disabled?: boolean;
+  maxDays?: number;
 }) {
   const [open, setOpen] = useState(false);
   const [error, setError] = useState("");
@@ -47,7 +49,7 @@ export function TimeRangePicker({
     const from = String(form.get("from") ?? ""),
       to = String(form.get("to") ?? "");
     const range = { from: `${from}:00Z`, to: `${to}:00Z` };
-    const problem = validateRange(range);
+    const problem = validateRange(range) || (Date.parse(range.to) - Date.parse(range.from) > maxDays * 86400000 ? `單次查詢最多 ${maxDays} 天。` : "");
     if (problem) {
       setError(problem);
       return;
@@ -55,7 +57,7 @@ export function TimeRangePicker({
     onChange({
       from: new Date(range.from).toISOString(),
       to: new Date(range.to).toISOString(),
-    });
+    }, { relative: false });
     setOpen(false);
     setError("");
   }
@@ -88,13 +90,13 @@ export function TimeRangePicker({
           aria-label="時間範圍"
         >
           <div className="overview-range-presets">
-            {PRESETS.map((preset) => (
+            {PRESETS.filter((preset) => preset.days <= maxDays).map((preset) => (
               <button
                 type="button"
                 key={preset.label}
                 aria-pressed={activePreset === preset}
                 onClick={() => {
-                  onChange(presetRange(preset.days));
+                  onChange(presetRange(preset.days), { relative: true });
                   setOpen(false);
                 }}
               >
@@ -124,7 +126,7 @@ export function TimeRangePicker({
             </div>
             <details className="overview-data-table">
               <summary>時間設定說明</summary>
-              <p>起點包含、終點不包含；最多 90 天。圖表時區：{timeZone}。</p>
+              <p>起點包含、終點不包含；最多 {maxDays} 天。圖表時區：{timeZone}。</p>
             </details>
             {error && <Notice error>{error}</Notice>}
             <Button>

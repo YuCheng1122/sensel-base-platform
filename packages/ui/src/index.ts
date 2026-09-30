@@ -20,3 +20,10 @@ export {
 } from "./platform-settings";
 
 export { MailServiceSettings } from "./mail-settings";
+
+export { ModelUsageCard } from "./model-usage";
+export type { ModelUsage } from "./model-usage-contracts";
+
+export { SettingsDialog } from "./settings-dialog";
+
+export { DataTable, type TableQuery, type TableColumn } from "./data-table";

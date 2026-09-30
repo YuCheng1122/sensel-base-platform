@@ -1,3 +1,6 @@
 @import "./overview.css";
 @import "./event-table.css";
 @import "./range-picker.css";
+
+.sensel-raw-record {max-height:480px;overflow:auto;padding:16px;background:var(--muted);font-family:var(--font-mono);font-size:12px;white-space:pre;max-width:100%;}
+.overview-chart-legend{display:flex;flex-wrap:wrap;gap:12px;font-size:12px;}.overview-chart-legend i{display:inline-block;width:8px;height:8px;margin-right:5px;}

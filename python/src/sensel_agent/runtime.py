@@ -1,8 +1,10 @@
 """Bounded execution with truthful terminal and tool states."""
 import asyncio
 import json
+import time
 from collections.abc import AsyncIterator
 from dataclasses import dataclass
+from datetime import datetime, timezone
 from uuid import uuid4
 
 from .profile import Profile
@@ -31,12 +33,25 @@ async def events(
     yield event("run.started")
     status = "completed"
     failure = None
+    clock_context = {"now": datetime.now(timezone.utc).isoformat(), "timezone": "UTC", "defaultRangeDays": 1}
+    if profile.timeContext:
+        clock_context.update(profile.timeContext.model_dump())
+    prompt += "\nTrusted current request time context: " + json.dumps(clock_context) + "\nUse this clock for relative dates; never use training dates or dates from older conversations as now."
     messages = [{"role": "system", "content": prompt}, *history, {"role": "user", "content": message}]
     tools = registry.allowed(profile.tools)
-    context = ToolContext(execution_id, profile.sub, profile_token, confirmation_token)
-    deadline = asyncio.get_running_loop().time() + limits.timeout_seconds
+    remaining = limits.timeout_seconds
+    if profile.deadlineMs is not None:
+        remaining = min(remaining, (profile.deadlineMs - time.time() * 1000) / 1000)
+    context = ToolContext(execution_id, profile.sub, profile_token, confirmation_token, profile.deadlineMs)
+    deadline = asyncio.get_running_loop().time() + remaining
+    summarize_only = False
 
     async def bounded(awaitable):
+        if cancel.is_set() or asyncio.get_running_loop().time() >= deadline:
+            awaitable.close()
+            if cancel.is_set():
+                raise asyncio.CancelledError()
+            raise TimeoutError()
         task = asyncio.create_task(awaitable)
         stopped = asyncio.create_task(cancel.wait())
         try:
@@ -65,7 +80,7 @@ async def events(
             chunks = asyncio.Queue()
             async def on_text(text):
                 await chunks.put(text)
-            model_task = asyncio.create_task(bounded(complete(profile.model, messages, tools, on_text)))
+            model_task = asyncio.create_task(bounded(complete(profile.model, messages, {} if summarize_only else tools, on_text)))
             emitted_text = False
             try:
                 while not model_task.done() or not chunks.empty():
@@ -93,6 +108,9 @@ async def events(
                 if not content:
                     raise ValueError("Empty model response")
                 break
+            if summarize_only:
+                raise IncompleteResponse("Summary requested more tools")
+            confirmation_required = False
             for call in calls:
                 tool_count += 1
                 if tool_count > limits.max_tool_calls:
@@ -109,6 +127,7 @@ async def events(
                     yield event("tool.completed", **active_tool, status="confirmation_required")
                     active_tool = None
                     status = "partial"
+                    confirmation_required = True
                     break
                 arguments = json.loads(call["function"]["arguments"])
                 if not isinstance(arguments, dict):
@@ -126,8 +145,13 @@ async def events(
                 messages.append({"role": "tool", "tool_call_id": call_id, "content": serialized})
                 if result_status != "completed":
                     status = "partial"
-            if status == "partial":
+            if confirmation_required:
                 break
+            if status == "partial":
+                summarize_only = True
+                messages.append({"role": "system", "content":
+                    "Summarize only the available evidence now. Clearly disclose incomplete results, "
+                    "failures and uncertainty. Do not request additional tools or claim complete coverage."})
         else:
             status = "partial"
             failure = {"code": "step_limit", "message": "Execution step limit reached"}

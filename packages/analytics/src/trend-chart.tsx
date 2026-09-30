@@ -15,14 +15,20 @@ export function TrendChart({
   timeZone = "UTC",
   label = "事件量",
   height = 256,
+  color = "var(--chart-1)",
+  onSelect,
 }: {
   points: OverviewTrendPoint[];
   timeZone?: string;
   label?: string;
   height?: number;
+  color?: string;
+  onSelect?: (time: string) => void;
 }) {
   if (!points.length)
     return <p className="overview-empty">選取期間內沒有可繪製的資料。</p>;
+  if (points.every(point => point.value === null))
+    return <p className="overview-empty">此期間的數值尚無法取得，無法繪製趨勢。</p>;
   return (
     <figure className="overview-trend">
       <div
@@ -34,6 +40,8 @@ export function TrendChart({
           <LineChart
             data={points}
             margin={{ left: 4, right: 12, top: 8 }}
+            onClick={state => {if (onSelect && typeof state?.activeLabel === "string" && points.some(point => point.time === state.activeLabel)) onSelect(state.activeLabel);}}
+            style={{cursor: onSelect ? "pointer" : undefined}}
             accessibilityLayer
           >
             <CartesianGrid
@@ -82,9 +90,9 @@ export function TrendChart({
               type="monotone"
               dataKey="value"
               name={label}
-              stroke="var(--chart-1)"
+              stroke={color}
               strokeWidth={2}
-              dot={points.length === 1 ? { r: 3 } : false}
+              dot={{ r: 2 }}
               activeDot={{ r: 4 }}
               connectNulls={false}
               isAnimationActive={false}
@@ -106,7 +114,7 @@ export function TrendChart({
             <tbody>
               {points.map((point) => (
                 <tr key={point.time}>
-                  <td>{formatOverviewTime(point.time, timeZone)}</td>
+                  <td>{onSelect ? <button type="button" aria-label={`篩選此時段：${formatOverviewTime(point.time, timeZone)}`} onClick={() => onSelect(point.time)}>{formatOverviewTime(point.time, timeZone)}</button> : formatOverviewTime(point.time, timeZone)}</td>
                   <td>
                     {point.value === null
                       ? "未知"

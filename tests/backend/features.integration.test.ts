@@ -154,6 +154,7 @@ test(
       const userCookie = (
         await call("auth/login", "POST", { email: member.email, password })
       ).cookie!;
+      assert.equal((await call("models/unknown/usage","GET",undefined,userCookie)).status,403);
       const sources = await call(
         "overview/sources",
         "GET",
@@ -191,6 +192,13 @@ test(
         ).status,
         404,
       );
+      const chapters=[{id:"summary",kind:"text",title:"Synthetic edited chapter",body:"Saved prose {{totalEvents}}",enabled:true}];
+      const countBefore=(await call("reports","GET",undefined,userCookie)).data.total;
+      const preview=await call("reports/preview","POST",{title:"Draft",range,chapters},userCookie);
+      assert.equal(preview.status,200);assert.deepEqual(preview.data.item.chapters,chapters);
+      assert.equal((await call("reports","GET",undefined,userCookie)).data.total,countBefore);
+      assert.equal((await call("reports/preview","POST",{title:"Invalid",range,chapters:[chapters[0],chapters[0]]},userCookie)).status,400);
+      collections=0;
       const initial = await call("settings", "GET", undefined, userCookie);
       restoreSettings = initial.data.item;
       const input = {

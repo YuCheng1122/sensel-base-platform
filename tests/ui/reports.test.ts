@@ -161,3 +161,17 @@ test(
     assert.deepEqual(snapshot, before);
   },
 );
+
+test("editable chapters share resolved prose with PDF, preserve order and omit disabled chapters",async()=>{
+  const s=fixture();s.chapters=[
+    {id:"custom",kind:"text",title:"自訂摘要",body:"第一段 {{totalEvents}}。\n\n第二段 {{metric.zero}}。",enabled:true},
+    {id:"chart",kind:"trend",title:"單點趨勢",body:"圖表說明",enabled:true},
+    {id:"hidden",kind:"text",title:"不可出現的章節",body:"hidden",enabled:false},
+  ];s.data.trend=[{time:s.range.from,value:3}];
+  const {resolvedChapters}=await import("../../packages/reports/src/report-document");
+  const resolved=resolvedChapters(s);assert.equal(resolved.length,2);assert.match(resolved[0].body,/第一段 未知/);assert.match(resolved[0].body,/第二段 0/);
+  const {reportCreateInput}=await import("../../packages/server/src/feature-validation");assert(!reportCreateInput.safeParse({title:s.title,range:s.range,chapters:[s.chapters[0],s.chapters[0]]}).success);
+  registerReportFont(path.resolve("templates/project/web/public/fonts/NotoSansCJKtc-Regular.otf"));
+  const buffer=await renderToBuffer(SnapshotPDF({snapshot:s}));const file="/tmp/sensel-chapter-regression.pdf";await writeFile(file,buffer);
+  const text=spawnSync("pdftotext",["-layout",file,"-"],{encoding:"utf8"});assert.equal(text.status,0);assert.match(text.stdout,/自訂摘要/);assert.match(text.stdout,/單點趨勢/);assert(!text.stdout.includes("不可出現的章節"));assert(!text.stdout.includes("{{"));
+});

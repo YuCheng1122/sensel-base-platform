@@ -37,4 +37,9 @@ Thin adapters remain where required by entry points, service boundaries and pack
 
 ## Nginx-derived second-pass review
 
-The [shared capability evolution plan](base-evolution.md) records the 2026-09-30 read-only source comparison and user-required defaults: editable sectioned graphic/text reports, model usage/quota, composed overview, raw-event and entity detail, pagination, addressable routes and per-answer tool history. These are extraction candidates and acceptance requirements, not completed package capabilities. The current source quota adapter is TokenFleet-specific, source entity detail covers domain/IP, and browser/PDF report content needs reconciliation before reuse. No customer source was changed and no runtime/browser acceptance checks were executed in this review.
+The [shared capability evolution plan](base-evolution.md) records the 2026-09-30 read-only source comparison and user-required defaults: editable sectioned graphic/text reports, model usage/quota, composed overview, raw-event and entity detail, pagination, addressable routes and per-answer tool history. At the initial review these were candidates, not completed capabilities: the source quota adapter was TokenFleet-specific, source detail covered domain/IP, and browser/PDF report content needed reconciliation. The implementation and verification below supersede that initial status.
+
+
+The second pass now includes shared chapter editing/resolution/PDF, draft preview, controlled tables, raw-record rendering, exploration contracts, routed synthetic host/domain/event composition, quota UI and a TokenFleet adapter, per-answer traces, chat management and signed deadlines/time context. See [actual exports and integration recipes](reuse-guide.md). Customer source remained read-only; CDN queries, field registries, domain prompts and notification triggers were not imported. Browser-discovered auto-opening of tool panels was removed to honor the user's explicit default. Legacy report snapshots remain supported without a database migration.
+
+Second-pass source file hashes are recorded in [the Nginx extraction manifest](nginx-extraction-manifest.json).

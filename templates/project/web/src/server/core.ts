@@ -1,12 +1,15 @@
+import { syntheticExploration } from "./synthetic-exploration";
 import { createSyntheticAnalysisProvider } from "./synthetic-analysis-provider";
 import { PrismaClient } from "@prisma/client";
-import { createCoreHandler, type CoreConfig } from "@sensel/server";
+import { createCoreHandler, createTokenFleetUsageProvider, type CoreConfig } from "@sensel/server";
 import { createPrismaStore } from "./prisma-store";
 const globalDb = globalThis as unknown as { senselDb?: PrismaClient };
 const db = globalDb.senselDb ?? new PrismaClient();
 if (process.env.NODE_ENV !== "production") globalDb.senselDb = db;
 export const coreConfig: CoreConfig = {
   store: createPrismaStore(db),
+  usageProvider: createTokenFleetUsageProvider(process.env.SETTINGS_ENCRYPTION_KEY ?? ""),
+  explorationProvider: syntheticExploration,
   analysisProvider: createSyntheticAnalysisProvider(),
   publicOrigin: process.env.PUBLIC_APP_URL,
   encryptionKey: process.env.SETTINGS_ENCRYPTION_KEY ?? "",

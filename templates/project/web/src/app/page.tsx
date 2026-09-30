@@ -1,12 +1,13 @@
 "use client";
-import { useEffect, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { Suspense, useEffect, useState } from "react";
 import {
   AccessSettings,
   ApiError,
   Button,
   AppShell,
   Login,
-  ModelSettings,
+  ModelSettings, ModelUsageCard,
   MailServiceSettings,
   Notice,
   ProfileSettings,
@@ -16,11 +17,19 @@ import {
   type User,
 } from "@sensel/ui";
 import { ChatWorkspace } from "@sensel/chat";
+import { ExplorationPage } from "./exploration-pages";
 import { AnalysisPages } from "./analysis-pages";
-export default function Home() {
+export default function Home() {return <Suspense fallback={<p>載入工作空間…</p>}><Workspace/></Suspense>;}
+function Workspace() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const [active, setActive] = useState("chat");
+  const router = useRouter();
+  const pathname = usePathname();
+  const routes: Record<string, string> = {chat:"/chat", overview:"/overview", reports:"/reports", platform:"/settings/platform", mail:"/settings/mail", models:"/settings/models", users:"/settings/users", groups:"/settings/groups", profile:"/settings/profile"};
+  const detail = pathname === "/events" || pathname.startsWith("/events/") || pathname.startsWith("/entities/");
+  const active = detail ? "overview" : Object.keys(routes).find(key => routes[key] === pathname) ?? "chat";
+  const setActive = (value: string) => router.push(routes[value] ?? "/chat");
+  useEffect(() => { if (pathname === "/") router.replace("/chat"); }, [pathname, router]);
   const [error, setError] = useState("");
   const [loginNotice, setLoginNotice] = useState("");
   const [settings, setSettings] = useState<PlatformSettingsData | null>(null);
@@ -46,6 +55,10 @@ export default function Home() {
     return () => controller.abort();
   }, [user, settingsRetry]);
   useEffect(() => {
+    if(sessionStorage.getItem("sensel-password-updated") === "1") {
+      setLoginNotice("密碼已更新，請使用新密碼重新登入。");
+      sessionStorage.removeItem("sensel-password-updated");
+    }
     request<{ user: User }>("/auth/me")
       .then((result) => setUser(result.user))
       .catch((cause) => {
@@ -116,7 +129,7 @@ export default function Home() {
       onLogout={() => void logout()}
     >
       {error && <Notice error>{error}</Notice>}
-      {active === "chat" && <ChatWorkspace />}
+      {active === "chat" && <ChatWorkspace onConfigureModels={user.role === "ADMIN" ? () => setActive("models") : undefined} />}
       {(active === "overview" || active === "reports") && settingsError && (
         <div className="stack">
           <Notice error>{settingsError}</Notice>
@@ -131,7 +144,8 @@ export default function Home() {
           settings={settingsError ? null : settings}
         />
       )}
-      {active === "overview" &&
+      {detail && <ExplorationPage/>}
+      {active === "overview" && !detail &&
         !settingsError &&
         (settings ? (
           <AnalysisPages active="overview" settings={settings} />
@@ -147,7 +161,7 @@ export default function Home() {
         />
       )}
       {user.role === "ADMIN" && active === "mail" && <MailServiceSettings actorId={user.id} />}
-      {user.role === "ADMIN" && active === "models" && <ModelSettings />}
+      {user.role === "ADMIN" && active === "models" && <ModelSettings renderUsage={model=><ModelUsageCard key={model.id} modelId={model.id} version={model.version}/>} />}
       {user.role === "ADMIN" && (active === "users" || active === "groups") && (
         <AccessSettings key={active} kind={active} />
       )}
@@ -156,6 +170,7 @@ export default function Home() {
           user={user}
           onUpdate={setUser}
           onPasswordChanged={() => {
+            sessionStorage.setItem("sensel-password-updated", "1");
             setUser(null);
             setActive("chat");
             setLoginNotice("密碼已更新，請使用新密碼重新登入。");

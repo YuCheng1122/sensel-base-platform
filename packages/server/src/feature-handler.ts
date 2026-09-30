@@ -158,7 +158,7 @@ export async function handleFeatures(
           reportListInput.parse(Object.fromEntries(url.searchParams)),
         ),
       );
-    if (path.length === 1 && method === "POST") {
+    if ((path.length === 1 || (path.length === 2 && path[1] === "preview")) && method === "POST") {
       const input = reportCreateInput.parse(await request.json());
       const available = await sources(config, user);
       const source = required(
@@ -182,7 +182,9 @@ export async function handleFeatures(
         source,
         coverage: data.coverage,
         data,
+        ...(input.chapters ? {chapters:input.chapters} : {}),
       };
+      if(path[1] === "preview") return Response.json({item:snapshot});
       return Response.json(
         { item: await config.store.createReport(user.id, snapshot) },
         { status: 201 },

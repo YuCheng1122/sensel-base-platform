@@ -141,6 +141,11 @@ test(
           .status,
         404,
       );
+      assert.equal((await call(`chats/${chat.id}`, "PATCH", {title:"renamed by stranger"}, userCookie)).response.status,404);
+      assert.equal((await call(`chats/${chat.id}`, "PATCH", {title:"Renamed private"}, cookie)).data.item.title,"Renamed private");
+      await call("chats", "POST", {title:"Other user's chat"}, userCookie);
+      assert.equal((await call("chats", "DELETE", undefined, userCookie)).data.deleted,1);
+      assert.equal((await call(`chats/${chat.id}`, "GET", undefined, cookie)).response.status,200);
       const group = (
         await call(
           "groups",

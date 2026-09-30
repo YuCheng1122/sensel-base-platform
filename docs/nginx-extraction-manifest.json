@@ -1,0 +1,87 @@
+{
+  "sourceRepository": "sensel-nginx-web-log",
+  "reviewedHead": "7e4a5b6c9b0b9dcba10772c2f95f89097062aeba",
+  "note": "Read-only working-tree sources, selectively adapted. Hashes identify source files read, not a wholesale merge or customer data transfer.",
+  "files": [
+    {
+      "path": "packages/chat/src/chat-view.tsx",
+      "sha256": "834c1967244472a5e896e7cabfb5e6fe7c9bd1a2c1fd023d49417a292d94a853"
+    },
+    {
+      "path": "packages/chat/src/chat-workspace.tsx",
+      "sha256": "4e10738dd40537f06cf6b796c87acea9a79bfbc7595c93718287fcf0bed86de0"
+    },
+    {
+      "path": "packages/chat/src/chat-message.tsx",
+      "sha256": "f3fead7b13435abff0953206d9bf9e720fc099936dc001dfd0b7e2d2d9435c6e"
+    },
+    {
+      "path": "packages/chat/src/chat-panels.tsx",
+      "sha256": "128e52210d7b84d329066cf8447e6c21a606674dc7e614548978a45b955dad41"
+    },
+    {
+      "path": "packages/chat/src/chat-suggestions.tsx",
+      "sha256": "a4941e72955093cea7443b476f3e1d2b183ed1055dd71d5e8b8c09cb55bb06b5"
+    },
+    {
+      "path": "packages/chat/src/chat-layout.css",
+      "sha256": "bff367a208efbeeb36468382fc103cc44e0bc055b39a63c1ac34c075815768aa"
+    },
+    {
+      "path": "packages/chat/src/chat-transcript.css",
+      "sha256": "4714932d642fff4a923a9a49b7bb88a32024bbf2c9b3a082a7b007e3ca171ae6"
+    },
+    {
+      "path": "packages/chat/src/chat-suggestions.css",
+      "sha256": "3e670e25cf09314f0a877e4013da7b479defa70c8cfb6e0cee549fba06bc6ae2"
+    },
+    {
+      "path": "packages/analytics/src/trend-chart.tsx",
+      "sha256": "093c07e4092c13fdc2e2615e818957026fc3744474cee804b324f40664c2f5a4"
+    },
+    {
+      "path": "packages/analytics/src/stacked-trend-chart.tsx",
+      "sha256": "20b42275f87b1ba10baeeaa4528739744d83ee8096801916f3ead5b2302bf0de"
+    },
+    {
+      "path": "packages/analytics/src/time-range-picker.tsx",
+      "sha256": "eb6d97944004d9f31177f453e25ec8525d3c61de566868f681f3d0d9e951dfa6"
+    },
+    {
+      "path": "python/src/sensel_agent/runtime.py",
+      "sha256": "6deea575fd304470c4bdb55f16b85ae545ddebdf8e2017e726d8673d1a3b447d"
+    },
+    {
+      "path": "python/src/sensel_agent/profile.py",
+      "sha256": "df63f21265d156eafa9f392583e5bd968ff8e8e6d9c2c5db1c0dbf2009419012"
+    },
+    {
+      "path": "python/src/sensel_agent/tools.py",
+      "sha256": "3c854a8d6b248f5f747b4ee195424107a81b7a7bb70693ee60ed10b1605e0bcb"
+    },
+    {
+      "path": "python/src/sensel_agent/provider.py",
+      "sha256": "f68d3306bbe16cf4a23b6ab7e6d3b8636823c8fad93be5222e055b1ebace4cfa"
+    },
+    {
+      "path": "templates/project/web/src/cdn-reports/outline-editor.tsx",
+      "sha256": "1b2f58a99b9526a6e4b5679a9d0f371f5a4c22779be6c4b7c13ea5c2292808a1"
+    },
+    {
+      "path": "templates/project/web/src/cdn-reports/outline.ts",
+      "sha256": "f1096e85724053c280ec3d12fc9b9e3143ee6d24659e6da36824199fdde7b144"
+    },
+    {
+      "path": "templates/project/web/src/cdn-reports/snapshot-pdf.tsx",
+      "sha256": "1c8f241dd5f246e5addb250d4431d872c7877626af9592a22dac480a79c63d94"
+    },
+    {
+      "path": "templates/project/web/src/cdn-reports/styles.css",
+      "sha256": "df986d8bb3408034e165d1e57443e3609229f7079f0d3e273ccf890d553b9a40"
+    },
+    {
+      "path": "templates/project/web/src/server/model-usage/service.ts",
+      "sha256": "18f91bd9301d8af65591759d0b17cb7f9c378c03a6e589ca1525f979fa04abbd"
+    }
+  ]
+}

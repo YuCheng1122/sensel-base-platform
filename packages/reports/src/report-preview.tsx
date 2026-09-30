@@ -1,5 +1,5 @@
 "use client";
-import { OverviewDashboard } from "@sensel/analytics";
+import { ReportChapters } from "./report-chapters";
 import type { ReportSnapshot, ReportsAdapter } from "./contracts";
 import { ReportDownloads } from "./report-downloads";
 const coverage = { complete: "完整", partial: "部分", sampled: "抽樣" };
@@ -49,15 +49,7 @@ export function ReportPreview({
         adapter={adapter}
         fontSrc={fontSrc}
       />
-      <OverviewDashboard data={snapshot.data} timeZone={snapshot.timeZone} />
-      {(snapshot.sections ?? []).map((section) => (
-        <section key={section.id} className="report-text-section">
-          <h3>{section.title}</h3>
-          {section.paragraphs.map((text, index) => (
-            <p key={index}>{text}</p>
-          ))}
-        </section>
-      ))}
+      <ReportChapters snapshot={snapshot}/>
       <details>
         <summary>快照追溯資訊</summary>
         <p>內容為已保存快照，不會重新查詢來源。明細僅呈現擷取時保存的資料。</p>

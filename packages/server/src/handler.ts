@@ -1,3 +1,4 @@
+import {handleExploration} from "./exploration";
 import { handleMail } from "./mail-handler";
 import { handleFeatures } from "./feature-handler";
 import bcrypt from "bcryptjs";
@@ -13,7 +14,7 @@ import {
   modelInput,
   profileInput,
 } from "./validation";
-import { agentFetch, profile, streamChat, cancelRun } from "./agent-bridge";
+import { agentFetch, profile, streamChat, cancelRun, assertChatsIdle } from "./agent-bridge";
 const { compare, hash } = bcrypt;
 const publicUser = (user: User) => {
   const { passwordHash: _passwordHash, ...safe } = user;
@@ -161,6 +162,8 @@ async function handle(config: CoreConfig, request: Request): Promise<Response> {
   const user = session.user;
   const mailResponse = await handleMail(config, user, path, request);
   if (mailResponse) return mailResponse;
+  const explorationResponse = await handleExploration(config,user,path,request);
+  if(explorationResponse) return explorationResponse;
   const featureResponse = await handleFeatures(config, user, path, request);
   if (featureResponse) return featureResponse;
   if (path.join("/") === "auth/logout" && method === "POST") {
@@ -227,13 +230,18 @@ async function handle(config: CoreConfig, request: Request): Promise<Response> {
     }
   }
   if (path[0] === "models") {
-    if (method === "GET")
+    if (path.length === 1 && method === "GET")
       return Response.json({
         items: (await config.store.models())
           .filter((m) => user.role === "ADMIN" || m.enabled)
           .map(publicModel),
       });
     admin(user);
+    if (path.length === 3 && path[2] === "usage" && method === "GET") {
+      const model = required((await config.store.models()).find(item => item.id === path[1]));
+      const item = config.usageProvider ? await config.usageProvider(model) : {status:"unsupported",provider:model.provider,scope:"key",unit:"",used:null,remaining:null,limit:null,unlimited:false,expiresAt:null,checkedAt:new Date().toISOString()};
+      return Response.json({item}, {headers:{"Cache-Control":"no-store"}});
+    }
     if (path[2] === "test" && method === "POST") {
       const model = required(
         (await config.store.models()).find((m) => m.id === path[1]),
@@ -308,6 +316,16 @@ async function handle(config: CoreConfig, request: Request): Promise<Response> {
     }
   }
   if (path[0] === "chats") {
+    if (path.length === 1 && method === "DELETE") {
+      assertChatsIdle(user.id);
+      return Response.json({deleted: await config.store.deleteChats(user.id)});
+    }
+    if (path.length === 2 && method === "PATCH") {
+      const {title} = z.object({title: z.string().trim().min(1).max(200)}).strict().parse(await request.json());
+      required(await config.store.chat(user.id, path[1]));
+      assertChatsIdle(user.id, path[1]);
+      return Response.json({item: await config.store.renameChat(user.id, path[1], title)});
+    }
     if (path.length === 1) {
       if (method === "GET")
         return Response.json({ items: await config.store.chats(user.id) });
@@ -336,6 +354,7 @@ async function handle(config: CoreConfig, request: Request): Promise<Response> {
     if (method === "GET")
       return Response.json({ item: await config.store.chat(user.id, id) });
     if (method === "DELETE") {
+      assertChatsIdle(user.id, id);
       await config.store.deleteChat(user.id, id);
       return Response.json({ ok: true });
     }

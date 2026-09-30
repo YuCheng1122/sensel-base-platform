@@ -195,3 +195,6 @@
   background: var(--destructive, #b42318);
   color: #fff;
 }
+
+.chat-message-tools { display: inline-flex; align-items: center; gap: 6px; margin: 8px 0 0 8px; padding: 5px 8px; border: 1px solid var(--border); border-radius: 6px; background: transparent; color: var(--muted-foreground); font: inherit; font-size: 12px; cursor: pointer; }
+.chat-message-tools:hover, .chat-message-tools[aria-pressed="true"] { color: var(--foreground); background: var(--muted); }

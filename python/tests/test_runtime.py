@@ -127,3 +127,51 @@ async def test_trace_redaction():
     for secret in ["secret-value", "private-event", "hidden-token"]:
         assert secret not in serialized
     assert records[-1]["status"] == "completed"
+
+
+async def test_partial_evidence_gets_summary_without_more_tools():
+    calls = 0
+    async def partial(*args):
+        nonlocal calls
+        calls += 1
+        return ToolResult("partial", {"evidenceId": "synthetic-evidence", "warnings": ["one source unavailable"]})
+    records = await collect_tool(partial)
+    assert calls == 1
+    assert records[-1]["status"] == "partial"
+    assert any(e["type"] == "text.delta" and "synthetic-evidence" in e["delta"] for e in records)
+
+
+async def test_expired_execution_never_starts_provider(monkeypatch):
+    async def forbidden(*args):
+        pytest.fail("Expired execution started model work")
+    monkeypatch.setattr("sensel_agent.runtime.complete", forbidden)
+    token = signed(deadlineMs=time.time() * 1000 - 1)
+    records = [e async for e in events("run-1", "test", [], verify_profile(token, SECRET, "run-1", True),
+        token, ToolRegistry(), asyncio.Event(), prompt="Test", limits=Limits())]
+    assert records[-1]["status"] == "partial"
+    assert records[-1]["error"]["code"] == "timeout"
+
+
+async def test_signed_deadline_bounds_tool_context():
+    deadline = time.time() * 1000 + 1000
+    async def check(arguments, context):
+        assert context.deadline_ms == deadline
+        return ToolResult("completed", {"ok": True})
+    token = signed(deadlineMs=deadline)
+    records = [e async for e in events("run-1", "test", [], verify_profile(token, SECRET, "run-1", True),
+        token, ToolRegistry([Tool("count", "Count", {}, check)]), asyncio.Event(), prompt="Test", limits=Limits())]
+    assert records[-1]["status"] == "completed"
+
+async def test_current_time_context_reaches_model_each_run(monkeypatch):
+    captured = []
+    async def provider(model, messages, tools, on_text=None):
+        captured.extend(messages)
+        return {"role": "assistant", "content": "synthetic"}
+    monkeypatch.setattr("sensel_agent.runtime.complete", provider)
+    token = signed(timeContext={"now": "2026-09-29T15:14:41.000Z", "timezone": "Asia/Taipei", "defaultRangeDays": 1})
+    profile = verify_profile(token, SECRET, "run-1", True)
+    records = [e async for e in events("run-1", "最近一天", [], profile, token, ToolRegistry([]), asyncio.Event(), prompt="Test", limits=Limits())]
+    assert records[-1]["status"] == "completed"
+    assert "2026-09-29T15:14:41.000Z" in captured[0]["content"]
+    assert "Asia/Taipei" in captured[0]["content"]
+    assert "never use training dates" in captured[0]["content"]

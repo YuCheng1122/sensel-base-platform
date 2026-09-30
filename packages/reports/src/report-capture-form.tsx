@@ -1,5 +1,7 @@
 "use client";
 import { useState, type FormEvent } from "react";
+import { ReportChapterEditor } from "./report-chapter-editor";
+import { defaultChapters } from "./report-document";
 import { Button, Field, Notice } from "@sensel/ui";
 import type { OverviewSource } from "@sensel/analytics/contracts";
 import type { CreateReportInput, ReportsDefaults } from "./contracts";
@@ -8,20 +10,23 @@ export function ReportCaptureForm({
   sources,
   defaults,
   busy,
-  onCreate,
+  onCreate, onPreview, initial,
 }: {
+  initial?: CreateReportInput;
+  onPreview?: (input: CreateReportInput) => Promise<void>;
   sources: OverviewSource[];
   defaults: ReportsDefaults;
   busy: boolean;
   onCreate: (input: CreateReportInput) => Promise<void>;
 }) {
-  const [title, setTitle] = useState(defaults.title);
+  const [chapters, setChapters] = useState(initial?.chapters ?? defaults.chapters ?? defaultChapters());
+  const [title, setTitle] = useState(initial?.title ?? defaults.title);
   const [from, setFrom] = useState(() =>
-    utcInput(Date.now() - defaults.rangeDays * 86400000),
+    initial?.range.from.slice(0,16) ?? utcInput(Date.now() - defaults.rangeDays * 86400000),
   );
-  const [to, setTo] = useState(() => utcInput(Date.now()));
-  const [sourceId, setSourceId] = useState(sources[0]?.id ?? "");
-  const [timeZone, setTimeZone] = useState(defaults.timeZone);
+  const [to, setTo] = useState(() => initial?.range.to.slice(0,16) ?? utcInput(Date.now()));
+  const [sourceId, setSourceId] = useState(initial?.sourceId ?? sources[0]?.id ?? "");
+  const [timeZone, setTimeZone] = useState(initial?.timeZone ?? defaults.timeZone);
   const chosenSource = sources.some((source) => source.id === sourceId)
     ? sourceId
     : (sources[0]?.id ?? "");
@@ -46,7 +51,9 @@ export function ReportCaptureForm({
       setError("請填寫有效的 IANA 時區，例如 Asia/Taipei 或 UTC。");
       return;
     }
-    await onCreate({
+    const action = (event.nativeEvent as SubmitEvent).submitter?.getAttribute("value") === "preview" ? onPreview : onCreate;
+    await action?.({
+      chapters,
       title: title.trim(),
       range: { from: start.toISOString(), to: end.toISOString() },
       sourceId: chosenSource || undefined,
@@ -110,7 +117,9 @@ export function ReportCaptureForm({
           <Notice error>目前沒有可用資料來源，無法建立報告。</Notice>
         )}
         {error && <Notice error>{error}</Notice>}
+        <ReportChapterEditor defaults={defaults.chapters} value={chapters} onChange={setChapters} disabled={busy}/>
         <div className="report-actions">
+          {onPreview && <Button value="preview" variant="secondary" disabled={busy || !sources.length}>預覽圖文報告</Button>}
           <Button disabled={busy || !sources.length}>
             {busy ? "保存中…" : "生成並保存新快照"}
           </Button>

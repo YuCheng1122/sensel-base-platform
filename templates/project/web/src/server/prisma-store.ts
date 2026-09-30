@@ -291,6 +291,12 @@ export function createPrismaStore(db: PrismaClient): CoreStore {
     async createChat(userId, title) {
       return db.chat.create({ data: { userId, title } });
     },
+    async renameChat(userId, id, title) {
+      return db.chat.update({ where: { id, userId }, data: { title } });
+    },
+    async deleteChats(userId) {
+      return (await db.chat.deleteMany({ where: { userId } })).count;
+    },
     async deleteChat(userId, id) {
       await db.chat.deleteMany({ where: { id, userId } });
     },

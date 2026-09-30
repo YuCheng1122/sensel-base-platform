@@ -7,6 +7,8 @@ description: Review SenseL frontend changes for cross-page consistency, responsi
 
 Read root `DESIGN.md` for current design values and the relevant implementation diff. Review the requested scope; do not turn an ordinary visual check into a redesign.
 
+For these capabilities, use the relevant `docs/reuse-guide.md` recipe to distinguish shared behavior from customer integration. Exercise direct route loading, refresh and Back; raw-event inspection; entity attributes and relationship pagination; chapter editing and preview/PDF agreement; truthful quota states; and tool panels staying closed during execution. Check only capabilities affected by the change.
+
 ## Compare observable behavior
 
 - For shared layout changes, at equal viewport widths compare the left and right content edges of overview, reports, platform settings, mail, models, users and groups. Check that a narrow form has not narrowed the whole page.

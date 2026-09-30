@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Activity, RefreshCw } from "lucide-react";
 import { Button } from "@sensel/ui";
 import type {
@@ -17,12 +17,15 @@ import { selectOverviewSource } from "./overview-source";
 import { TimeRangePicker } from "./time-range-picker";
 import { OverviewDashboard } from "./overview-dashboard";
 export function EventOverview({
-  adapter,
+  adapter, renderPanels, eventHref, onQueryChange,
   defaultRangeDays = 7,
   timeZone = "UTC",
   initialQuery,
   title = "事件概覽",
 }: {
+  renderPanels?: (data:OverviewData)=>ReactNode;
+  eventHref?: (id:string,query:OverviewQuery)=>string;
+  onQueryChange?: (query:OverviewQuery)=>void;
   adapter: OverviewAdapter;
   defaultRangeDays?: number;
   timeZone?: string;
@@ -115,6 +118,7 @@ export function EventOverview({
       });
     return () => abort.abort();
   }, [adapter, query, sourcesReady, sources, sourcesError]);
+  function updateQuery(next:OverviewQuery){setQuery(next);onQueryChange?.(next);}
   return (
     <div className="sensel-page event-overview">
       <header className="overview-page-header">
@@ -123,13 +127,13 @@ export function EventOverview({
             <Activity size={24} />
             {title}
           </h1>
-          <p>比較事件量與分類分佈，從同一時間範圍查看資料。</p>
+
         </div>
         <div className="overview-page-controls">
           <TimeRangePicker
             value={query}
             onChange={(range) =>
-              setQuery({ ...range, sourceId: query.sourceId })
+              updateQuery({ ...range, sourceId: query.sourceId })
             }
             timeZone={timeZone}
           />
@@ -155,7 +159,7 @@ export function EventOverview({
             type="button"
             aria-pressed={query.sourceId === source.id}
             disabled={!sourcesReady}
-            onClick={() => setQuery({ ...query, sourceId: source.id })}
+            onClick={() => updateQuery({ ...query, sourceId: source.id })}
           >
             {source.label}
           </button>
@@ -192,6 +196,8 @@ export function EventOverview({
       ) : data ? (
         <OverviewDashboard
           key={`${query.from}-${query.to}-${query.sourceId ?? ""}`}
+          renderPanels={renderPanels}
+          eventHref={eventHref ? id=>eventHref(id,query) : undefined}
           data={data}
           timeZone={timeZone}
         />

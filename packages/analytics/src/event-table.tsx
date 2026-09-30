@@ -14,6 +14,7 @@ import { formatOverviewTime } from "./overview-range";
 import { selectEvents, type EventSortKey } from "./event-list";
 const PAGE_SIZE = 15;
 export function EventTable({
+  eventHref,
   events,
   totalEvents,
   timeZone = "UTC",
@@ -22,6 +23,7 @@ export function EventTable({
   onClearCategory,
   onCategoryChange,
 }: {
+  eventHref?: (id:string)=>string;
   events: OverviewEvent[];
   totalEvents: number | null;
   timeZone?: string;
@@ -207,7 +209,7 @@ export function EventTable({
                     </time>
                   </td>
                   <td>
-                    <span>{event.title}</span>
+                    <span>{eventHref ? <a href={eventHref(event.id)}>{event.title}</a> : event.title}</span>
                     <small>{event.id}</small>
                   </td>
                   <td>

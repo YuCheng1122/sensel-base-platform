@@ -57,7 +57,7 @@ def gemini_request(messages: list[dict], tools: dict[str, Tool], model: Model) -
             "systemInstruction": {"parts": [{"text": m["content"]} for m in messages if m["role"] == "system"]}}
     if tools:
         body["tools"] = [{"functionDeclarations": [{"name": t.name, "description": t.description,
-                                                    "parameters": t.parameters} for t in tools.values()]}]
+                                                    "parametersJsonSchema": t.parameters} for t in tools.values()]}]
     return body
 
 

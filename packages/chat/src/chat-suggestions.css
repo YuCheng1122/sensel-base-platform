@@ -1,0 +1,76 @@
+.chat-suggestion-categories {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+.chat-suggestion-categories button {
+  min-height: 40px;
+  padding: 8px 14px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--card);
+  color: var(--muted-foreground);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+.chat-suggestion-categories button:hover {
+  color: var(--foreground);
+  border-color: var(--primary);
+}
+.chat-suggestion-categories button[aria-pressed="true"] {
+  background: color-mix(in srgb, var(--primary) 10%, var(--card));
+  border-color: color-mix(in srgb, var(--primary) 45%, var(--border));
+  color: var(--primary);
+  font-weight: 600;
+}
+.chat-suggestion-categories button:focus-visible,
+.chat-suggestions button:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 3px;
+}
+.chat-suggestions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.chat-suggestions button {
+  min-height: 128px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  color: var(--foreground);
+  background: var(--card);
+  text-align: left;
+  box-shadow: 0 1px 2px #00000008;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s,
+    transform 0.15s;
+}
+.chat-suggestions button:hover {
+  border-color: color-mix(in srgb, var(--primary) 40%, transparent);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px #0000000a;
+}
+.chat-suggestion-icon {
+  display: inline-flex;
+  color: var(--primary);
+  padding: 8px;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--primary) 10%, transparent);
+}
+.chat-suggestions strong {
+  display: block;
+  margin-top: 12px;
+  font-size: 14px;
+  font-weight: 600;
+}
+.chat-suggestions button > span:last-child {
+  display: block;
+  margin-top: 4px;
+  color: var(--muted-foreground);
+  font-size: 12px;
+  line-height: 20px;
+}

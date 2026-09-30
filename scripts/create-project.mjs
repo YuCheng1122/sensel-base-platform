@@ -15,6 +15,8 @@ if (existing.length) throw new Error('Destination must be empty; existing projec
 const blocked = new Set(['node_modules', '.next', '__pycache__', '.venv', '.env', '.git', 'next-env.d.ts', 'Dockerfile']);
 await mkdir(destination, { recursive: true });
 await cp(path.join(platform, 'templates/project'), destination, { recursive: true, filter: source => !blocked.has(path.basename(source)) && !source.endsWith('.tsbuildinfo') && (!path.basename(source).startsWith('.env.') || source.endsWith('.env.example')) });
+await mkdir(path.join(destination, "docs"), {recursive:true});
+await cp(path.join(platform, "docs/reuse-guide.md"), path.join(destination, "docs/reuse-guide.md"));
 // Ship one canonical skill source and relative discovery links for both agents.
 await cp(path.join(platform, 'skills'), path.join(destination, 'skills'), { recursive: true });
 for (const file of ['DESIGN.md', 'CLAUDE.md']) await cp(path.join(platform, file), path.join(destination, file));

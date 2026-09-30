@@ -1,3 +1,4 @@
+import { resolvedChapters } from "./report-document";
 import type { ReportSnapshot } from "./contracts";
 
 /** Prevent spreadsheet formula execution, including prefixes hidden by whitespace. */
@@ -50,9 +51,7 @@ export function reportCsv(snapshot: ReportSnapshot): string {
       e.category,
       e.level,
     ]),
-    ...(snapshot.sections ?? []).flatMap((s) =>
-      s.paragraphs.map((p) => ["narrative", s.id, s.title, p]),
-    ),
+    ...resolvedChapters(snapshot).map(s => ["narrative",s.id,s.title,s.body]),
   ];
   return (
     "\uFEFF" +

@@ -20,13 +20,22 @@ class Model(BaseModel):
     maxOutputTokens: int = Field(default=2048, ge=1, le=32768)
 
 
+class TimeContext(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    now: str
+    timezone: str
+    defaultRangeDays: int = Field(ge=1, le=90)
+
+
 class Profile(BaseModel):
     model_config = ConfigDict(extra="forbid")
     v: Literal[1]
     sub: str = Field(min_length=1)
     executionId: str = Field(min_length=1)
     exp: int
+    deadlineMs: float | None = Field(default=None, gt=0, allow_inf_nan=False)
     model: Model
+    timeContext: TimeContext | None = None
     tools: list[str] = Field(default_factory=list)
 
 

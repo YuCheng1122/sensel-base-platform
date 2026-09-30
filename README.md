@@ -1,6 +1,6 @@
 # SenseL Base Platform
 
-[![Platform CI](https://github.com/AvocadoAI-Lab/sensel-base-platform/actions/workflows/ci.yml/badge.svg?branch=development)](https://github.com/AvocadoAI-Lab/sensel-base-platform/actions/workflows/ci.yml)
+[![Platform CI](https://github.com/YuCheng1122/sensel-base-platform/actions/workflows/ci.yml/badge.svg?branch=development)](https://github.com/YuCheng1122/sensel-base-platform/actions/workflows/ci.yml)
 [![Node.js](https://img.shields.io/badge/Node.js-%E2%89%A520.19-339933?style=flat)](docs/development.md)
 [![Python](https://img.shields.io/badge/Python-%E2%89%A53.12-3776AB?style=flat)](python/README.md)
 
@@ -26,10 +26,10 @@ For example, an Nginx web logs project can store and query data with Prisma/Post
 ### Features
 
 - **Accounts and settings:** authentication, users/groups/roles, profiles, platform name and time zone. [Groups currently manage membership](docs/groups-and-permissions.md); they do not automatically grant resource access.
-- **Models and Agent:** encrypted model settings, connection/tool capability tests, OpenAI-compatible/Anthropic/Gemini providers and customer tool registration.
-- **Conversations:** history, streaming, cancellation, tool traces and truthful partial/failure states.
-- **Event overview:** shared metrics, trends, categories and event lists, populated by customer data providers.
-- **Reports:** saved snapshots, preview, search and Chinese PDF/CSV/JSON exports.
+- **Models and Agent:** encrypted model settings, connection/tool capability tests, provider quota display with a TokenFleet adapter, OpenAI-compatible/Anthropic/Gemini providers and customer tool registration.
+- **Conversations:** history management, categorized suggestions, streaming, cancellation and per-answer tool traces that start closed.
+- **Event overview:** shared metrics, trends, categories, searchable/sortable paginated tables, raw events and entity detail routes, populated by customer data providers.
+- **Reports:** editable/reorderable sections, graphic/text preview, saved snapshots and Chinese PDF/CSV/JSON exports.
 - **Mail:** Resend, encrypted configuration, administrator tests and delivery records; unknown outcomes are never retried automatically.
 - **Project foundation:** six TypeScript packages, a Python runtime, Prisma template, project generator and CI/CD.
 
@@ -46,6 +46,12 @@ These are actual platform screens. Overview values and accounts are synthetic ex
 **Event overview and shared charts**
 
 <kbd>![SenseL event overview with synthetic metrics and trends](docs/images/overview.png)</kbd>
+
+**Editable report chapters**
+
+<kbd>![SenseL report chapter editor](docs/images/reports.png)</kbd>
+
+See the [exported PDF page](docs/images/report-pdf.png), [entity details](docs/images/entity.png), [raw event](docs/images/event.png), [ranking table](docs/images/rankings.png), [Chat suggestions](docs/images/chat.png) and [model quota](docs/images/model-usage.png).
 
 See the [mail service preview](docs/mail-service.md#screen-preview) for settings and delivery states.
 
@@ -72,6 +78,7 @@ This creates independent `web/`, `agent/` and documentation directories without 
 
 ### Using SenseL
 
+- [Reusable components and integration recipes](docs/reuse-guide.md)
 - [Manual acceptance and self-review](docs/self-review.md)
 - [Event overview, charts and reports](docs/analytics-and-reports.md)
 - [Mail settings, testing and delivery records](docs/mail-service.md)

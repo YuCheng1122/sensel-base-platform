@@ -35,3 +35,10 @@ The template tool response includes `recentConversationCount` and `historyLimit:
 Agent input limits are 32000 characters per current message/history content and at most 100 history messages. The Web bridge selects the latest 40 completed messages. If any selected saved message exceeds 32000 JavaScript string units (UTF-16), it returns HTTP 400 `HISTORY_TOO_LARGE` before inserting the new user message or contacting Agent, with guidance to start a new conversation. It does not truncate stored history.
 
 Fake models require explicit `allow_fake` and an environment of `development` or `test`; unknown environment names are rejected when fake mode is requested. Production does not permit fake execution.
+
+
+## Optional execution clock claims
+
+Profiles may additionally contain `deadlineMs` (absolute Unix milliseconds) and `timeContext:{now,timezone,defaultRangeDays}`. Web signs these from trusted server/platform settings for each run. Python uses the smaller of the remaining signed deadline and runtime limit, adds the clock to the system context, and forwards the deadline in `ToolContext.deadline_ms`. Tool authorization rejects expired work. Older profiles without these optional claims retain the local runtime limit/UTC clock behavior.
+
+After partial evidence, the runtime may make one final tools-disabled summarization call within remaining step/time limits. Overall status remains partial. Confirmation-required tools stop immediately, and cancellation/expired deadlines do not permit additional provider work. Web separately identifies its execution timeout from user cancellation and reserves five seconds after the signed deadline for terminal persistence.

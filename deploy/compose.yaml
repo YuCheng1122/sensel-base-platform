@@ -26,7 +26,7 @@ services:
       retries: 20
     restart: unless-stopped
   migrate:
-    image: ${MIGRATE_IMAGE:-ghcr.io/avocadoai-lab/sensel-base-platform-migrate:v0.1.0}
+    image: ${MIGRATE_IMAGE:-ghcr.io/yucheng1122/sensel-base-platform-migrate:v0.1.0}
     user: "1000:1000"
     environment: *web-environment
     command: [npm, run, db:migrate]
@@ -36,7 +36,7 @@ services:
     restart: "no"
   bootstrap:
     profiles: [setup]
-    image: ${MIGRATE_IMAGE:-ghcr.io/avocadoai-lab/sensel-base-platform-migrate:v0.1.0}
+    image: ${MIGRATE_IMAGE:-ghcr.io/yucheng1122/sensel-base-platform-migrate:v0.1.0}
     user: "1000:1000"
     environment: *web-environment
     command: [npm, run, db:bootstrap]
@@ -45,7 +45,7 @@ services:
         condition: service_completed_successfully
     restart: "no"
   agent:
-    image: ${AGENT_IMAGE:-ghcr.io/avocadoai-lab/sensel-base-platform-agent:v0.1.0}
+    image: ${AGENT_IMAGE:-ghcr.io/yucheng1122/sensel-base-platform-agent:v0.1.0}
     environment:
       AGENT_SHARED_SECRET: ${AGENT_SHARED_SECRET:?Set AGENT_SHARED_SECRET}
       BACKEND_URL: http://web:3000
@@ -58,7 +58,7 @@ services:
       retries: 10
     restart: unless-stopped
   web:
-    image: ${WEB_IMAGE:-ghcr.io/avocadoai-lab/sensel-base-platform-web:v0.1.0}
+    image: ${WEB_IMAGE:-ghcr.io/yucheng1122/sensel-base-platform-web:v0.1.0}
     environment: *web-environment
     ports:
       - "127.0.0.1:${WEB_PORT:-3000}:3000"

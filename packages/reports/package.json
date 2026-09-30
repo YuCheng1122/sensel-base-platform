@@ -20,7 +20,8 @@
   "dependencies": {
     "@sensel/ui": "0.1.0",
     "@sensel/analytics": "0.1.0",
-    "@react-pdf/renderer": "4.3.0"
+    "@react-pdf/renderer": "4.3.0",
+    "lucide-react": "0.479.0"
   },
   "peerDependencies": {
     "react": "^18.3.1",

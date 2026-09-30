@@ -23,6 +23,7 @@
     }
   },
   "ignoreBinaries": [
-    "pdftotext"
+    "pdftotext",
+    "pdftoppm"
   ]
 }

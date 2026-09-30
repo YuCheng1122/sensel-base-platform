@@ -25,6 +25,7 @@ export const overviewAdapter: OverviewAdapter = {
   },
 };
 export const reportsAdapter: ReportsAdapter = {
+  preview: async input => (await request<{item:ReportSnapshot}>("/reports/preview",{method:"POST",body:JSON.stringify(input)})).item,
   list: (query, signal) => {
     const params = new URLSearchParams({
       page: String(query.page),

@@ -2,9 +2,28 @@
   "name": "@sensel/analytics",
   "version": "0.1.0",
   "type": "module",
-  "files": ["src", "README.md", "extraction-manifest.json"],
-  "exports": {".": "./src/index.ts", "./contracts": "./src/contracts.ts", "./styles.css": "./src/styles.css"},
-  "sideEffects": ["**/*.css"],
-  "peerDependencies": {"react": "^18.3.1", "react-dom": "^18.3.1"},
-  "dependencies": {"@sensel/ui": "0.1.0", "recharts": "2.15.4", "lucide-react": "0.479.0", "@radix-ui/react-popover": "1.1.14"}
+  "files": [
+    "src",
+    "README.md",
+    "extraction-manifest.json"
+  ],
+  "exports": {
+    ".": "./src/index.ts",
+    "./contracts": "./src/contracts.ts",
+    "./styles.css": "./src/styles.css",
+    "./exploration": "./src/exploration-contracts.ts"
+  },
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "peerDependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "dependencies": {
+    "@sensel/ui": "0.1.0",
+    "recharts": "2.15.4",
+    "lucide-react": "0.479.0",
+    "@radix-ui/react-popover": "1.1.14"
+  }
 }

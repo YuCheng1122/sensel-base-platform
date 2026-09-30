@@ -9,8 +9,8 @@ The Web template mounts `/api/core/[...path]` and uses an HttpOnly session cooki
 | users, groups | GET, POST, PATCH | Administrator operations; updates use expectedVersion |
 | models | GET, POST, PATCH | Users read enabled models; administrators save settings |
 | models/:id/test | POST | mode=connection or tools; save checks for the current version |
-| chats | GET, POST | List/create the current user's conversations |
-| chats/:id | GET, DELETE | Read/delete an owned conversation |
+| chats | GET, POST, DELETE | List/create/delete all owned conversations; active executions block deletion |
+| chats/:id | GET, PATCH, DELETE | Read/rename/delete an owned conversation; PATCH accepts title |
 | chats/:id/messages | POST | content and optional modelId; returns SSE |
 | chats/:id/cancel | POST | Cancel executionId after checking ownership |
 
@@ -45,3 +45,12 @@ Contracts live in `@sensel/analytics/contracts` and `@sensel/reports/contracts`.
 DTOs live in `@sensel/mail/contracts`. Ordinary users have no arbitrary-send API. Accepted means provider acceptance, not delivery; unknown results are not resent automatically. Writes use same-origin/session checks, and storage rechecks disabled accounts/role changes. Customer server code may call `sendConfiguredMail` from `@sensel/server`; the template still requires an administrator actor. See [mail service](mail-service.md).
 
 Before dispatch, conversation POST checks the latest 40 completed history entries. Any entry exceeding 32000 JavaScript string units (UTF-16) produces HTTP 400 `HISTORY_TOO_LARGE` with guidance to start a new conversation. It neither inserts the new message nor calls Agent; previously saved content remains complete instead of silently truncating long replies.
+
+
+## Reusable detail, report and usage extensions
+
+- POST `/reports/preview` uses the same validated capture input as POST `/reports`, including optional `chapters`, but returns an unsaved draft without inserting a snapshot. Saved reports remain independent of the live provider.
+- GET `/models/:id/usage` is administrator-only and returns `{item: ModelUsage}` with explicit provider/scope/unit/availability. `CoreConfig.usageProvider` supplies the value; no adapter produces unsupported, not zero. The bundled adapter supports TokenFleet only.
+- GET `/explore/events`, `/explore/events/:id`, `/explore/entities`, `/explore/entities/:type/:id` require authentication and a configured `CoreConfig.explorationProvider(actor)`. Queries require `from`/`to` and accept sourceId, page/pageSize, search/sort/order and entityType/entityId. The customer provider owns resource authorization and complete/partial raw-record semantics. Responses use `{item: ...}` and no-store caching. Missing configuration returns FEATURE_UNAVAILABLE; no customer schema is assumed.
+
+See the [component/adapter guide](reuse-guide.md) for concrete DTOs and template examples. Browser routes and API authorization are separate contracts.

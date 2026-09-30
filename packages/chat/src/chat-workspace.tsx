@@ -1,10 +1,10 @@
 "use client";
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import { request, type Model } from "@sensel/ui";
+import { Button, Notice, SettingsDialog, request, type Model } from "@sensel/ui";
 import { readAgentStream } from "./read-agent-stream";
-import { ChatView } from "./chat-view";
+import { ChatView, type ChatSuggestion } from "./chat-view";
 import type { Conversation, Message, StreamEvent } from "./chat-types";
-export function ChatWorkspace() {
+export function ChatWorkspace({ onConfigureModels, suggestions }: { onConfigureModels?: () => void; suggestions?: ChatSuggestion[] } = {}) {
   const [chats, setChats] = useState<Conversation[]>([]);
   const [active, setActive] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
@@ -14,6 +14,12 @@ export function ChatWorkspace() {
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [pendingDelete, setPendingDelete] = useState<Conversation | null>(null);
+  const [deleteAll, setDeleteAll] = useState(false);
+  const [editing, setEditing] = useState<Conversation | null>(null);
+  const [title, setTitle] = useState("");
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState("");
   const [status, setStatus] = useState("");
   const controller = useRef<AbortController | null>(null);
   const execution = useRef("");
@@ -49,13 +55,8 @@ export function ChatWorkspace() {
         `/chats/${id}`,
       );
       setMessages(result.item.messages);
-      setTraces(
-        result.item.messages.flatMap((message) =>
-          Array.isArray(message.trace)
-            ? message.trace.filter((event) => event.type?.startsWith("tool."))
-            : [],
-        ),
-      );
+      const lastWithTools = [...result.item.messages].reverse().find(message => message.role === "assistant" && message.trace?.some(event => event.type?.startsWith("tool.")));
+      setTraces(lastWithTools?.trace?.filter(event => event.type?.startsWith("tool.")) ?? []);
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "Load failed");
     } finally {
@@ -71,17 +72,30 @@ export function ChatWorkspace() {
     return result.item.id;
   }
   async function remove() {
-    if (!active || !window.confirm("刪除此對話與歷史訊息？")) return;
+    if ((!pendingDelete && !deleteAll) || deleting || busy) return;
+    const id = pendingDelete?.id;
+    setDeleting(true); setDeleteError("");
     try {
-      await request(`/chats/${active}`, { method: "DELETE" });
-      setActive("");
-      setMessages([]);
-      setTraces([]);
-      setStatus("");
-      await list();
+      await request(deleteAll ? "/chats" : `/chats/${id}`, { method: "DELETE" });
+      setChats(previous => deleteAll ? [] : previous.filter(chat => chat.id !== id));
+      if (deleteAll || active === id) {
+        setActive(""); setMessages([]); setTraces([]); setStatus(""); setError("");
+      }
+      setPendingDelete(null); setDeleteAll(false);
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "Delete failed");
-    }
+      setDeleteError(cause instanceof Error ? cause.message : "無法刪除對話，請重試。");
+    } finally { setDeleting(false); }
+  }
+  async function rename(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!editing || deleting || busy || !title.trim()) return;
+    setDeleting(true); setDeleteError("");
+    try {
+      const result = await request<{ item: Conversation }>(`/chats/${editing.id}`, { method: "PATCH", body: JSON.stringify({ title: title.trim() }) });
+      setChats(previous => previous.map(chat => chat.id === editing.id ? result.item : chat));
+      setEditing(null);
+    } catch (cause) { setDeleteError(cause instanceof Error ? cause.message : "無法儲存標題，請重試。"); }
+    finally { setDeleting(false); }
   }
   async function stop() {
     const pending = controller.current;
@@ -111,7 +125,7 @@ export function ChatWorkspace() {
     event.preventDefault();
     const form = event.currentTarget;
     const content = String(new FormData(form).get("content") ?? "").trim();
-    if (!content || busy) return;
+    if (!content || busy || loading || !modelId) return;
     setBusy(true);
     setError("");
     setStatus("執行中");
@@ -119,14 +133,14 @@ export function ChatWorkspace() {
     execution.current = "";
     const abort = new AbortController();
     controller.current = abort;
-    const assistantId = crypto.randomUUID();
+    const assistantId = Array.from(crypto.getRandomValues(new Uint32Array(4))).join("-");
     let terminal = false;
     try {
       const id = active || (await create(content));
       setActive(id);
       setMessages((previous) => [
         ...previous,
-        { id: crypto.randomUUID(), role: "user", content },
+        { id: `${assistantId}-user`, role: "user", content },
         { id: assistantId, role: "assistant", content: "", status: "running" },
       ]);
       form.reset();
@@ -153,8 +167,10 @@ export function ChatWorkspace() {
                 : message,
             ),
           );
-        if (item.type.startsWith("tool."))
+        if (item.type.startsWith("tool.")) {
           setTraces((previous) => [...previous, item]);
+          setMessages(previous => previous.map(message => message.id === assistantId ? {...message,trace:[...(message.trace ?? []),item]} : message));
+        }
         if (item.type === "run.completed") {
           terminal = true;
           const runStatus = item.status ?? "error";
@@ -212,7 +228,10 @@ export function ChatWorkspace() {
     }
   }
   return (
+    <>
     <ChatView
+      suggestions={suggestions}
+      onConfigureModels={onConfigureModels}
       chats={chats}
       active={active}
       messages={messages}
@@ -221,7 +240,7 @@ export function ChatWorkspace() {
       traces={traces}
       error={error}
       busy={busy}
-      loading={loading}
+      loading={loading || deleting}
       status={status}
       end={end}
       onModel={setModelId}
@@ -233,9 +252,30 @@ export function ChatWorkspace() {
         setStatus("");
         setError("");
       }}
-      onRemove={() => void remove()}
+      onRename={(id) => { const chat = chats.find(item => item.id === id); if (chat) { setEditing(chat); setTitle(chat.title); setDeleteError(""); } }}
+      onRemoveAll={() => { setDeleteAll(true); setDeleteError(""); }}
+      onRemove={(id) => { setPendingDelete(chats.find(chat => chat.id === id) ?? null); setDeleteError(""); }}
       onStop={() => void stop()}
       onSubmit={(event) => void submit(event)}
     />
+    <SettingsDialog open={!!pendingDelete || deleteAll} onOpenChange={open => { if (!open) { setPendingDelete(null); setDeleteAll(false); } }} title={deleteAll ? "刪除全部對話" : "刪除對話"} busy={deleting}>
+      <p className="chat-delete-description">{deleteAll ? "確定刪除您的全部對話及所有歷史訊息？包含未列在最近對話中的紀錄，此操作無法復原。" : `確定刪除「${pendingDelete?.title}」及所有歷史訊息？此操作無法復原。`}</p>
+      {deleteError && <Notice error>{deleteError}</Notice>}
+      <div className="chat-delete-actions">
+        <Button variant="secondary" disabled={deleting} onClick={() => { setPendingDelete(null); setDeleteAll(false); }}>取消</Button>
+        <Button variant="danger" disabled={deleting} onClick={() => void remove()}>{deleting ? "刪除中…" : "確認刪除"}</Button>
+      </div>
+    </SettingsDialog>
+    <SettingsDialog open={!!editing} onOpenChange={open => { if (!open) setEditing(null); }} title="編輯對話標題" busy={deleting}>
+      <form onSubmit={event => void rename(event)}>
+        <label className="chat-title-field">對話標題<input name="title" value={title} onChange={event => setTitle(event.target.value)} maxLength={200} required autoFocus disabled={deleting} /></label>
+        {deleteError && <Notice error>{deleteError}</Notice>}
+        <div className="chat-delete-actions">
+          <Button type="button" variant="secondary" disabled={deleting} onClick={() => setEditing(null)}>取消</Button>
+          <Button type="submit" disabled={deleting || !title.trim()}>{deleting ? "儲存中…" : "儲存"}</Button>
+        </div>
+      </form>
+    </SettingsDialog>
+    </>
   );
 }

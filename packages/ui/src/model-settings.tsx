@@ -1,10 +1,11 @@
 "use client";
+import type { ReactNode } from "react";
 import { useEffect, useState, type FormEvent } from "react";
 import { request, type Model } from "./api-client";
 import { Notice, PageHeader } from "./primitives";
 import { ModelEditor } from "./model-editor";
 import { ModelCatalog } from "./model-catalog";
-export function ModelSettings() {
+export function ModelSettings({renderUsage}: {renderUsage?: (model:Model)=>ReactNode} = {}) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [items, setItems] = useState<Model[]>([]);
   const [editing, setEditing] = useState<Model | null>(null);
@@ -111,6 +112,7 @@ export function ModelSettings() {
             }}
           />
           <ModelCatalog
+            renderUsage={renderUsage}
             items={items}
             selectedId={selectedId}
             onSelect={setSelectedId}

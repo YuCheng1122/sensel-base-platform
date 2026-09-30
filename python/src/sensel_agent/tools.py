@@ -10,6 +10,7 @@ class ToolContext:
     user_id: str
     profile_token: str
     confirmation_token: str | None = None
+    deadline_ms: float | None = None
 
 
 @dataclass(frozen=True)

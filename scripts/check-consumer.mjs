@@ -31,7 +31,7 @@ for (const skill of await readdir(path.join(platform, 'skills'))) {
   }
   await readFile(path.join(canonical, 'SKILL.md'), 'utf8');
 }
-for (const file of ['DESIGN.md', 'CLAUDE.md']) await readFile(path.join(project, file), 'utf8');
+for (const file of ['DESIGN.md', 'CLAUDE.md', 'docs/reuse-guide.md']) await readFile(path.join(project, file), 'utf8');
 // Verify the actual transitive install, not only the manifest declaration.
 if (root.overrides?.next?.postcss) {
   const nextRequire = createRequire(path.join(consumer, 'node_modules', 'next', 'package.json'));

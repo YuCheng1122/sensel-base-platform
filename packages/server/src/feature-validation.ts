@@ -37,6 +37,7 @@ export const settingsInput = z
   .strict();
 export const reportCreateInput = z
   .object({
+    chapters: z.array(z.object({id:z.string().min(1).max(80),kind:z.enum(["text","metrics","trend","categories","events"]),title:z.string().trim().min(1).max(120),body:z.string().max(10000),enabled:z.boolean()}).strict()).min(1).max(20).refine(rows=>new Set(rows.map(r=>r.id)).size===rows.length && rows.some(r=>r.enabled)).optional(),
     title: z.string().trim().min(1).max(200),
     range: rangeInput,
     sourceId,

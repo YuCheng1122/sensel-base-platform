@@ -4,6 +4,13 @@ import type {
   OverviewSource,
 } from "@sensel/analytics/contracts";
 
+export interface ReportChapter {
+  id: string;
+  kind: "text" | "metrics" | "trend" | "categories" | "events";
+  title: string;
+  body: string;
+  enabled: boolean;
+}
 export interface ReportSection {
   id: string;
   title: string;
@@ -24,8 +31,10 @@ export interface ReportSummary {
 export interface ReportSnapshot extends ReportSummary {
   data: OverviewData;
   sections?: ReportSection[];
+  chapters?: ReportChapter[];
 }
 export interface CreateReportInput {
+  chapters?: ReportChapter[];
   title: string;
   range: OverviewRange;
   sourceId?: string;
@@ -44,11 +53,13 @@ export interface ReportList {
 }
 export interface ReportsAdapter {
   list(query: ReportListQuery, signal?: AbortSignal): Promise<ReportList>;
+  preview?(input: CreateReportInput): Promise<ReportSnapshot>;
   create(input: CreateReportInput): Promise<ReportSnapshot>;
   get(id: string, signal?: AbortSignal): Promise<ReportSnapshot>;
   delete(id: string): Promise<void>;
 }
 export interface ReportsDefaults {
+  chapters?: ReportChapter[];
   title: string;
   rangeDays: number;
   timeZone: string;

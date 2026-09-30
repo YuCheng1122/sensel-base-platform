@@ -15,3 +15,12 @@ Write tools require a confirmation token, but the customer handler must verify i
 The execution registry is in memory; multi-worker cancellation and durable pause/resume are not supported. Deploy one instance initially. Long PCAP analysis needs separate persistent job management.
 
 Web sends only the latest 40 completed messages as model history; stored content is not truncated. If any selected entry exceeds 32000 JavaScript string units (UTF-16), Web returns `HISTORY_TOO_LARGE` before inserting the new user message or calling Agent, with guidance to start a new conversation. Existing full replies remain readable. This is a request limit, not history deletion or automatic summarization.
+
+
+## Shared deadline, clock and partial explanation
+
+Web signs an absolute 120-second `deadlineMs` and a `timeContext` from server time/platform timezone/default range. Python bounds execution by the smaller remaining signed deadline and its own limit; tool context forwards the deadline and backend tool authorization rejects expired work. Web allows five seconds for final persistence/status. Timeout is distinct from cancellation. Optional claims preserve older signed profiles.
+
+A partial tool result may be followed by one tools-disabled evidence summary within the remaining budget. The terminal status stays partial. Confirmation-required writes stop without this summary; cancellation and exhausted deadlines do not launch more work. The default product prompt now requires observed evidence, uncertainty and treating tool content as data. Customer prompts still own domain semantics.
+
+Provider quota display is independent of execution token accounting; see the reuse guide. Per-run token/cost reporting is not implemented.

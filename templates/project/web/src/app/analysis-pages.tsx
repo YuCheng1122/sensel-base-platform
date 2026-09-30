@@ -1,4 +1,7 @@
 "use client";
+import Link from "next/link";
+import {useRouter,useSearchParams} from "next/navigation";
+import {EntityRankings,scopeParams} from "./exploration-pages";
 import { useEffect, useState } from "react";
 import { EventOverview } from "@sensel/analytics";
 import type { OverviewSource } from "@sensel/analytics/contracts";
@@ -12,6 +15,8 @@ export function AnalysisPages({
   active: "overview" | "reports";
   settings: PlatformSettingsData | null;
 }) {
+  const params=useSearchParams(),router=useRouter();
+  const initialQuery=params.has("from")&&params.has("to")?{from:params.get("from")!,to:params.get("to")!,sourceId:params.get("sourceId")??"all"}:undefined;
   const [sources, setSources] = useState<OverviewSource[] | null>(null);
   const [error, setError] = useState("");
   const [retry, setRetry] = useState(0);
@@ -36,6 +41,11 @@ export function AnalysisPages({
   if (active === "overview")
     return (
       <EventOverview
+        key={params.toString()}
+        initialQuery={initialQuery}
+        onQueryChange={query=>router.push(`/overview?${scopeParams(query)}`)}
+        eventHref={(id,query)=>`/events/${encodeURIComponent(id)}?${scopeParams(query)}`}
+        renderPanels={data=><><EntityRankings query={data.query}/><Link href={`/events?${scopeParams(data.query)}`}>查看所有符合條件的事件</Link></>}
         adapter={overviewAdapter}
         defaultRangeDays={settings?.defaultRangeDays}
         timeZone={settings?.timezone}

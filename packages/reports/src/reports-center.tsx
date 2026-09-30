@@ -10,6 +10,8 @@ import type {
   ReportsAdapter,
   ReportsDefaults,
 } from "./contracts";
+import { ReportChapters } from "./report-chapters";
+import { reportChapters } from "./report-document";
 import { ReportCaptureForm } from "./report-capture-form";
 import { ReportPreview } from "./report-preview";
 export function ReportsCenter({
@@ -25,6 +27,9 @@ export function ReportsCenter({
   defaults?: ReportsDefaults;
   fontSrc?: string;
 }) {
+  const [draft, setDraft] = useState<ReportSnapshot | null>(null);
+  const [editing, setEditing] = useState<CreateReportInput>();
+  const [editorKey, setEditorKey] = useState(0);
   const [query, setQuery] = useState("");
   const [page, setPage] = useState(1);
   const [list, setList] = useState<ReportList | null>(null);
@@ -83,6 +88,13 @@ export function ReportsCenter({
       });
     return () => controller.abort();
   }, [adapter, selected, revision]);
+  async function preview(input: CreateReportInput) {
+    if(!adapter.preview) return;
+    setBusy(true);setError("");setDraft(null);
+    try { setDraft(await adapter.preview(input)); }
+    catch {setError("無法預覽，請確認資料來源與查詢範圍。");}
+    finally {setBusy(false);}
+  }
   async function create(input: CreateReportInput) {
     setBusy(true);
     setError("");
@@ -135,6 +147,9 @@ export function ReportsCenter({
       </PageHeader>
       {captureEnabled ? (
         <ReportCaptureForm
+          key={editorKey}
+          initial={editing}
+          onPreview={adapter.preview ? preview : undefined}
           sources={sources}
           defaults={defaults}
           busy={busy}
@@ -143,6 +158,7 @@ export function ReportsCenter({
       ) : (
         <Notice>目前無法建立新快照，仍可查看已保存報告。</Notice>
       )}
+      {draft && <section className="panel report-preview" aria-label="報告草稿預覽"><h2>{draft.title} · 草稿預覽（尚未保存）</h2><p>{draft.data.dataset.label} · {draft.coverage.status}</p><p>{draft.coverage.explanation}</p><ReportChapters snapshot={draft}/></section>}
       {notice && <Notice>{notice}</Notice>}
       {error && <Notice error>{error}</Notice>}
       <section className="panel report-library" aria-label="已保存報告">
@@ -222,6 +238,7 @@ export function ReportsCenter({
         </nav>
       </section>
       {detailLoading && <p role="status">載入固定快照…</p>}
+      {snapshot && <Button variant="secondary" onClick={()=>{setEditing({title:snapshot.title,range:snapshot.range,sourceId:snapshot.source.id,timeZone:snapshot.timeZone,chapters:reportChapters(snapshot)});setEditorKey(v=>v+1);setDraft(null);document.querySelector(".report-capture")?.scrollIntoView();}}>編輯篩選與內容，另存新報告</Button>}
       {snapshot && (
         <ReportPreview
           key={snapshot.id}

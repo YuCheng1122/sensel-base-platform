@@ -13,3 +13,5 @@ Replace the synthetic analysis provider with authorized project queries; do not 
 Use the installed @sensel/server sendConfiguredMail coordinator for authorized mail; direct @sensel/mail transport calls do not provide durable deduplication. Preserve receipt records and stable operation UUIDs. Accepted does not establish inbox delivery; unknown must not trigger automatic resend. Mail fake mode requires MAIL_ALLOW_FAKE=true and APP_ENV=test/development. Keep customer notification policy, recipient authorization and scheduling in this repo.
 
 Read DESIGN.md for frontend work. Use the generated sensel-frontend and sensel-ui-review skills under skills/ (discovered through .agents/skills and .claude/skills). Keep documentation in English; preserve the chosen product UI language. These copied instructions belong to this customer project and do not update automatically with npm packages.
+
+For shared frontend capability selection and adapter examples, read `docs/reuse-guide.md` before rebuilding reports, tables, usage, exploration or Chat. Apply DESIGN.md route/detail/report defaults to new customer composition.

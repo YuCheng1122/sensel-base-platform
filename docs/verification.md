@@ -157,3 +157,24 @@ The English analytics guide includes data and component examples. The new groups
 Validation: production Next and Web image builds passed; npm check/dead-code/document checks passed. The backend/core/analytics suite passed 34/34 with isolated PostgreSQL and no skips. The complete browser suite passed 22/22 in 30.7 seconds; the final two event tests were rerun after adding explicit card-geometry and chart-to-table filter assertions, and both passed. Desktop/mobile screenshots were reviewed. No provider calls or real mail were used.
 
 Preview 3300 was updated to `sensel-base-web:events`. Login, local level filtering and header sorting passed with zero page errors; Web/Agent/PostgreSQL are healthy. Only Web was recreated, with no schema changes, and existing user/model/chat/report counts were preserved. Logs and synthetic captures are under `/tmp/sensel-base-events/`. Isolated services were stopped after validation; the preview remains running.
+
+
+## Platform Evolution: 2026-09-30
+
+Implemented the [evolution plan](base-evolution.md) with the actual exports and extension boundaries documented in the [reuse guide](reuse-guide.md). Source Nginx files were read-only; shared changes retain customer-owned queries, authorization, prompts and schemas.
+
+Executed against the final implementation:
+
+- npm check (lint/types/boundaries/module size), Knip and documentation links/fences passed.
+- Backend/core contracts: **38 passed, 0 skipped**, using a fresh isolated PostgreSQL 18.6 database with all three migrations and administrator bootstrap.
+- Python 3.12.11: Ruff passed; **32 tests passed**, including signed deadlines, trusted time context, partial-result handling and Gemini schema conversion.
+- Production Next build passed. Full Playwright suite: **28 passed in 54.5 seconds**, including existing regression cases, routed raw-event/entity browsing at 1440/1920/390px, paging/search/sort and URL restoration, chapter editing/preview/PDF, mocked quota and initially closed tool history.
+- Actual PDF export was checked using pdftotext and pdftoppm; edited Chinese text, order/omissions, metrics and graphic trend were inspected. Preview does not insert a report; saved exports use stored snapshots. Legacy snapshots remain supported.
+- Six npm tgz packages were generated and installed into /tmp/sensel-ready-consumer. Consumer guard, Prisma generation, typecheck and production build passed. The independent server on port 3250 returned healthy database readiness and HTTP 200 for /overview.
+- Python wheel installed into a fresh /tmp/sensel-evolution-wheel environment. The generated consumer Agent ran the installed wheel on port 8250 without source PYTHONPATH, and its /ready endpoint returned ok/runtime v1.
+- Both canonical frontend skills passed structure validation; the generated consumer includes the reuse guide and local skill discovery links.
+- Current synthetic screenshots were visually inspected and copied into [documentation images](images/README.md), including light/dark table states and actual PDF output.
+
+Browser verification used dedicated Web 3249/Agent 8249 and PostgreSQL 55439, with explicit fake gates and synthetic data. Local evidence includes /tmp/sensel-evolution-tests.log, /tmp/sensel-evolution-all-ui.log and /tmp/sensel-ready-consumer-build.log; test-results contains temporary browser/PDF artifacts and is not committed.
+
+Limits: quota transport is implemented for TokenFleet only and tested with mocked HTTP, not a real account; this is not per-run token/cost accounting. Customer AnalysisProvider/ExplorationProvider integrations and arbitrary report chart schemas require project-specific adapters. No live model, real email, new container build, registry publication or deployment was performed in this round. Earlier container/preview evidence applies only to its recorded version. Local results do not establish a remote GitHub Actions result.

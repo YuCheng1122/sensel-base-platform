@@ -81,7 +81,7 @@ A generated project's copy of this file is a starting contract. Document custome
 
 ## Required customer-product defaults
 
-These are acceptance requirements for new pages and the next shared-capability extraction. They do not mean every capability is already exported by base. See the implementation status in the base repository's `docs/base-evolution.md`.
+These are acceptance requirements for new pages and the next shared-capability extraction. Use `docs/reuse-guide.md` for actual exports, working template examples and remaining integration limits.
 
 - **Overview:** provide compact filters, coverage status, metric cards, primary and secondary charts, related rankings, paginated analysis tables and recent-event detail actions. Match the composed quality of the reviewed Nginx overview; token reuse alone is insufficient.
 - **Reports:** users can edit every chapter's title and prose, reorder/include/omit chapters and preview text with graphics. Browser preview and PDF use the same saved chapter order, content and data. Preserve units, time zone, unknown values and limitations. Editing saved content creates a new snapshot.

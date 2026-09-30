@@ -21,9 +21,9 @@ Checks install npm and uv locks, generate Prisma, run lint/types/boundaries/dead
 
 Create a GitHub release with a `vMAJOR.MINOR.PATCH` tag matching root, Web template, all platform package versions and every @sensel/* dependency pin; Python metadata must match too. `.github/workflows/release.yml` first executes the complete CI workflow, then publishes:
 
-- `ghcr.io/avocadoai-lab/sensel-base-platform-web`
-- `ghcr.io/avocadoai-lab/sensel-base-platform-agent`
-- `ghcr.io/avocadoai-lab/sensel-base-platform-migrate` (Web build target with Prisma CLI/bootstrap tools)
+- `ghcr.io/yucheng1122/sensel-base-platform-web`
+- `ghcr.io/yucheng1122/sensel-base-platform-agent`
+- `ghcr.io/yucheng1122/sensel-base-platform-migrate` (Web build target with Prisma CLI/bootstrap tools)
 
 Images carry version and full commit SHA tags, provenance/SBOM and OCI source/revision labels. Tags are references, not technically immutable registry objects; deploy the `@sha256:...` references recorded in job summaries for immutable releases. There is no floating `latest` tag. npm tarballs and Python wheel/source distribution are attached to the release; this does not publish to public npm/PyPI.
 

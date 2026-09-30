@@ -1,0 +1,12 @@
+.sensel-data-table {min-width:0;padding:24px;}
+.sensel-data-table header,.sensel-data-table footer{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+.sensel-data-table header{margin-bottom:20px;}.sensel-data-table h2{font-size:16px;margin:0;}
+.sensel-data-table form,.sensel-data-table nav{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.sensel-data-table input{height:36px;width:180px;min-width:0;background:var(--background);border:1px solid var(--border);border-radius:6px;padding:8px;color:var(--foreground);}
+.sensel-table-scroll{overflow:auto;border:1px solid var(--border);border-radius:8px;max-width:100%;}
+.sensel-data-table table{border-collapse:collapse;width:100%;min-width:640px;table-layout:fixed;}
+.sensel-data-table th,.sensel-data-table td{text-align:left;padding:12px 14px;border-bottom:1px solid var(--border);font-size:12px;overflow-wrap:anywhere;}
+.sensel-data-table th{background:var(--muted);}.sensel-data-table .numeric{text-align:right;font-variant-numeric:tabular-nums;}
+.sensel-data-table th button{background:transparent;border:0;font:inherit;color:inherit;cursor:pointer;}
+.sensel-data-table a{color:var(--primary);}.sensel-data-table footer{margin-top:16px;font-size:12px;}
+@media(max-width:639px){.sensel-data-table{padding:16px;}.sensel-data-table nav{gap:4px;}.sensel-data-table .button{padding:6px 8px;font-size:12px;}}

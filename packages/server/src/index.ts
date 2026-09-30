@@ -29,3 +29,7 @@ export { defaultPlatformSettings } from "./feature-types";
 export type { MailStore, StoredMailSettings } from "./mail-types";
 export { defaultMailSettings } from "./mail-types";
 export { sendConfiguredMail } from "./mail-service";
+
+export { createTokenFleetUsageProvider, type UsageProvider } from "./model-usage";
+
+export type { ExplorationProvider } from "./exploration";

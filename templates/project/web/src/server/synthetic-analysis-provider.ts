@@ -6,24 +6,7 @@ const hour = 3600000,
 export function createSyntheticAnalysisProvider(
   now = new Date(),
 ): AnalysisProvider {
-  const anchor = Date.UTC(
-    now.getUTCFullYear(),
-    now.getUTCMonth(),
-    now.getUTCDate(),
-  );
-  const sources = [
-    { id: "all", label: "全部示範來源" },
-    { id: "sample-a", label: "示範來源 A" },
-    { id: "sample-b", label: "示範來源 B" },
-  ];
-  const rows = Array.from({ length: 14 * 24 }, (_, index) => ({
-    id: `synthetic-${index}`,
-    time: new Date(anchor - (14 * 24 - index) * hour).toISOString(),
-    sourceId: index % 2 ? "sample-a" : "sample-b",
-    title: `合成示範事件 ${index + 1}`,
-    category: ["工作執行", "請求處理", "系統通知"][index % 3]!,
-    level: index % 17 === 0 ? "error" : index % 7 === 0 ? "warning" : "info",
-  }));
+  const {sources,rows} = syntheticDataset(now);
   return {
     async sources() {
       return sources.map((source) => ({ ...source }));
@@ -112,4 +95,26 @@ export function createSyntheticAnalysisProvider(
       };
     },
   };
+}
+
+export function syntheticDataset(now = new Date()) {
+  const anchor = Date.UTC(
+    now.getUTCFullYear(),
+    now.getUTCMonth(),
+    now.getUTCDate(),
+  );
+  const sources = [
+    { id: "all", label: "全部示範來源" },
+    { id: "sample-a", label: "示範來源 A" },
+    { id: "sample-b", label: "示範來源 B" },
+  ];
+  const rows = Array.from({ length: 14 * 24 }, (_, index) => ({
+    id: `synthetic-${index}`,
+    time: new Date(anchor - (14 * 24 - index) * hour).toISOString(),
+    sourceId: index % 2 ? "sample-a" : "sample-b",
+    title: `合成示範事件 ${index + 1}`,
+    category: ["工作執行", "請求處理", "系統通知"][index % 3]!,
+    level: index % 17 === 0 ? "error" : index % 7 === 0 ? "warning" : "info",
+  }));
+  return {sources,rows};
 }

@@ -1,6 +1,6 @@
 # Shared Capability Evolution from the Nginx Project
 
-Status: requirements and source review, 2026-09-30. This document records the user's required defaults and the extraction plan; it does not declare the planned APIs implemented.
+Status: initial requirements and source review, followed by the 2026-09-30 implementation. The source-review table below preserves the pre-extraction baseline. See [reusable components and recipes](reuse-guide.md) for implemented APIs, examples and limits; the verification record reports executed checks.
 
 ## Evidence and scope
 
@@ -64,7 +64,7 @@ All unbounded event/relationship lists require pagination or a dedicated browsab
 
 The template must provide `/overview`, `/chat`, `/reports` and `/settings/...` routes. Give `/` a documented landing/redirect policy. Do not implement primary navigation solely as local state under `/`.
 
-Use addressable event/entity detail routes, such as `/events/[id]` and `/entities/[type]/[id]`, with customer-owned stable opaque identifiers. These are route conventions, not implemented base routes. Details may appear in drawers, but direct opening, refresh and browser Back must restore meaningful state. Preserve supported range, filter and pagination state in URLs using validated parameters; do not expose raw payloads or credentials in URLs. Route visibility never replaces API authorization.
+Use addressable event/entity detail routes, such as `/events/[id]` and `/entities/[type]/[id]`, with customer-owned stable opaque identifiers. These route conventions are now demonstrated by the synthetic template; customer authorization and query adapters remain project-owned. Details may appear in drawers, but direct opening, refresh and browser Back must restore meaningful state. Preserve supported range, filter and pagination state in URLs using validated parameters; do not expose raw payloads or credentials in URLs. Route visibility never replaces API authorization.
 
 The customer source already has top-level routes, but re-exports a shared root component and derives the active screen from the last path segment. That approach is not sufficient for nested entity routes; implement explicit route composition rather than copying the last-segment heuristic.
 
@@ -87,4 +87,9 @@ Use a component catalog mapping user tasks to existing components and examples. 
 3. **Overview and drill-down:** reusable table/chart/layout/detail primitives; verify 1440/1920/390px and light/dark, long values, raw completeness, known/unknown pagination and entity-to-event navigation with retained scope.
 4. **Agent/settings:** usage display/provider interface, per-answer trace selection and runtime improvements; verify fake-provider quota states, initial panel visibility, correct trace selection, deadlines, cancellation and partial evidence.
 
-Documentation requirements apply to every batch rather than a final cleanup step. Do not claim the first-version target complete solely because reusable primitives exist: the generated template must demonstrate the composed experience with clearly marked synthetic data. Record screenshots, behavior checks and unverified limits separately. No source-customer changes, live provider calls, push, publication or deployment are part of this review.
+Documentation requirements apply to every batch rather than a final cleanup step. Do not claim the first-version target complete solely because reusable primitives exist: the generated template must demonstrate the composed experience with clearly marked synthetic data. Record screenshots, behavior checks and unverified limits separately. The original review did not authorize source-customer changes, live provider calls, publication or deployment. The subsequent implementation and push to the new remote were explicitly requested by the user.
+
+
+## Implementation status: 2026-09-30
+
+All four batches now have shared implementations and generated-template examples. Consult [reuse recipes](reuse-guide.md) for installed exports and adapter boundaries, [screenshots](images/README.md) for current synthetic captures, and [verification](verification.md#platform-evolution-2026-09-30) for executed checks. The initial source comparison above records the starting point, not the current package inventory. Arbitrary customer chart schemas, real quota-provider acceptance and per-run billing remain outside this implementation.

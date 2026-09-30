@@ -79,17 +79,17 @@ jobs:
           provenance: mode=max
           sbom: true
           tags: |
-            ghcr.io/avocadoai-lab/sensel-base-platform-${{ matrix.name }}:${{ github.event.release.tag_name }}
-            ghcr.io/avocadoai-lab/sensel-base-platform-${{ matrix.name }}:sha-${{ github.sha }}
+            ghcr.io/yucheng1122/sensel-base-platform-${{ matrix.name }}:${{ github.event.release.tag_name }}
+            ghcr.io/yucheng1122/sensel-base-platform-${{ matrix.name }}:sha-${{ github.sha }}
           labels: |
-            org.opencontainers.image.source=https://github.com/AvocadoAI-Lab/sensel-base-platform
+            org.opencontainers.image.source=https://github.com/YuCheng1122/sensel-base-platform
             org.opencontainers.image.revision=${{ github.sha }}
             org.opencontainers.image.version=${{ github.event.release.tag_name }}
       - name: Record immutable deployment reference
         env:
           IMAGE_NAME: ${{ matrix.name }}
           IMAGE_DIGEST: ${{ steps.image.outputs.digest }}
-        run: printf 'ghcr.io/avocadoai-lab/sensel-base-platform-%s@%s\n' "$IMAGE_NAME" "$IMAGE_DIGEST" >> "$GITHUB_STEP_SUMMARY"
+        run: printf 'ghcr.io/yucheng1122/sensel-base-platform-%s@%s\n' "$IMAGE_NAME" "$IMAGE_DIGEST" >> "$GITHUB_STEP_SUMMARY"
   package-assets:
     needs: verify
     runs-on: ubuntu-latest

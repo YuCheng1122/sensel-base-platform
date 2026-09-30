@@ -1,21 +1,21 @@
 "use client";
-import { useState, useRef, type FormEvent, type RefObject } from "react";
+import { useEffect, useState, useRef, type FormEvent, type RefObject } from "react";
 import {
-  Activity,
-  FileSearch,
-  ListChecks,
-  MessagesSquare,
   MessageSquarePlus,
   PanelLeft,
   PanelRight,
   Send,
   Square,
 } from "lucide-react";
-import { Notice, type Model } from "@sensel/ui";
+import { Button, Notice, type Model } from "@sensel/ui";
 import { ChatDrawer, ChatSidebar, ToolPanel } from "./chat-panels";
 import { ChatMessage } from "./chat-message";
 import type { Conversation, Message, StreamEvent } from "./chat-types";
+import { ChatSuggestions, type ChatSuggestion } from "./chat-suggestions";
+export type { ChatSuggestion } from "./chat-suggestions";
 interface Props {
+  suggestions?: ChatSuggestion[];
+  onConfigureModels?: () => void;
   chats: Conversation[];
   active: string;
   messages: Message[];
@@ -30,41 +30,23 @@ interface Props {
   onModel: (id: string) => void;
   onSelect: (id: string) => void;
   onNew: () => void;
-  onRemove: () => void;
+  onRemove: (id: string) => void;
+  onRename: (id: string) => void;
+  onRemoveAll: () => void;
   onStop: () => void;
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
 }
-const suggestions = [
-  {
-    icon: ListChecks,
-    title: "整理分析重點",
-    description: "釐清問題與分析步驟，建立適合的工作方向。",
-    prompt: "請協助我整理這個專案的分析重點與步驟。",
-  },
-  {
-    icon: FileSearch,
-    title: "了解專案資料",
-    description: "查看目前專案提供的資料與查詢能力。",
-    prompt: "請查詢目前專案的資訊與可用分析能力。",
-  },
-  {
-    icon: MessagesSquare,
-    title: "解讀查詢結果",
-    description: "說明資料的意義，整理值得關注的發現。",
-    prompt: "我想解讀一份查詢結果，請告訴我需要提供哪些資料。",
-  },
-  {
-    icon: Activity,
-    title: "規劃後續分析",
-    description: "從目前問題出發，找出下一步可以驗證的方向。",
-    prompt: "請協助我規劃後續分析，並列出需要確認的問題。",
-  },
-];
 export function ChatView(props: Props) {
   const [collapsed, setCollapsed] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
   const [toolsOpen, setToolsOpen] = useState(false);
   const [mobileTools, setMobileTools] = useState(false);
+  const [selectedTrace, setSelectedTrace] = useState<string | null>(null);
+  const selectedMessage = props.messages.find(message => message.id === selectedTrace);
+  const panelTraces = selectedMessage ? (selectedMessage.trace ?? []).filter(event => event.type?.startsWith("tool.")) : props.traces;
+  const panelBusy = selectedMessage ? selectedMessage.status === "running" : props.busy;
+  useEffect(() => {setSelectedTrace(null);setToolsOpen(false);setMobileTools(false);}, [props.active]);
+  useEffect(() => {if(props.busy) {setSelectedTrace(null);setToolsOpen(false);setMobileTools(false);}}, [props.busy]);
   const textarea = useRef<HTMLTextAreaElement>(null);
   const sidebar = (embedded = false) => (
     <ChatSidebar
@@ -84,7 +66,9 @@ export function ChatView(props: Props) {
         props.onSelect(id);
         setHistoryOpen(false);
       }}
-      onRemove={props.onRemove}
+      onRename={(id) => { setHistoryOpen(false); props.onRename(id); }}
+      onRemoveAll={() => { setHistoryOpen(false); props.onRemoveAll(); }}
+      onRemove={(id) => { setHistoryOpen(false); props.onRemove(id); }}
     />
   );
   const toggleTools = () => {
@@ -115,7 +99,7 @@ export function ChatView(props: Props) {
           >
             <MessageSquarePlus size={18} />
           </button>
-          <button
+          {!!props.traces.length && <button
             type="button"
             className="chat-tools-toggle"
             onClick={toggleTools}
@@ -128,7 +112,7 @@ export function ChatView(props: Props) {
                 ? ` · ${new Set(props.traces.map((e) => e.toolCallId)).size}`
                 : ""}
             </span>
-          </button>
+          </button>}
         </header>
         <div
           className="chat-transcript"
@@ -141,7 +125,7 @@ export function ChatView(props: Props) {
           ) : props.messages.length ? (
             <div className="chat-message-container">
               {props.messages.map((message) => (
-                <ChatMessage key={message.id} message={message} />
+                <ChatMessage key={message.id} message={message} toolsSelected={selectedTrace === message.id && (toolsOpen || mobileTools)} onShowTools={() => {setSelectedTrace(message.id);if(window.matchMedia("(min-width:1280px)").matches) setToolsOpen(true);else setMobileTools(true);}} />
               ))}
             </div>
           ) : (
@@ -152,26 +136,12 @@ export function ChatView(props: Props) {
                 <p className="chat-welcome-description">
                   用自然語言探索資料、整理發現，讓分析更有方向。
                 </p>
-                <div className="chat-suggestions">
-                  {suggestions.map(({ icon: Icon, ...item }) => (
-                    <button
-                      type="button"
-                      key={item.title}
-                      onClick={() => {
-                        if (textarea.current) {
-                          textarea.current.value = item.prompt;
-                          textarea.current.focus();
-                        }
-                      }}
-                    >
-                      <span className="chat-suggestion-icon">
-                        <Icon size={20} />
-                      </span>
-                      <strong>{item.title}</strong>
-                      <span>{item.description}</span>
-                    </button>
-                  ))}
-                </div>
+                <ChatSuggestions items={props.suggestions} onChoose={prompt => {
+                  if (textarea.current) {
+                    textarea.current.value = prompt;
+                    textarea.current.focus();
+                  }
+                }} />
               </div>
             </div>
           )}
@@ -199,7 +169,7 @@ export function ChatView(props: Props) {
               </select>
             </div>
             {!props.models.length && (
-              <Notice>尚無可用模型，請管理員在模型設定啟用模型。</Notice>
+              <Notice>尚未設定可用模型。{props.onConfigureModels ? <Button type="button" variant="secondary" onClick={props.onConfigureModels}>前往模型設定</Button> : "請聯絡管理員啟用模型。"}</Notice>
             )}
             {props.error && <Notice error>{props.error}</Notice>}
             <div className="chat-composer-input">
@@ -212,7 +182,7 @@ export function ChatView(props: Props) {
                 name="content"
                 required
                 rows={1}
-                disabled={props.busy || props.loading}
+                disabled={props.busy || props.loading || !props.modelId}
                 placeholder="輸入您想分析的問題"
                 maxLength={32000}
                 onKeyDown={(event) => {
@@ -252,8 +222,8 @@ export function ChatView(props: Props) {
       {toolsOpen && (
         <div className="chat-desktop-tools">
           <ToolPanel
-            traces={props.traces}
-            busy={props.busy}
+            traces={panelTraces}
+            busy={panelBusy}
             onClose={() => setToolsOpen(false)}
           />
         </div>
@@ -273,8 +243,8 @@ export function ChatView(props: Props) {
         side="right"
       >
         <ToolPanel
-          traces={props.traces}
-          busy={props.busy}
+          traces={panelTraces}
+          busy={panelBusy}
           onClose={() => setMobileTools(false)}
         />
       </ChatDrawer>

@@ -7,6 +7,7 @@ const claims = z.object({
   sub: z.string().uuid(),
   executionId: z.string().uuid(),
   exp: z.number(),
+  deadlineMs: z.number().finite().optional(),
   tools: z.array(z.string()),
 });
 function equal(a: string, b: string) {
@@ -55,7 +56,9 @@ export async function authorizeTool(
     !profile.tools.includes(toolName)
   )
     throw new CoreError("FORBIDDEN", 403);
+  if (profile.deadlineMs !== undefined && profile.deadlineMs <= Date.now())
+    throw new CoreError("EXECUTION_TIMEOUT", 408);
   const user = await config.store.userById(profile.sub);
   if (!user?.enabled) throw new CoreError("UNAUTHORIZED", 401);
-  return { user, arguments: body.arguments, executionId: body.executionId };
+  return { user, arguments: body.arguments, executionId: body.executionId, deadlineMs: profile.deadlineMs };
 }
